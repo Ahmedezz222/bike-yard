@@ -279,6 +279,7 @@
         height: auto;
         border-block: 5px solid rgb(79, 162, 0);
         padding: 1px 0px;
+        background-color: #ffffff;
       }
     
     .product-card h3 {
