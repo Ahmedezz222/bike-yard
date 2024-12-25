@@ -48,6 +48,8 @@ function sortProducts() {
 
     products.forEach((product) => productsContainer.appendChild(product));
 }
+
+// Toggle Forms
 function toggleForms() {
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
@@ -59,6 +61,7 @@ function toggleForms() {
         signupForm.style.display = 'block';
     }
 }
+
 // Check if user is logged in
 document.addEventListener("DOMContentLoaded", () => {
     const loginSection = document.getElementById("login-section");
@@ -69,20 +72,23 @@ document.addEventListener("DOMContentLoaded", () => {
         loginSection.innerHTML = `<span>Welcome, ${username}!</span>`;
     }
 });
+
+// Forgot Password Form
 document.getElementById("forgot-password-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    const email = document.getElementById("email").value;
-    
+    const email = document.getElementById("forgot-password-email").value;
+
     // Simulate sending a reset email
     alert(`Instructions to reset your password have been sent to ${email}.`);
     window.location.href = "login.html"; // Redirect to login page after submission
 });
-// Simulating account creation process
+
+// Register Form
 document.getElementById("register-form").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const username = document.getElementById("username").value;
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("register-email").value;
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirm-password").value;
 
@@ -96,12 +102,12 @@ document.getElementById("register-form").addEventListener("submit", function (e)
     window.location.href = "login.html"; // Redirect to login page after registration
 });
 
-
+// Checkout Form
 document.getElementById("checkout-form").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
+    const email = document.getElementById("checkout-email").value.trim();
     const address = document.getElementById("address").value.trim();
     const paymentMethod = document.getElementById("payment").value;
 
@@ -113,3 +119,7 @@ document.getElementById("checkout-form").addEventListener("submit", function (e)
     alert(`Thank you, ${name}! Your order has been placed successfully.\n\nOrder Details:\nEmail: ${email}\nAddress: ${address}\nPayment Method: ${paymentMethod}`);
     // Redirect to a confirmation page or clear the cart here.
 });
+
+// Event listeners for filter and sort
+document.getElementById('category-filter').addEventListener('change', filterProducts);
+document.getElementById('price-sort').addEventListener('change', sortProducts);
