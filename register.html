@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="x-icon" href="bike yard logo.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Bike Yard Shop</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="index.html" class="logo">
+            <img src="bike yard logo.png" alt="Bike Yard Logo" style="max-width: 75px;">
+        </a>
+        <button class="menu-toggle" id="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav id="nav-menu">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                
+                
+               <li id="login-section">
+                    <a href="login.html" id="login-button">Login</a>
+                </li><a href="bikeyardcart.html" title="Shopping Cart" class="cart-link">
+                    <span class="wd-tools-icon wd-icon-alt">
+                        <span class="wd-cart-number wd-tools-count">
+                            0 <span class="items-text">items</span>
+                        </span>
+                    </span>
+                    <span class="wd-tools-text">
+                        <span class="wd-cart-subtotal">
+                            <span class="woocommerce-Price-amount amount">
+                                <bdi>
+                                    <span id="cart-total">0</span>&nbsp;
+                                    <span class="woocommerce-Price-currencySymbol">EGP</span>
+                                </bdi>
+                            </span>
+                        </span>
+                    </span>
+                    
+                </a>
+            </ul>
+        </nav>
+    </header>
+
+<!-- Registration Section -->
+<section class="register-section">
+    <div class="register-wrapper">
+        <h1>Create Your Account</h1>
+        <p>Join us today to shop exclusive products and enjoy our services.</p>
+        <form id="register-form">
+            <!-- Name Input -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+            </div>
+
+            <!-- Email Input -->
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Create a password" required>
+            </div>
+
+            <!-- Confirm Password Input -->
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-primary">Register</button>
+        </form>
+
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+</section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Bike Yard Shop. All Rights Reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="x-icon" href="bike yard logo.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Bike Yard Shop</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <a href="index.html" class="logo">
+            <img src="bike yard logo.png" alt="Bike Yard Logo" style="max-width: 75px;">
+        </a>
+        <button class="menu-toggle" id="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav id="nav-menu">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                
+                
+               <li id="login-section">
+                    <a href="login.html" id="login-button">Login</a>
+                </li><a href="bikeyardcart.html" title="Shopping Cart" class="cart-link">
+                    <span class="wd-tools-icon wd-icon-alt">
+                        <span class="wd-cart-number wd-tools-count">
+                            0 <span class="items-text">items</span>
+                        </span>
+                    </span>
+                    <span class="wd-tools-text">
+                        <span class="wd-cart-subtotal">
+                            <span class="woocommerce-Price-amount amount">
+                                <bdi>
+                                    <span id="cart-total">0</span>&nbsp;
+                                    <span class="woocommerce-Price-currencySymbol">EGP</span>
+                                </bdi>
+                            </span>
+                        </span>
+                    </span>
+                    
+                </a>
+            </ul>
+        </nav>
+    </header>
+
+
+
+
+    <!-- Hero Section -->
+    <section class="products-hero">
+        <h1>Explore Our Products</h1>
+        <p>Discover the perfect bike and gear for your next adventure.</p>
+    </section>
+
+    <!-- Filter and Sorting Section -->
+    <section class="filter-section">
+        <div class="filter-controls">
+            <label for="category-filter">Filter by Category:</label>
+            <select id="category-filter" onchange="filterProducts()">
+                <option value="all">All</option>
+                <option value="mountain">Mountain Bikes</option>
+                <option value="road">Road Bikes</option>
+                <option value="accessories">Accessories</option>
+            </select>
+
+            <label for="price-sort">Sort by Price:</label>
+            <select id="price-sort" onchange="sortProducts()">
+                <option value="default">Default</option>
+                <option value="low-to-high">Low to High</option>
+                <option value="high-to-low">High to Low</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Product Listings -->
+    <section class="products-list">
+        <div id="products-container" class="product-grid">
+            <!-- Product Card -->
+            <div class="product-card" data-category="mountain" data-price="500">
+                <img src="images/mountain-bike.jpg" alt="Mountain Bike">
+                <h3>Trail Blazer Mountain Bike</h3>
+                <p class="price">$500</p>
+                <a href="product-details.html" class="btn-secondary">View Details</a>
+            </div>
+            <div class="product-card" data-category="road" data-price="1200">
+                <img src="images/road-bike.jpg" alt="Road Bike">
+                <h3>Speedster Road Bike</h3>
+                <p class="price">$1200</p>
+                <a href="product-details.html" class="btn-secondary">View Details</a>
+            </div>
+            <div class="product-card" data-category="electric" data-price="1500">
+                <img src="images/electric-bike.jpg" alt="Electric Bike">
+                <h3>Eco Electric Bike</h3>
+                <p class="price">$1500</p>
+                <a href="product-details.html" class="btn-secondary">View Details</a>
+            </div>
+            <div class="product-card" data-category="accessories" data-price="200">
+                <img src="images/bike-helmet.jpg" alt="Bike Helmet">
+                <h3>Protective Helmet</h3>
+                <p class="price">$200</p>
+                <a href="product-details.html" class="btn-secondary">View Details</a>
+            </div>
+            <div class="product-card" data-category="accessories" data-price="100">
+                <img src="images/bike-lock.jpg" alt="Bike Lock">
+                <h3>Secure Lock</h3>
+                <p class="price">$100</p>
+                <a href="product-details.html" class="btn-secondary">View Details</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section class="contact-cta">
+        <h2>Have Questions?</h2>
+        <p>Contact our team for assistance with your bike, gear, or order.</p>
+        <a href="contact.html" class="btn-primary">Contact Us</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Bike Yard Shop. All Rights Reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
