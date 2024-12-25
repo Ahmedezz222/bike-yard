@@ -203,7 +203,7 @@
     
         header nav ul {
             flex-direction: column;
-            gap: 10px;
+            gap: 23px;
         }
     
         .hero {
@@ -750,6 +750,9 @@
     
         nav.open ul {
             display: flex;
+            margin: auto;
+            margin-block: -29px;
+            margin-block-end: 5px;
         }
     }
     /* Styles for Login Button */
