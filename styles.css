@@ -219,6 +219,7 @@
         .hero {
             height: 0vh;
             background: url(https://scontent.fcai21-4.fna.fbcdn.net/v/t39.30808-6/471331523_610920588110603_1611860993789231347_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=127cfc&_nc_ohc=4D-Miuj1SG0Q7kNvgFLuMZo&_nc_oc=AdhktUYVx_3vdUB451YI5ybvsbsrW3wxEqwyb1dhrIjhsk4Fgs-uDILHKuzlIu4Clm8&_nc_zt=23&_nc_ht=scontent.fcai21-4.fna&_nc_gid=Awz2mCXEwvn1KWmIa0j0pQg&oh=00_AYBMOIqJwBJr89h4grc4seStij0J_xKGExc_WpXJq82jJQ&oe=67775AFB) no-repeat center center/cover;
+            padding: 235px 20px;
         }
     
         .hero h1 {
