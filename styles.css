@@ -23,11 +23,16 @@
     }
     
     header .logo {
-        font-size: 1.8rem;
+        font-size: 1rem;
         font-weight: bold;
         letter-spacing: 2px;
+        max-height: 55px;
     }
     
+    .logo img {
+        max-height: 70px;
+    }
+
     header nav ul {
         list-style: none;
         display: flex;
@@ -250,6 +255,15 @@
         footer {
             font-size: 0.8rem;
         }
+        .Services {
+        background: url('https://scontent.fcai21-4.fna.fbcdn.net/v/t39.30808-6/471331523_610920588110603_1611860993789231347_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=127cfc&_nc_ohc=4D-Miuj1SG0Q7kNvgFLuMZo&_nc_oc=AdhktUYVx_3vdUB451YI5ybvsbsrW3wxEqwyb1dhrIjhsk4Fgs-uDILHKuzlIu4Clm8&_nc_zt=23&_nc_ht=scontent.fcai21-4.fna&_nc_gid=Awz2mCXEwvn1KWmIa0j0pQg&oh=00_AYBMOIqJwBJr89h4grc4seStij0J_xKGExc_WpXJq82jJQ&oe=67775AFB') no-repeat center center/cover;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 150px 20px;
+    }
     }
     /* About Us Section */
     .about-us {
@@ -297,6 +311,7 @@
         text-align: center;
         padding: 15px;
         transition: transform 0.3s;
+        margin-bottom: 20px;
     }
     
     .product-card:hover {
@@ -781,7 +796,7 @@
         nav.open ul {
             display: flex;
             margin: auto;
-            margin-block: -29px;
+            margin-block: -20px;
             margin-block-end: 5px;
         }
     }
@@ -803,10 +818,12 @@
     .login-section {
         display: flex;
         justify-content: center;
+        background: url(https://scontent.fcai21-4.fna.fbcdn.net/v/t39.30808-6/449749716_493128323223164_5271876534653055048_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=HXXyyUl7AIYQ7kNvgEhJtZa&_nc_oc=AdiE-30hs_LjuLLJgEF0Rf57GWIWwyvHR0TqfDybcnAQqVrjYEtlz-93ohQbUkDnrmY&_nc_zt=23&_nc_ht=scontent.fcai21-4.fna&_nc_gid=AQvVHfm4_HfkRvxUIAVv2hc&oh=00_AYC1KGJQsKp64dZ86n_iphzRcNwEWKKLgDWpb8q3o55z9Q&oe=67773CC2);
+        background-size: cover;
         align-items: center;
         min-height: 80vh;
         background-color: #f9f9f9;
-        padding: 20px;
+        padding: 44px;
     }
     
     .login-wrapper {
@@ -913,10 +930,12 @@
     .forgot-password-section {
         display: flex;
         justify-content: center;
+        background: url(https://scontent.fcai21-4.fna.fbcdn.net/v/t39.30808-6/449749716_493128323223164_5271876534653055048_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=HXXyyUl7AIYQ7kNvgEhJtZa&_nc_oc=AdiE-30hs_LjuLLJgEF0Rf57GWIWwyvHR0TqfDybcnAQqVrjYEtlz-93ohQbUkDnrmY&_nc_zt=23&_nc_ht=scontent.fcai21-4.fna&_nc_gid=AQvVHfm4_HfkRvxUIAVv2hc&oh=00_AYC1KGJQsKp64dZ86n_iphzRcNwEWKKLgDWpb8q3o55z9Q&oe=67773CC2);
+        background-size: cover;
         align-items: center;
         min-height: 80vh;
         background-color: #f9f9f9;
-        padding: 20px;
+        padding: 44px;
     }
     
     .forgot-password-wrapper {
@@ -996,10 +1015,13 @@
     .register-section {
         display: flex;
         justify-content: center;
+        background: url(https://scontent.fcai21-4.fna.fbcdn.net/v/t39.30808-6/449749716_493128323223164_5271876534653055048_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=HXXyyUl7AIYQ7kNvgEhJtZa&_nc_oc=AdiE-30hs_LjuLLJgEF0Rf57GWIWwyvHR0TqfDybcnAQqVrjYEtlz-93ohQbUkDnrmY&_nc_zt=23&_nc_ht=scontent.fcai21-4.fna&_nc_gid=AQvVHfm4_HfkRvxUIAVv2hc&oh=00_AYC1KGJQsKp64dZ86n_iphzRcNwEWKKLgDWpb8q3o55z9Q&oe=67773CC2);
+        background-size: cover;
         align-items: center;
         min-height: 80vh;
         background-color: #f9f9f9;
-        padding: 20px;
+        padding: 44px;
+        
     }
     
     .register-wrapper {
@@ -1044,6 +1066,7 @@
         border: 1px solid #ddd;
         border-radius: 5px;
         box-sizing: border-box;
+        margin-bottom: 15px;
     }
     
     .register-wrapper .btn-primary {
