@@ -1,125 +1,67 @@
-// Toggle Mobile Menu
-const menuToggle = document.getElementById('menu-toggle');
-const navMenu = document.getElementById('nav-menu');
+document.addEventListener('DOMContentLoaded', () => {
+    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    const cartItemsContainer = document.getElementById('cart-items');
+    const orderSubtotal = document.getElementById('order-subtotal');
+    const checkoutForm = document.getElementById('checkout-form');
 
-menuToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('open');
-});
+    function updateCartSummary() {
+        cartItemsContainer.innerHTML = '';
+        let subtotal = 0;
 
-// Close Menu on Outside Click
-document.addEventListener('click', (e) => {
-    if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
-        navMenu.classList.remove('open');
+        cartItems.forEach(item => {
+            const total = item.quantity * item.price;
+            subtotal += total;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.product}</td>
+                <td>${item.quantity}</td>
+                <td>${item.price} EGP</td>
+                <td>${total} EGP</td>
+            `;
+            cartItemsContainer.appendChild(row);
+        });
+
+        orderSubtotal.textContent = `${subtotal} EGP`;
     }
-});
 
-// Filtering Products by Category
-function filterProducts() {
-    const categoryFilter = document.getElementById('category-filter').value;
-    const products = document.querySelectorAll('.product-card');
+    updateCartSummary();
 
-    products.forEach((product) => {
-        const productCategory = product.getAttribute('data-category');
-        if (categoryFilter === 'all' || productCategory === categoryFilter) {
-            product.style.display = 'block';
-        } else {
-            product.style.display = 'none';
+    checkoutForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(checkoutForm);
+        const orderData = {
+            customerName: formData.get('name'),
+            email: formData.get('email'),
+            address: formData.get('address'),
+            phone: formData.get('phone'),
+            otherPhone: formData.get('other-phone'),
+            notes: formData.get('notes'),
+            paymentMethod: formData.get('payment'),
+            items: cartItems,
+            subtotal: parseFloat(orderSubtotal.textContent)
+        };
+
+        try {
+            const response = await fetch('http://localhost:3000/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert('Order placed successfully! Order ID: ' + result.orderId);
+                localStorage.removeItem('cartItems');
+                window.location.href = '/order-confirmation.html';
+            } else {
+                throw new Error('Failed to place order');
+            }
+        } catch (error) {
+            alert('Error placing order: ' + error.message);
         }
     });
-}
-
-// Sorting Products by Price
-function sortProducts() {
-    const sortOption = document.getElementById('price-sort').value;
-    const productsContainer = document.getElementById('products-container');
-    const products = Array.from(productsContainer.children);
-
-    products.sort((a, b) => {
-        const priceA = parseInt(a.getAttribute('data-price'));
-        const priceB = parseInt(b.getAttribute('data-price'));
-
-        if (sortOption === 'low-to-high') {
-            return priceA - priceB;
-        } else if (sortOption === 'high-to-low') {
-            return priceB - priceA;
-        }
-        return 0;
-    });
-
-    products.forEach((product) => productsContainer.appendChild(product));
-}
-
-// Toggle Forms
-function toggleForms() {
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
-    if (loginForm.style.display === 'none') {
-        loginForm.style.display = 'block';
-        signupForm.style.display = 'none';
-    } else {
-        loginForm.style.display = 'none';
-        signupForm.style.display = 'block';
-    }
-}
-
-// Check if user is logged in
-document.addEventListener("DOMContentLoaded", () => {
-    const loginSection = document.getElementById("login-section");
-    const username = localStorage.getItem("username");
-
-    if (username) {
-        // If user is logged in, show their username
-        loginSection.innerHTML = `<span>Welcome, ${username}!</span>`;
-    }
 });
-
-// Forgot Password Form
-document.getElementById("forgot-password-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const email = document.getElementById("forgot-password-email").value;
-
-    // Simulate sending a reset email
-    alert(`Instructions to reset your password have been sent to ${email}.`);
-    window.location.href = "login.html"; // Redirect to login page after submission
-});
-
-// Register Form
-document.getElementById("register-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const username = document.getElementById("username").value;
-    const email = document.getElementById("register-email").value;
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirm-password").value;
-
-    if (password !== confirmPassword) {
-        alert("Passwords do not match. Please try again.");
-        return;
-    }
-
-    // Simulating successful account creation
-    alert(`Account created successfully! Welcome, ${username}!`);
-    window.location.href = "login.html"; // Redirect to login page after registration
-});
-
-// Checkout Form
-document.getElementById("checkout-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("checkout-email").value.trim();
-    const address = document.getElementById("address").value.trim();
-    const paymentMethod = document.getElementById("payment").value;
-
-    if (!name || !email || !address || !paymentMethod) {
-        alert("Please fill out all fields to confirm your order.");
-        return;
-    }
-
-    alert(`Thank you, ${name}! Your order has been placed successfully.\n\nOrder Details:\nEmail: ${email}\nAddress: ${address}\nPayment Method: ${paymentMethod}`);
-    // Redirect to a confirmation page or clear the cart here.
-});
-
-// Event listeners for filter and sort
-document.getElementById('category-filter').addEventListener('change', filterProducts);
-document.getElementById('price-sort').addEventListener('change', sortProducts);
