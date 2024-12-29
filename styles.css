@@ -451,10 +451,12 @@
     }
     /* Hero Section */
     .products-hero {
-        background: url('https://lh3.googleusercontent.com/p/AF1QipOULCSR8GVr9uyn6b_VjWYfu9LjhPGio7Rh_ffv=s1360-w1360-h1020') no-repeat center/cover;
-        color: #fff;
+        background: #662650;
         text-align: center;
-        padding: 150px 20px;
+        color: white;
+        padding: 32px 30px;
+        padding-block: 20px;
+        padding-block-end: 47px;
     }
     
     .products-hero .hero-content {
@@ -479,10 +481,11 @@
     /* Filter Section */
     .filter-section {
         padding: 20px 40px;
-        background: #f4f4f4;
+        background: #000;
         text-align: center;
         margin-bottom: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        color: white;
     }
     
     .filter-controls {
@@ -499,10 +502,12 @@
     }
     
     .filter-controls select {
-        padding: 8px 12px;
-        font-size: 1rem;
-        border-radius: 5px;
-        border: 1px solid #ddd;
+        padding: 7px 15px;
+        font-size: 1.2rem;
+        border-radius: 39px;
+        border: 1px solid #000000;
+        background: #545454;
+        color: white;
     }
     /* Services Details Section */
     .services-details {
@@ -1151,6 +1156,7 @@
         font-size: 2.5rem;
         margin-bottom: 20px;
         text-align: center;
+        color: white;
     }
     
     .cart-intro {
