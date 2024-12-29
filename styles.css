@@ -58,7 +58,7 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-        padding: 352px;
+        padding: 366px 20px;
     }
     
     .hero h1 {
@@ -67,7 +67,7 @@
     }
     
     .hero p {
-        font-size: 1.2rem;
+        font-size: 10rem;
         margin-bottom: 20px;
     }
     
@@ -90,6 +90,16 @@
     
     .hero .btn-primary:hover {
         background: #333;
+    }
+
+    .Services {
+        background: url('https://scontent.fcai21-4.fna.fbcdn.net/v/t39.30808-6/449749716_493128323223164_5271876534653055048_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=HXXyyUl7AIYQ7kNvgEhJtZa&_nc_oc=AdiE-30hs_LjuLLJgEF0Rf57GWIWwyvHR0TqfDybcnAQqVrjYEtlz-93ohQbUkDnrmY&_nc_zt=23&_nc_ht=scontent.fcai21-4.fna&_nc_gid=AQvVHfm4_HfkRvxUIAVv2hc&oh=00_AYC1KGJQsKp64dZ86n_iphzRcNwEWKKLgDWpb8q3o55z9Q&oe=67773CC2') no-repeat center center/cover;
+        color: #000000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 366px 20px;
     }
     
     /* Products Section */
