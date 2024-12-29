@@ -98,13 +98,13 @@
     }
 
     .Services {
-        background: url('https://scontent.fcai21-4.fna.fbcdn.net/v/t39.30808-6/449749716_493128323223164_5271876534653055048_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=HXXyyUl7AIYQ7kNvgEhJtZa&_nc_oc=AdiE-30hs_LjuLLJgEF0Rf57GWIWwyvHR0TqfDybcnAQqVrjYEtlz-93ohQbUkDnrmY&_nc_zt=23&_nc_ht=scontent.fcai21-4.fna&_nc_gid=AQvVHfm4_HfkRvxUIAVv2hc&oh=00_AYC1KGJQsKp64dZ86n_iphzRcNwEWKKLgDWpb8q3o55z9Q&oe=67773CC2') no-repeat center center/cover;
-        color: #000000;
+        background: #662650;
+        color: #ffffff;
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
-        padding: 366px 20px;
+        padding: 54px 20px;
     }
     .btn-primary {
         color: rgb(229, 229, 229);
@@ -1235,12 +1235,13 @@
     
     
     .cart-summary {
-        text-align: right;
+        text-align: left;
         margin-top: 20px;
     }
     
     .cart-summary h3 {
         margin-bottom: 10px;
+        text-align: left;
     }
     
     .btn-primary {
@@ -1366,4 +1367,12 @@
     .checkout-container #checkout-form {
         order: 2;
         width: 55%;
+    }
+        /*body*/
+    @media screen and (max-width: 768px) {
+    .cart-summary{
+    order: revert;
+    width: 86%;
+    padding: 20px 20px;
+    text-align:left;}
     }

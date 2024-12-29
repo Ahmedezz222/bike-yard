@@ -169,3 +169,39 @@ if (checkoutButton) {
         }
     });
 }
+
+function filterProducts() {
+    console.debug('Filtering products...');
+    const category = document.getElementById('category-filter').value;
+    console.debug('Selected category:', category);
+    
+    const products = document.querySelectorAll('.product-card');
+    products.forEach(product => {
+        const isVisible = category === 'all' || product.dataset.category === category;
+        product.style.display = isVisible ? 'block' : 'none';
+        console.debug(`Product ${product.querySelector('h3').textContent}: ${isVisible ? 'shown' : 'hidden'}`);
+    });
+}
+
+function sortProducts() {
+    console.debug('Sorting products...');
+    const sortBy = document.getElementById('price-sort').value;
+    console.debug('Sort order:', sortBy);
+    
+    const productsContainer = document.getElementById('products-container');
+    const products = Array.from(document.querySelectorAll('.product-card'));
+    
+    products.sort((a, b) => {
+        const priceA = parseFloat(a.dataset.price);
+        const priceB = parseFloat(b.dataset.price);
+        return sortBy === 'low-to-high' ? priceA - priceB : priceB - priceA;
+    });
+    
+    products.forEach(product => productsContainer.appendChild(product));
+    console.debug('Sort complete');
+}
+
+// Error handling
+window.addEventListener('error', (event) => {
+    console.error('Product page error:', event.error);
+});
