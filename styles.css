@@ -578,7 +578,7 @@ footer {
 
 .service-card .btn-secondary {
     display: inline-block;
-    padding: 10px 0px;
+    padding: 10px 20px;
     background: #000000;
     color: #fff;
     border-radius: 5px;
@@ -1741,7 +1741,7 @@ body.menu-open {
 }
 
 .product-specs li:before {
-    content: "•";
+    content: "â€¢";
     position: absolute;
     left: 0;
     color: #007bff;
@@ -1792,6 +1792,9 @@ body.menu-open {
     .thumbnail-images img {
         width: 60px;
         height: 60px;
+    }
+    .service-card .btn-secondary {
+    padding: 10px 0px;
     }
 }
 
