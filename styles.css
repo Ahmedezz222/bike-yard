@@ -1583,6 +1583,7 @@ header {
 
 #nav-menu.open {
     right: 0;
+    width: 59%;
 }
 
 #nav-menu ul {
@@ -1601,6 +1602,17 @@ header {
     text-align: left;
     border-radius: 8px;
 }
+.notes{
+    background: white;
+    margin-block: 0em;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid rgb(221, 221, 221);
+    border-radius: 5px;
+    box-sizing: border-box;
+    width: 327px;
+    height: 77px;
+}    
 
 /* Overlay when menu is open */
 .menu-overlay {
