@@ -435,7 +435,7 @@
         margin-bottom: 20px;
     }
     
-    .contact-cta .btn-primary { 
+    .contact-cta .btn-primary {
         display: inline-block;
         padding: 12px 20px;
         background: #662650;
@@ -444,6 +444,7 @@
         border-radius: 5px;
         text-decoration: none;
         transition: background 0.3s;
+        width: 8%;
     }
     
     .contact-cta .btn-primary:hover {
@@ -1525,7 +1526,9 @@
     .checkout-container {
         flex-direction: column;
     }
-
+    .contact-cta .btn-primary{
+        width: 31%;
+    }
     #checkout-form,
     .cart-summary {
         min-width: 100%;
