@@ -99,12 +99,13 @@ header nav ul li a.active {
 
 .Services {
     background: url(https://scontent.fcai21-2.fna.fbcdn.net/v/t39.30808-6/466498274_583387787530550_1841363694341444879_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=RjOSLQSUEpUQ7kNvgFdxtbJ&_nc_oc=Adi7jsrAhKslhnSSzeJD3BPGMrfOeXDLzuneLu7LY1kJ__DSn7tSDPXpXpfaVUyv7Js&_nc_zt=23&_nc_ht=scontent.fcai21-2.fna&_nc_gid=A_bKh_jx1_YeK90TrL75jld&oh=00_AYBz4PlWu8kq2KI0Gyh2-THzULNlMtGfv7r1wDKTG08QvA&oe=677898CC);
-    color: #662650;
+    color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 311px 20px;
+    padding: 152px 20px;
+    size: 20px;
 }
 .btn-primary {
     color: rgb(229, 229, 229);
