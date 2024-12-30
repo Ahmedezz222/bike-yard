@@ -111,6 +111,195 @@
         <a href="contact.html" class="btn-primary">Contact Us</a>
     </section>
 
+    <!-- Customization Options Modal -->
+    <div id="custom-options" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Bike Customization Options</h2>
+            <div class="custom-options-grid">
+                <div class="custom-category">
+                    <h3>Paint & Design</h3>
+                    <div class="option-list">
+                        <div class="custom-option">
+                            <input type="checkbox" id="custom-paint" name="customization[]" value="custom-paint">
+                            <label for="custom-paint">Custom Paint Job ($200+)</label>
+                        </div>
+                        <div class="custom-option">
+                            <input type="checkbox" id="custom-decals" name="customization[]" value="custom-decals">
+                            <label for="custom-decals">Custom Decals ($50+)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="custom-category">
+                    <h3>Performance Upgrades</h3>
+                    <div class="option-list">
+                        <div class="custom-option">
+                            <input type="checkbox" id="custom-gears" name="customization[]" value="custom-gears">
+                            <label for="custom-gears">Premium Gear System ($300+)</label>
+                        </div>
+                        <div class="custom-option">
+                            <input type="checkbox" id="custom-brakes" name="customization[]" value="custom-brakes">
+                            <label for="custom-brakes">High-Performance Brakes ($250+)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="custom-category">
+                    <h3>Comfort & Fit</h3>
+                    <div class="option-list">
+                        <div class="custom-option">
+                            <input type="checkbox" id="custom-saddle" name="customization[]" value="custom-saddle">
+                            <label for="custom-saddle">Premium Saddle ($100+)</label>
+                        </div>
+                        <div class="custom-option">
+                            <input type="checkbox" id="custom-handlebars" name="customization[]" value="custom-handlebars">
+                            <label for="custom-handlebars">Custom Handlebars ($80+)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="customization-form">
+                <h3>Request Customization</h3>
+                <form id="customization-form">
+                    <div class="form-group">
+                        <label for="bike-type">Bike Type:</label>
+                        <select id="bike-type" required>
+                            <option value="">Select your bike type</option>
+                            <option value="mountain">Mountain Bike</option>
+                            <option value="road">Road Bike</option>
+                            <option value="hybrid">Hybrid Bike</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="customization-notes">Additional Requirements:</label>
+                        <textarea id="customization-notes" rows="3" placeholder="Describe any specific requirements or questions"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Get Quote</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Repair Booking Modal -->
+    <div id="book-repair" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Book a Bike Repair</h2>
+            <div class="repair-rates">
+                <h3>Service Rates</h3>
+                <table>
+                    <tr>
+                        <th>Service Type</th>
+                        <th>Price</th>
+                        <th>Duration</th>
+                    </tr>
+                    <tr>
+                        <td>Basic Tune-up</td>
+                        <td>$50</td>
+                        <td>1-2 hours</td>
+                    </tr>
+                    <tr>
+                        <td>Full Service</td>
+                        <td>$120</td>
+                        <td>3-4 hours</td>
+                    </tr>
+                    <tr>
+                        <td>Emergency Repair</td>
+                        <td>$80</td>
+                        <td>1 hour</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="repair-form">
+                <h3>Schedule Your Service</h3>
+                <form id="repair-booking-form">
+                    <div class="form-group">
+                        <label for="service-type">Service Type:</label>
+                        <select id="service-type" required>
+                            <option value="">Select a service</option>
+                            <option value="basic">Basic Tune-up</option>
+                            <option value="full">Full Service</option>
+                            <option value="emergency">Emergency Repair</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bike-details">Bike Details:</label>
+                        <textarea id="bike-details" rows="3" placeholder="Please describe your bike (make, model, year)" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="service-date">Preferred Date:</label>
+                        <input type="date" id="service-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="service-time">Preferred Time:</label>
+                        <select id="service-time" required>
+                            <option value="">Select a time</option>
+                            <option value="morning">Morning (9AM - 12PM)</option>
+                            <option value="afternoon">Afternoon (1PM - 4PM)</option>
+                            <option value="evening">Evening (5PM - 8PM)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">Book Service</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rental Information Modal -->
+    <div id="rental-info" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Bike Rental Information</h2>
+            <div class="rental-rates">
+                <h3>Rental Rates</h3>
+                <table>
+                    <tr>
+                        <th>Bike Type</th>
+                        <th>Daily Rate</th>
+                        <th>Weekly Rate</th>
+                    </tr>
+                    <tr>
+                        <td>Mountain Bike</td>
+                        <td>$35</td>
+                        <td>$175</td>
+                    </tr>
+                    <tr>
+                        <td>Road Bike</td>
+                        <td>$40</td>
+                        <td>$200</td>
+                    </tr>
+                    <tr>
+                        <td>Electric Bike</td>
+                        <td>$50</td>
+                        <td>$250</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="rental-form">
+                <h3>Book a Rental</h3>
+                <form id="rental-booking-form">
+                    <div class="form-group">
+                        <label for="bike-type">Bike Type:</label>
+                        <select id="bike-type" required>
+                            <option value="">Select a bike type</option>
+                            <option value="mountain">Mountain Bike</option>
+                            <option value="road">Road Bike</option>
+                            <option value="electric">Electric Bike</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="rental-date">Start Date:</label>
+                        <input type="date" id="rental-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rental-duration">Duration (days):</label>
+                        <input type="number" id="rental-duration" min="1" max="30" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Reserve Now</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer>
         <p>&copy; 2024 Bike Yard Shop. All Rights Reserved.</p>

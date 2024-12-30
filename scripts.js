@@ -237,3 +237,154 @@ function sortProducts() {
 window.addEventListener('error', (event) => {
     console.error('Product page error:', event.error);
 });
+
+// Common Modal Functions
+function openModal(modal) {
+    modal.style.display = 'block';
+    document.body.classList.add('modal-open');
+}
+
+function closeModal(modal) {
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
+// Update existing modal event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const modals = ['rental-info', 'book-repair', 'custom-options'].map(id => document.getElementById(id));
+    
+    modals.forEach(modal => {
+        if (!modal) return;
+        
+        const links = document.querySelectorAll(`a[href="#${modal.id}"]`);
+        const closeBtn = modal.querySelector('.close');
+
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(modal);
+            });
+        });
+
+        closeBtn.addEventListener('click', () => closeModal(modal));
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal(modal);
+            }
+        });
+    });
+});
+
+// Rental Modal Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('rental-info');
+    const rentalLinks = document.querySelectorAll('a[href="#rental-info"]');
+    const closeBtn = modal.querySelector('.close');
+    const rentalForm = document.getElementById('rental-booking-form');
+
+    rentalLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal(modal);
+        });
+    });
+
+    closeBtn.addEventListener('click', () => closeModal(modal));
+
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal(modal);
+        }
+    });
+
+    rentalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Add form submission logic here
+        alert('Rental request submitted! We will contact you shortly.');
+        closeModal(modal);
+    });
+});
+
+// Repair Booking Modal Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const repairModal = document.getElementById('book-repair');
+    const repairLinks = document.querySelectorAll('a[href="#book-repair"]');
+    const closeRepairBtn = repairModal.querySelector('.close');
+    const repairForm = document.getElementById('repair-booking-form');
+
+    repairLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal(repairModal);
+        });
+    });
+
+    closeRepairBtn.addEventListener('click', () => closeModal(repairModal));
+
+    window.addEventListener('click', (e) => {
+        if (e.target === repairModal) {
+            closeModal(repairModal);
+        }
+    });
+
+    repairForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const serviceType = document.getElementById('service-type').value;
+        const serviceDate = document.getElementById('service-date').value;
+        const serviceTime = document.getElementById('service-time').value;
+        
+        // Add form validation and submission logic here
+        alert(`Service booking confirmed!\nType: ${serviceType}\nDate: ${serviceDate}\nTime: ${serviceTime}`);
+        closeModal(repairModal);
+        repairForm.reset();
+    });
+});
+
+// Customization Options Modal Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const customModal = document.getElementById('custom-options');
+    const customLinks = document.querySelectorAll('a[href="#custom-options"]');
+    const closeCustomBtn = customModal.querySelector('.close');
+    const customForm = document.getElementById('customization-form');
+
+    customLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal(customModal);
+        });
+    });
+
+    closeCustomBtn.addEventListener('click', () => closeModal(customModal));
+
+    window.addEventListener('click', (e) => {
+        if (e.target === customModal) {
+            closeModal(customModal);
+        }
+    });
+
+    customForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const selectedOptions = Array.from(document.querySelectorAll('input[name="customization[]"]:checked'))
+            .map(checkbox => checkbox.value);
+        const bikeType = document.getElementById('bike-type').value;
+        const notes = document.getElementById('customization-notes').value;
+        
+        // Calculate rough estimate
+        let estimatedCost = 0;
+        selectedOptions.forEach(option => {
+            switch(option) {
+                case 'custom-paint': estimatedCost += 200; break;
+                case 'custom-decals': estimatedCost += 50; break;
+                case 'custom-gears': estimatedCost += 300; break;
+                case 'custom-brakes': estimatedCost += 250; break;
+                case 'custom-saddle': estimatedCost += 100; break;
+                case 'custom-handlebars': estimatedCost += 80; break;
+            }
+        });
+
+        alert(`Customization request submitted!\nEstimated Cost: $${estimatedCost}\nWe'll contact you with a detailed quote soon.`);
+        closeModal(customModal);
+        customForm.reset();
+    });
+});
