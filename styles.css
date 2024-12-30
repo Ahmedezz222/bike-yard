@@ -1,4 +1,4 @@
-    /* Global Styles */
+/* Global Styles */
     body {
         font-family: 'Roboto', sans-serif;
         line-height: 1.6;
@@ -98,13 +98,13 @@
     }
 
     .Services {
-        background: #662650;
-        color: #ffffff;
+        background: url(https://scontent.fcai21-2.fna.fbcdn.net/v/t39.30808-6/466498274_583387787530550_1841363694341444879_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=RjOSLQSUEpUQ7kNvgFdxtbJ&_nc_oc=Adi7jsrAhKslhnSSzeJD3BPGMrfOeXDLzuneLu7LY1kJ__DSn7tSDPXpXpfaVUyv7Js&_nc_zt=23&_nc_ht=scontent.fcai21-2.fna&_nc_gid=A_bKh_jx1_YeK90TrL75jld&oh=00_AYBz4PlWu8kq2KI0Gyh2-THzULNlMtGfv7r1wDKTG08QvA&oe=677898CC);
+        color: #662650;
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
-        padding: 54px 20px;
+        padding: 311px 20px;
     }
     .btn-primary {
         color: rgb(229, 229, 229);
@@ -1156,7 +1156,7 @@
         font-size: 2.5rem;
         margin-bottom: 20px;
         text-align: center;
-        color: white;
+        color: #ffffff;
     }
     
     .cart-intro {
@@ -1376,3 +1376,266 @@
     padding: 20px 20px;
     text-align:left;}
     }
+
+/* Enhanced Cart Styling */
+.checkout-section {
+    padding: 120px 20px 40px;
+    background-color: #f9f9f9;
+}
+
+.checkout-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.checkout-section h1 {
+    font-size: 2.2rem;
+    color: #fff;
+    text-align: center;
+    padding: 15px 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    background: linear-gradient(45deg, #000000, #333333);
+}
+
+.checkout-container {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* Cart Summary Styling */
+.cart-summary {
+    flex: 1;
+    min-width: 300px;
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.cart-summary h3 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #4fa200;
+}
+
+.shopping-data-table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.shopping-data-table th {
+    background: #333;
+    color: #fff;
+    padding: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.shopping-data-table td {
+    padding: 12px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+/* Form Styling */
+#checkout-form {
+    flex: 2;
+    min-width: 400px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+#checkout-form h3 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #4fa200;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #4fa200;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(79, 162, 0, 0.1);
+}
+
+/* Button Styling */
+.btn-primary {
+    background: #4fa200;
+    color: #fff;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn-primary:hover {
+    background: #428800;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 162, 0, 0.2);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .checkout-container {
+        flex-direction: column;
+    }
+
+    #checkout-form,
+    .cart-summary {
+        min-width: 100%;
+    }
+
+    .checkout-section {
+        padding: 100px 15px 30px;
+    }
+
+    .checkout-section .container {
+        padding: 20px;
+    }
+
+    .shopping-data-table {
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px;
+    }
+    /* Header and Navigation */
+    header {
+        padding: 10px 15px;
+    }
+
+    .logo img {
+        max-height: 50px;
+    }
+
+    .menu-toggle {
+        display: flex;
+        z-index: 1001;
+    }
+
+    #nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background: #000;
+        padding: 80px 20px 20px;
+        transition: right 0.3s ease-in-out;
+        z-index: 1000;
+        overflow-y: auto;
+    }
+
+    #nav-menu.open {
+        right: 0;
+    }
+
+    #nav-menu ul {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    #nav-menu ul li {
+        width: 100%;
+    }
+
+    #nav-menu ul li a {
+        display: block;
+        padding: 12px 15px;
+        font-size: 1.1rem;
+        text-align: left;
+        border-radius: 8px;
+    }
+
+    /* Overlay when menu is open */
+    .menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    #nav-menu.open + .menu-overlay {
+        display: block;
+    }
+
+    /* Prevent body scroll when menu is open */
+    body.menu-open {
+        overflow: hidden;
+    }
+
+    /* Cart and checkout adjustments */
+    .checkout-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .cart-summary,
+    #checkout-form {
+        width: 100%;
+    }
+
+    .shopping-data-table {
+        font-size: 0.85rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px;
+    }
+}

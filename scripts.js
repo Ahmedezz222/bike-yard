@@ -1,16 +1,48 @@
-// Toggle Mobile Menu
-const menuToggle = document.getElementById('menu-toggle');
-const navMenu = document.getElementById('nav-menu');
+// Enhanced Mobile Menu Functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.getElementById('menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    const overlay = document.querySelector('.menu-overlay');
+    let isMenuOpen = false;
 
-menuToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('open');
-});
+    const toggleMenu = () => {
+        isMenuOpen = !isMenuOpen;
+        menuToggle.setAttribute('aria-expanded', isMenuOpen.toString());
+        navMenu.setAttribute('aria-hidden', (!isMenuOpen).toString());
+        navMenu.classList.toggle('open');
+        document.body.classList.toggle('menu-open');
+        
+        // Handle focus trap when menu is open
+        if (isMenuOpen) {
+            // Focus first link in menu
+            const firstLink = navMenu.querySelector('a');
+            if (firstLink) firstLink.focus();
+        }
+    };
 
-// Close Menu on Outside Click
-document.addEventListener('click', (e) => {
-    if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
-        navMenu.classList.remove('open');
-    }
+    menuToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleMenu();
+    });
+
+    // Close menu when clicking overlay
+    overlay?.addEventListener('click', () => {
+        if (isMenuOpen) toggleMenu();
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isMenuOpen) {
+            toggleMenu();
+        }
+    });
+
+    // Handle screen resize
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && isMenuOpen) {
+            toggleMenu();
+        }
+    });
 });
 
 // Filtering Products by Category
