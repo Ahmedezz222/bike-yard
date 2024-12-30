@@ -1364,10 +1364,12 @@
     .checkout-container .cart-summary {
         order: 1;
         width: 40%;
+        padding: 10px 3px;
     }
     .checkout-container #checkout-form {
         order: 2;
         width: 55%;
+        PADDING: 35px 10px;
     }
         /*body*/
     @media screen and (max-width: 768px) {
@@ -1639,6 +1641,6 @@
     .form-group input,
     .form-group select,
     .form-group textarea {
-        padding: 10px;
+        padding: 10px 10PX;
     }
 }
