@@ -6,6 +6,7 @@
     <title>Welcome to Bike Yard Shop</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
@@ -23,9 +24,12 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="products.html">Products</a></li>
                 <li><a href="services.html">Services</a></li>
-                <li><a href="bikeyardcart.html">Cart</a></li>
-                <li id="login-section">
-                    <a href="login.html" id="login-button">Login</a>
+                <li>
+                    <a href="bikeyardcart.html" class="cart-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        Cart
+                        <span class="cart-count" id="cart-count">0</span>
+                    </a>
                 </li>
             </ul>
         </nav>
@@ -111,5 +115,5 @@
     </footer>
 
     <script src="scripts.js"></script>
-
-</body></html>
+</body>
+</html>

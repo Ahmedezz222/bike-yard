@@ -388,3 +388,117 @@ document.addEventListener('DOMContentLoaded', function() {
         customForm.reset();
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Menu toggle functionality
+    const menuToggle = document.getElementById('menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    
+    menuToggle.addEventListener('click', function() {
+        navMenu.classList.toggle('open');
+        document.body.classList.toggle('menu-open');
+    });
+
+    // Update cart count
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById('cart-count').textContent = totalItems;
+    }
+    
+    updateCartCount();
+});
+function displayCart() {
+    const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+    const cartContainer = document.getElementById('cart-items');
+    const subtotalElement = document.getElementById('order-subtotal');
+    let subtotal = 0;
+
+    // Clear existing cart items
+    cartContainer.innerHTML = '';
+
+    // Display each cart item
+    cart.forEach(item => {
+        const total = item.price * item.quantity;
+        subtotal += total;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <div class="cart-item">
+                    <img src="${item.image}" alt="${item.name}" style="width: 50px; height: 50px;">
+                    <span>${item.name}</span>
+                </div>
+            </td>
+            <td>
+                <div class="quantity-controls">
+                    <button onclick="updateQuantity('${item.id}', ${item.quantity - 1})">-</button>
+                    <span>${item.quantity}</span>
+                    <button onclick="updateQuantity('${item.id}', ${item.quantity + 1})">+</button>
+                </div>
+            </td>
+            <td>${item.price} EG</td>
+            <td>${total} EG</td>
+            <td>
+                <button onclick="removeItem('${item.id}')" class="remove-btn">×</button>
+            </td>
+        `;
+        cartContainer.appendChild(row);
+    });
+
+    // Update subtotal
+    subtotalElement.textContent = subtotal + ' EG';
+
+    // Show/hide empty cart message
+    if (cart.length === 0) {
+        cartContainer.innerHTML = '<tr><td colspan="4">Your cart is empty</td></tr>';
+    }
+
+    updateCartCount();
+}
+
+function updateQuantity(productId, newQuantity) {
+    if (newQuantity < 1) return;
+    
+    let cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+    const itemIndex = cart.findIndex(item => item.id === productId);
+    
+    if (itemIndex > -1) {
+        cart[itemIndex].quantity = newQuantity;
+        localStorage.setItem('bikeYardCart', JSON.stringify(cart));
+        displayCart();
+    }
+}
+
+function removeItem(productId) {
+    let cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+    cart = cart.filter(item => item.id !== productId);
+    localStorage.setItem('bikeYardCart', JSON.stringify(cart));
+    displayCart();
+}
+
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById('cart-count').textContent = totalItems;
+}
+
+// Initialize cart display when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    displayCart();
+    updateCartCount();
+});
+
+// Handle form submission
+document.getElementById('checkout-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+    if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
+    // Add your checkout logic here
+    alert('Order submitted successfully!');
+    localStorage.removeItem('bikeYardCart');
+    displayCart();
+});

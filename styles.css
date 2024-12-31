@@ -1740,13 +1740,6 @@ body.menu-open {
     position: relative;
 }
 
-.product-specs li:before {
-    content: "â€¢";
-    position: absolute;
-    left: 0;
-    color: #007bff;
-}
-
 .purchase-options {
     display: flex;
     gap: 1rem;
