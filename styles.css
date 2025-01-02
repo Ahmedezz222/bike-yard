@@ -1180,7 +1180,6 @@ nav ul li a.active {
 }
 /* Shopping Cart Link */
 .cart-link {
-    display: flex;
     align-items: center;
     text-decoration: none;
     color: #333;
