@@ -355,7 +355,7 @@ footer {
 .services {
     padding: 80px 0;
     background-color: #f8f9fa;
-    background: white;
+    background: #662650;
 }
 
 .services h2 {
@@ -417,8 +417,8 @@ footer {
 
 @media (max-width: 768px) {
     .services {
-        padding: 60px 0;
-        background: white;
+        padding: 40px 80px;
+        background: #662650;
     }
     
     .services h2 {
@@ -1590,11 +1590,7 @@ text-align: center;
 margin-top: 20px;
 }
 
-.btn-primary:hover {
-background: #428800;
-transform: translateY(-2px);
-box-shadow: 0 4px 12px rgba(79, 162, 0, 0.2);
-}
+.btn-primary:hover {background: #428800;transform: translateY(10px);box-shadow: 0 4px 12px rgba(79, 162, 0, 0.2);}
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -1973,8 +1969,8 @@ body.modal-open {
 /* Repair Booking Modal Styles */
 .repair-rates table {
     width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
+    border-collapse: revert;
+    margin: 25px 0px;
 }
 
 .repair-rates th, 
@@ -2105,8 +2101,8 @@ body.modal-open {
     .btn-primary,
     .btn-secondary {
         width: 100%;
-        padding: 5px;
-        margin: 5px 0;
+        padding: 10px;
+        margin: 10px 0;
     }
 
     /* Section Padding */
@@ -2150,8 +2146,9 @@ body.modal-open {
 /* Small Mobile Devices */
 @media (max-width: 480px) {
     .modal-content {
-        margin: 5px;
+        margin: -5px;
         padding: 10px;
+        width: 88%;
     }
 
     .services-grid {
@@ -2474,4 +2471,13 @@ body.modal-open {
     #order-subtotal {
         font-size: 1.2rem;
     }
-}
+    .service-card .btn-secondary {
+    display: inline-block;
+    padding: 10px 0px;
+    background: #000000;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+}}

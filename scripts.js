@@ -386,3 +386,308 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('error', (event) => {
     console.error('Product page error:', event.error);
 });
+
+// Services Page Functionality
+document.addEventListener('DOMContentLoaded', () => {
+    // Modal handling
+    const modals = {
+        'custom-options': document.getElementById('custom-options'),
+        'book-repair': document.getElementById('book-repair'),
+        'rental-info': document.getElementById('rental-info')
+    };
+
+    // Open modal handlers
+    document.querySelectorAll('.btn-secondary').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const modalId = e.target.getAttribute('href').substring(1);
+            if (modals[modalId]) {
+                openModal(modals[modalId]);
+            }
+        });
+    });
+
+    // Close modal handlers
+    document.querySelectorAll('.close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', () => {
+            const modal = closeBtn.closest('.modal');
+            closeModal(modal);
+        });
+    });
+
+    // Close on outside click
+    window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+            closeModal(e.target);
+        }
+    });
+
+    function openModal(modal) {
+        modal.style.display = 'block';
+        document.body.classList.add('modal-open');
+    }
+
+    function closeModal(modal) {
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+    }
+
+    // Form Handling
+    const forms = {
+        'customization-form': handleCustomizationSubmit,
+        'repair-booking-form': handleRepairBooking,
+        'rental-booking-form': handleRentalBooking
+    };
+
+    Object.entries(forms).forEach(([formId, handler]) => {
+        const form = document.getElementById(formId);
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+
+                try {
+                    await handler(new FormData(form));
+                    closeModal(form.closest('.modal'));
+                    alert('Booking submitted successfully! We will contact you shortly.');
+                    form.reset();
+                } catch (error) {
+                    alert(error.message || 'An error occurred. Please try again.');
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+    });
+
+    async function handleCustomizationSubmit(formData) {
+        const customizations = document.querySelectorAll('input[name="customization[]"]:checked');
+        if (customizations.length === 0) {
+            throw new Error('Please select at least one customization option');
+        }
+        // Add API call here
+        return new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    async function handleRepairBooking(formData) {
+        const date = formData.get('service-date');
+        const today = new Date().toISOString().split('T')[0];
+        if (date < today) {
+            throw new Error('Please select a future date');
+        }
+        // Add API call here
+        return new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    async function handleRentalBooking(formData) {
+        const duration = parseInt(formData.get('rental-duration'));
+        if (duration < 1 || duration > 30) {
+            throw new Error('Rental duration must be between 1 and 30 days');
+        }
+        // Add API call here
+        return new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    // Price Calculator
+    function calculateRentalPrice() {
+        const bikeType = document.getElementById('bike-type').value;
+        const duration = parseInt(document.getElementById('rental-duration').value) || 0;
+        const rates = {
+            mountain: 35,
+            road: 40,
+            electric: 50
+        };
+        
+        if (bikeType && rates[bikeType]) {
+            const dailyRate = rates[bikeType];
+            const total = duration * dailyRate;
+            const weeklyDiscount = duration >= 7 ? 0.2 : 0; // 20% discount for weekly rentals
+            const finalPrice = total * (1 - weeklyDiscount);
+            
+            document.getElementById('rental-total').textContent = 
+                `Total: $${finalPrice.toFixed(2)}${weeklyDiscount > 0 ? ' (Weekly discount applied)' : ''}`;
+        }
+    }
+
+    // Add event listeners for price calculator
+    const rentalForm = document.getElementById('rental-booking-form');
+    if (rentalForm) {
+        ['bike-type', 'rental-duration'].forEach(id => {
+            document.getElementById(id)?.addEventListener('change', calculateRentalPrice);
+        });
+    }
+});
+
+// Services Page Button Enhancement
+class ServiceFormHandler {
+    constructor() {
+        this.initializeButtons();
+        this.initializeForms();
+        this.setupPriceCalculator();
+    }
+
+    initializeButtons() {
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            button.addEventListener('click', this.handleButtonClick.bind(this));
+        });
+    }
+
+    async handleButtonClick(e) {
+        const button = e.currentTarget;
+        const originalText = button.textContent;
+        
+        try {
+            // Add loading animation
+            button.innerHTML = '<span class="spinner"></span> Processing...';
+            button.disabled = true;
+            
+            // Simulate processing time
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Success state
+            button.innerHTML = '✓ Success';
+            button.classList.add('success');
+            
+            // Reset button after delay
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('success');
+                button.disabled = false;
+            }, 2000);
+        } catch (error) {
+            button.innerHTML = '× Error';
+            button.classList.add('error');
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('error');
+                button.disabled = false;
+            }, 2000);
+        }
+    }
+
+    initializeForms() {
+        const forms = {
+            'customization-form': this.handleCustomization.bind(this),
+            'repair-booking-form': this.handleRepair.bind(this),
+            'rental-booking-form': this.handleRental.bind(this)
+        };
+
+        Object.entries(forms).forEach(([formId, handler]) => {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await handler(new FormData(e.target));
+                });
+            }
+        });
+    }
+
+    async handleCustomization(formData) {
+        const bikeType = formData.get('bike-type');
+        const customizations = document.querySelectorAll('input[name="customization[]"]:checked');
+        
+        if (!bikeType) {
+            throw new Error('Please select a bike type');
+        }
+        if (customizations.length === 0) {
+            throw new Error('Please select at least one customization option');
+        }
+
+        // Calculate total price
+        const total = Array.from(customizations).reduce((sum, option) => {
+            const price = this.getOptionPrice(option.value);
+            return sum + price;
+        }, 0);
+
+        // Success message with quote
+        alert(`Customization request submitted!\nEstimated total: $${total}\nWe'll contact you shortly to confirm details.`);
+        return { success: true, total };
+    }
+
+    async handleRepair(formData) {
+        const serviceDate = new Date(formData.get('service-date'));
+        const today = new Date();
+        
+        if (serviceDate < today) {
+            throw new Error('Please select a future date');
+        }
+
+        // Success message
+        alert('Service booking confirmed!\nWe\'ll see you on ' + serviceDate.toLocaleDateString());
+        return { success: true };
+    }
+
+    async handleRental(formData) {
+        const duration = parseInt(formData.get('rental-duration'));
+        const bikeType = formData.get('bike-type');
+        
+        if (duration < 1 || duration > 30) {
+            throw new Error('Rental duration must be between 1 and 30 days');
+        }
+
+        const total = this.calculateRentalPrice(bikeType, duration);
+        alert(`Rental booking confirmed!\nTotal cost: $${total}\nPlease bring a valid ID when picking up your bike.`);
+        return { success: true, total };
+    }
+
+    setupPriceCalculator() {
+        const rentalForm = document.getElementById('rental-booking-form');
+        if (rentalForm) {
+            ['bike-type', 'rental-duration'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('change', () => {
+                        this.updateRentalPrice();
+                    });
+                }
+            });
+        }
+    }
+
+    updateRentalPrice() {
+        const bikeType = document.getElementById('bike-type')?.value;
+        const duration = parseInt(document.getElementById('rental-duration')?.value) || 0;
+        
+        if (bikeType && duration) {
+            const total = this.calculateRentalPrice(bikeType, duration);
+            const priceDisplay = document.getElementById('rental-total');
+            if (priceDisplay) {
+                priceDisplay.textContent = `Total: $${total}`;
+            }
+        }
+    }
+
+    calculateRentalPrice(bikeType, duration) {
+        const rates = {
+            mountain: 35,
+            road: 40,
+            electric: 50
+        };
+
+        const dailyRate = rates[bikeType] || 0;
+        const baseTotal = dailyRate * duration;
+        
+        // Apply weekly discount if applicable
+        const discount = duration >= 7 ? 0.2 : 0;
+        return (baseTotal * (1 - discount)).toFixed(2);
+    }
+
+    getOptionPrice(optionValue) {
+        const prices = {
+            'custom-paint': 200,
+            'custom-decals': 50,
+            'custom-gears': 300,
+            'custom-brakes': 250,
+            'custom-saddle': 100,
+            'custom-handlebars': 80
+        };
+        return prices[optionValue] || 0;
+    }
+}
+
+// Initialize services functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const serviceHandler = new ServiceFormHandler();
+});
