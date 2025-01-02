@@ -1612,7 +1612,7 @@ margin-top: 20px;
 }
 
 .checkout-section .container {
-    padding: 20px;
+    padding: 20px 29px;
 }
 
 .shopping-data-table {
@@ -2391,7 +2391,7 @@ body.modal-open {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 5px 87px;
+        padding: 0px 70px;
         border: none;
         text-align: right;
     }
@@ -2482,4 +2482,9 @@ body.modal-open {
     text-decoration: none;
     font-weight: bold;
     transition: background 0.3s;
+}
+.checkout-container .cart-summary {
+    order: 1;
+    width: 40%;
+    padding: 10px 10px;
 }}
