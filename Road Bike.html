@@ -38,49 +38,45 @@
     <main class="product-details-container">
         <div class="product-gallery">
             <div class="main-image">
-                <img src="Mountain Bike.png" alt="Product Image" id="main-product-image">
+                <img src="Road Bike.png" alt="Product Image" id="main-product-image">
             </div>
             <div class="thumbnail-images">
-                <img src="Mountain Bike.png" alt="Thumbnail 1" onclick="updateMainImage(this.src)">
+                <img src="Road Bike.png" alt="Thumbnail 1" onclick="updateMainImage(this.src)">
                 <img src="bike-detail-2.jpg" alt="Thumbnail 2" onclick="updateMainImage(this.src)">
                 <img src="bike-detail-3.jpg" alt="Thumbnail 3" onclick="updateMainImage(this.src)">
             </div>
         </div>
-
-        <div class="product-info">
-            <h1>Trail Blazer Mountain Bike</h1>
-            <div class="price">2000 EG</div>
-            <div class="product-description">
-                <h2>Description</h2>
-                <p>Experience the thrill of mountain biking with our Trail Blazer Mountain Bike. Features premium components and durable construction for the most demanding trails.</p>
-            </div>
-
-            <div class="product-specs">
-                <h2>Specifications</h2>
-                <ul>
-                    <li>Frame: Aluminum Alloy 6061</li>
-                    <li>Suspension: RockShox Recon Silver RL</li>
-                    <li>Wheels: 29" Double-wall Alloy Rims</li>
-                    <li>Gears: Shimano Deore 1x12 Speed</li>
-                    <li>Brakes: Shimano MT200 Hydraulic Disc</li>
-                    <li>Tires: Maxxis Ardent 29x2.4"</li>
-                    <li>Weight: 13.5 kg</li>
-                    <li>Size Options: S, M, L, XL</li>
-                </ul>
-            </div>
-
-            <div class="purchase-options">
-                <div class="quantity-selector">
-                    <label for="quantity">Quantity:</label>
-                    <select id="quantity">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
+            <div class="product-info">
+                <h1>Road Bike</h1>
+                <div class="price">$999.99</div>
+                <div class="product-description">
+                    <h2>Description</h2>
+                    <p>High-performance road bike perfect for speed and endurance riding. Features lightweight aluminum frame, carbon fork, and professional-grade components.</p>
                 </div>
-                <button class="btn-primary" onclick="addToCart()">Add to Cart</button>
+                <div class="product-specs">
+                    <h2>Specifications</h2>
+                    <ul>
+                        <li>Frame: Aluminum</li>
+                        <li>Fork: Carbon</li>
+                        <li>Gears: Shimano 21-speed</li>
+                        <li>Brakes: Disc brakes</li>
+                        <li>Tires: 700c road tires</li>
+                        <li>Weight: 9.5 kg</li>
+                    </ul>
+                </div>
+                <div class="purchase-options">
+                    <div class="quantity-selector">
+                        <label for="quantity">Quantity:</label>
+                        <select id="quantity">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="addToCart()">Add to Cart</button>
+                </div>
             </div>
         </div>
     </main>
@@ -89,10 +85,10 @@
         <h2>Related Products</h2>
         <div class="product-grid">
             <div class="product-card">
-                <img src="Road Bike.png" alt="Road Bike">
-                <h3>Speedster Road Bike</h3>
-                <p class="price">1200 EG</p>
-                <a href="product-details.html" class="product-btn">View Details</a>
+                <img src="Mountain Bike.png" alt="Mountain Bike">
+                <h3>Trail Blazer Mountain Bike</h3>
+                <p class="price">2000 EG</p>
+                <a href="Trail Blazer Mountain Bike.html" class="product-btn">View Details</a>
             </div>
             <div class="product-card">
                 <img src="Accessories.png" alt="Bike Helmet">
@@ -116,7 +112,7 @@
     </section>
 
     <footer>
-        <p>© 2024 Bike Yard Shop. All Rights Reserved.</p>
+        <p>&copy; 2024 Bike Yard Shop. All Rights Reserved.</p>
     </footer>
 
     <script src="scripts.js"></script>

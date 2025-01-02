@@ -691,3 +691,56 @@ class ServiceFormHandler {
 document.addEventListener('DOMContentLoaded', () => {
     const serviceHandler = new ServiceFormHandler();
 });
+
+let cartCount = 0;
+
+function updateCartCount() {
+    const cartCountElement = document.getElementById('cart-count');
+    cartCountElement.textContent = cartCount;
+}
+
+function addToCart() {
+    cartCount++;
+    updateCartCount();
+}
+
+// Initialize cart count on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartCount();
+});
+
+function updateMainImage(src) {
+    document.getElementById('main-product-image').src = src;
+}
+
+function addToCart() {
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+    
+    const product = {
+        id: 'trail-blazer-mountain-bike',
+        name: 'Trail Blazer Mountain Bike',
+        price: 2000,
+        image: 'Mountain Bike.png',
+        quantity: quantity
+    };
+
+    const existingProduct = cart.find(item => item.id === product.id);
+    if (existingProduct) {
+        existingProduct.quantity += quantity;
+    } else {
+        cart.push(product);
+    }
+
+    // Save cart and update display
+    localStorage.setItem('bikeYardCart', JSON.stringify(cart));
+    
+    // Update cart count in header
+    const cartCount = document.getElementById('cart-count');
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCount.textContent = totalItems;
+
+    // Show success message and redirect
+    alert('Product added to cart successfully!');
+    window.location.href = 'bikeyardcart.html';
+}

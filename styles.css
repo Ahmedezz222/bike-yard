@@ -177,11 +177,13 @@ text-decoration: none;
     margin-bottom: 10px;
 }
 
-.product-card .btn-secondary {
-    background: #4fa200;
-    color: #fff;
-    padding: 8px 15px;
-    border-radius: 5px;
+.product-card .product-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: transparent;
+    color: #333333;
+    border: 2px solid #333333;
+    border-radius: 4px;
     text-decoration: none;
     font-weight: bold;
     transition: background 0.3s ease;
@@ -1437,7 +1439,7 @@ form input, form select {
 .checkout-container .cart-summary {
     order: 1;
     width: 40%;
-    padding: 10px 3px;
+    padding: 10px 247px;
 }
 .checkout-container #checkout-form {
     order: 2;
