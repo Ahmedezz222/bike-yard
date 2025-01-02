@@ -55,10 +55,13 @@
                             </tr>
                         </thead>
                         <tbody id="cart-items">
-                            
+                            <!-- Cart items will be inserted here -->
                         </tbody>
                     </table>
-                    <p><strong>Subtotal:</strong> <span id="order-subtotal"></span></p>
+                    <p>
+                        <span><strong>Order Total:</strong></span>
+                        <span id="order-subtotal">0 EGP</span>
+                    </p>
                 </div>
 
                 <!-- Customer Details Form -->
@@ -115,5 +118,76 @@
     </footer>
 
     <script src="scripts.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartDisplay();
+        });
+
+        function updateCartDisplay() {
+            const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+            const cartItems = document.getElementById('cart-items');
+            const orderSubtotal = document.getElementById('order-subtotal');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<tr><td colspan="4">Your cart is empty</td></tr>';
+                orderSubtotal.textContent = '0 EGP';
+                return;
+            }
+
+            // Render cart items with quantity controls
+            let total = 0;
+            cartItems.innerHTML = cart.map((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                return `
+                    <tr>
+                        <td data-label="Product">
+                            <div class="cart-item">
+                                <img src="${item.image}" alt="${item.name}" width="50">
+                                <span>${item.name}</span>
+                            </div>
+                        </td>
+                        <td data-label="Quantity">
+                            <div class="quantity-controls">
+                                <button onclick="updateQuantity(${index}, -1)" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                                <span>${item.quantity}</span>
+                                <button onclick="updateQuantity(${index}, 1)">+</button>
+                                <button onclick="removeItem(${index})" class="remove-btn">Remove</button>
+                            </div>
+                        </td>
+                        <td data-label="Price">${item.price} EGP</td>
+                        <td data-label="Total">${itemTotal} EGP</td>
+                    </tr>
+                `;
+            }).join('');
+
+            orderSubtotal.textContent = `${total} EGP`;
+        }
+
+        function updateQuantity(index, change) {
+            const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+            if (cart[index]) {
+                cart[index].quantity += change;
+                if (cart[index].quantity < 1) cart[index].quantity = 1;
+                localStorage.setItem('bikeYardCart', JSON.stringify(cart));
+                updateCartDisplay();
+            }
+        }
+
+        function removeItem(index) {
+            const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+            if (confirm('Are you sure you want to remove this item?')) {
+                cart.splice(index, 1);
+                localStorage.setItem('bikeYardCart', JSON.stringify(cart));
+                updateCartDisplay();
+                
+                // Update cart count in header
+                const cartCount = document.getElementById('cart-count');
+                if (cartCount) {
+                    cartCount.textContent = cart.length;
+                }
+            }
+        }
+    </script>
 </body>
 </html>

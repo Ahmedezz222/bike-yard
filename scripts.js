@@ -2,75 +2,79 @@
 document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.getElementById('menu-toggle');
     const navMenu = document.getElementById('nav-menu');
-    const overlay = document.querySelector('.menu-overlay');
+    const overlay = document.createElement('div');
+    overlay.className = 'menu-overlay';
+    document.body.appendChild(overlay);
+    
     let isMenuOpen = false;
 
-    const toggleMenu = () => {
+    function toggleMenu() {
         isMenuOpen = !isMenuOpen;
-        menuToggle.setAttribute('aria-expanded', isMenuOpen.toString());
-        navMenu.setAttribute('aria-hidden', (!isMenuOpen).toString());
+        menuToggle.classList.toggle('active');
         navMenu.classList.toggle('open');
+        overlay.classList.toggle('active');
         document.body.classList.toggle('menu-open');
         
-        // Handle focus trap when menu is open
+        menuToggle.setAttribute('aria-expanded', isMenuOpen.toString());
+        navMenu.setAttribute('aria-hidden', (!isMenuOpen).toString());
+        
         if (isMenuOpen) {
-            // Focus first link in menu
-            const firstLink = navMenu.querySelector('a');
-            if (firstLink) firstLink.focus();
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
         }
-    };
+    }
 
-    menuToggle.addEventListener('click', (e) => {
+    menuToggle?.addEventListener('click', (e) => {
         e.preventDefault();
         toggleMenu();
     });
 
-    // Close menu when clicking overlay
-    overlay?.addEventListener('click', () => {
-        if (isMenuOpen) toggleMenu();
+    [overlay, navMenu].forEach(element => {
+        element.addEventListener('click', (e) => {
+            if (e.target === element && isMenuOpen) {
+                toggleMenu();
+            }
+        });
     });
 
     // Close menu on escape key
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && isMenuOpen) {
-            toggleMenu();
-        }
-    });
-
-    // Handle screen resize
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768 && isMenuOpen) {
-            toggleMenu();
-        }
+        if (e.key === 'Escape' && isMenuOpen) toggleMenu();
     });
 });
 
 // Filtering Products by Category
 function filterProducts() {
-    const categoryFilter = document.getElementById('category-filter').value;
+    console.debug('Filtering products...');
+    const category = document.getElementById('category-filter').value;
+    console.debug('Selected category:', category);
+    
     const products = document.querySelectorAll('.product-card');
-
-    products.forEach((product) => {
-        const productCategory = product.getAttribute('data-category');
-        product.style.display =
-            categoryFilter === 'all' || productCategory === categoryFilter ? 'block' : 'none';
+    products.forEach(product => {
+        const isVisible = category === 'all' || product.dataset.category === category;
+        product.style.display = isVisible ? 'block' : 'none';
+        console.debug(`Product ${product.querySelector('h3').textContent}: ${isVisible ? 'shown' : 'hidden'}`);
     });
 }
 
 // Sorting Products by Price
 function sortProducts() {
-    const sortOption = document.getElementById('price-sort').value;
+    console.debug('Sorting products...');
+    const sortBy = document.getElementById('price-sort').value;
+    console.debug('Sort order:', sortBy);
+    
     const productsContainer = document.getElementById('products-container');
-    const products = Array.from(productsContainer.children);
-
+    const products = Array.from(document.querySelectorAll('.product-card'));
+    
     products.sort((a, b) => {
-        const priceA = parseInt(a.getAttribute('data-price'));
-        const priceB = parseInt(b.getAttribute('data-price'));
-
-        return sortOption === 'low-to-high' ? priceA - priceB : priceB - priceA;
+        const priceA = parseFloat(a.dataset.price);
+        const priceB = parseFloat(b.dataset.price);
+        return sortBy === 'low-to-high' ? priceA - priceB : priceB - priceA;
     });
-
-    products.forEach((product) => productsContainer.appendChild(product));
+    
+    products.forEach(product => productsContainer.appendChild(product));
+    console.debug('Sort complete');
 }
 
 // Toggle Login/Signup Forms
@@ -118,7 +122,7 @@ if (contactForm) {
             return;
         }
 
-        Email.send({
+        email.send({
             SecureToken: "YOUR_SECURE_TOKEN", // Replace with your SMTP.js secure token
             To: "byard7689@gmail.com",
             From: email,
@@ -202,303 +206,183 @@ if (checkoutButton) {
     });
 }
 
-function filterProducts() {
-    console.debug('Filtering products...');
-    const category = document.getElementById('category-filter').value;
-    console.debug('Selected category:', category);
-    
-    const products = document.querySelectorAll('.product-card');
-    products.forEach(product => {
-        const isVisible = category === 'all' || product.dataset.category === category;
-        product.style.display = isVisible ? 'block' : 'none';
-        console.debug(`Product ${product.querySelector('h3').textContent}: ${isVisible ? 'shown' : 'hidden'}`);
-    });
+class ApplicationError extends Error {
+    constructor(message, code) {
+        super(message);
+        this.code = code;
+    }
 }
 
-function sortProducts() {
-    console.debug('Sorting products...');
-    const sortBy = document.getElementById('price-sort').value;
-    console.debug('Sort order:', sortBy);
-    
-    const productsContainer = document.getElementById('products-container');
-    const products = Array.from(document.querySelectorAll('.product-card'));
-    
-    products.sort((a, b) => {
-        const priceA = parseFloat(a.dataset.price);
-        const priceB = parseFloat(b.dataset.price);
-        return sortBy === 'low-to-high' ? priceA - priceB : priceB - priceA;
-    });
-    
-    products.forEach(product => productsContainer.appendChild(product));
-    console.debug('Sort complete');
+class Cart {
+    #items;
+    #storage;
+
+    constructor() {
+        this.#storage = localStorage;
+        this.#items = this.#loadCart();
+        this.updateCartDisplay();
+    }
+
+    #loadCart() {
+        try {
+            return JSON.parse(this.#storage.getItem('cart')) || [];
+        } catch (error) {
+            console.error('Failed to load cart:', error);
+            return [];
+        }
+    }
+
+    addItem(item) {
+        if (!item?.id || !item?.price) {
+            throw new ApplicationError('Invalid item data', 'INVALID_ITEM');
+        }
+        
+        const existingItem = this.#items.find(i => i.id === item.id);
+        if (existingItem) {
+            existingItem.quantity += item.quantity || 1;
+        } else {
+            this.#items.push({ ...item, quantity: item.quantity || 1 });
+        }
+        
+        this.saveCart();
+        this.updateCartDisplay();
+    }
+
+    removeItem(index) {
+        this.#items.splice(index, 1);
+        this.saveCart();
+        this.updateCartDisplay();
+    }
+
+    saveCart() {
+        localStorage.setItem('cart', JSON.stringify(this.#items));
+    }
+
+    updateCartDisplay() {
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+            cartCount.textContent = this.#items.length;
+        }
+
+        // Update cart table if on cart page
+        const cartItems = document.getElementById('cart-items');
+        if (cartItems) {
+            this.renderCartItems(cartItems);
+        }
+    }
+
+    renderCartItems(container) {
+        container.innerHTML = this.#items.map((item, index) => `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${item.price} EGP</td>
+                <td>${item.quantity * item.price} EGP</td>
+                <td>
+                    <button onclick="cart.removeItem(${index})" class="remove-item">
+                        Remove
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        this.updateOrderTotal();
+    }
+
+    updateOrderTotal() {
+        const subtotal = this.#items.reduce((sum, item) => 
+            sum + (item.price * item.quantity), 0);
+        const subtotalElement = document.getElementById('order-subtotal');
+        if (subtotalElement) {
+            subtotalElement.textContent = `${subtotal} EGP`;
+        }
+    }
+
+    async checkout() {
+        try {
+            if (this.#items.length === 0) {
+                throw new ApplicationError('Cart is empty', 'EMPTY_CART');
+            }
+            
+            // Implement checkout logic here
+            await this.#processPayment();
+            this.#items = [];
+            this.saveCart();
+            this.updateCartDisplay();
+            
+            return { success: true };
+        } catch (error) {
+            console.error('Checkout failed:', error);
+            throw new ApplicationError('Checkout failed', 'CHECKOUT_FAILED');
+        }
+    }
+
+    async #processPayment() {
+        // Simulate payment processing
+        return new Promise((resolve) => setTimeout(resolve, 1000));
+    }
 }
+
+// Initialize cart
+const cart = new Cart();
+
+// Enhanced form handling
+const FormHandler = {
+    async submitForm(formElement) {
+        try {
+            const formData = new FormData(formElement);
+            const data = Object.fromEntries(formData.entries());
+            
+            switch (formElement.id) {
+                case 'contact-form':
+                    return await this.handleContact(data);
+                case 'register-form':
+                    return await this.handleRegistration(data);
+                default:
+                    throw new ApplicationError('Unknown form type', 'INVALID_FORM');
+            }
+        } catch (error) {
+            console.error('Form submission failed:', error);
+            throw error;
+        }
+    },
+
+    // ...existing code...
+};
+
+// Initialize application
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        window.cart = new Cart();
+        
+        // Setup form handlers
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitButton = e.target.querySelector('[type="submit"]');
+                
+                try {
+                    submitButton?.setAttribute('disabled', 'true');
+                    await FormHandler.submitForm(e.target);
+                } catch (error) {
+                    alert(error.message);
+                } finally {
+                    submitButton?.removeAttribute('disabled');
+                }
+            });
+        });
+
+        // Setup error handling
+        window.addEventListener('unhandledrejection', event => {
+            console.error('Unhandled promise rejection:', event.reason);
+        });
+
+    } catch (error) {
+        console.error('Application initialization failed:', error);
+    }
+});
 
 // Error handling
 window.addEventListener('error', (event) => {
     console.error('Product page error:', event.error);
-});
-
-// Common Modal Functions
-function openModal(modal) {
-    modal.style.display = 'block';
-    document.body.classList.add('modal-open');
-}
-
-function closeModal(modal) {
-    modal.style.display = 'none';
-    document.body.classList.remove('modal-open');
-}
-
-// Update existing modal event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    const modals = ['rental-info', 'book-repair', 'custom-options'].map(id => document.getElementById(id));
-    
-    modals.forEach(modal => {
-        if (!modal) return;
-        
-        const links = document.querySelectorAll(`a[href="#${modal.id}"]`);
-        const closeBtn = modal.querySelector('.close');
-
-        links.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal(modal);
-            });
-        });
-
-        closeBtn.addEventListener('click', () => closeModal(modal));
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal(modal);
-            }
-        });
-    });
-});
-
-// Rental Modal Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('rental-info');
-    const rentalLinks = document.querySelectorAll('a[href="#rental-info"]');
-    const closeBtn = modal.querySelector('.close');
-    const rentalForm = document.getElementById('rental-booking-form');
-
-    rentalLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            openModal(modal);
-        });
-    });
-
-    closeBtn.addEventListener('click', () => closeModal(modal));
-
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal(modal);
-        }
-    });
-
-    rentalForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        // Add form submission logic here
-        alert('Rental request submitted! We will contact you shortly.');
-        closeModal(modal);
-    });
-});
-
-// Repair Booking Modal Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const repairModal = document.getElementById('book-repair');
-    const repairLinks = document.querySelectorAll('a[href="#book-repair"]');
-    const closeRepairBtn = repairModal.querySelector('.close');
-    const repairForm = document.getElementById('repair-booking-form');
-
-    repairLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            openModal(repairModal);
-        });
-    });
-
-    closeRepairBtn.addEventListener('click', () => closeModal(repairModal));
-
-    window.addEventListener('click', (e) => {
-        if (e.target === repairModal) {
-            closeModal(repairModal);
-        }
-    });
-
-    repairForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const serviceType = document.getElementById('service-type').value;
-        const serviceDate = document.getElementById('service-date').value;
-        const serviceTime = document.getElementById('service-time').value;
-        
-        // Add form validation and submission logic here
-        alert(`Service booking confirmed!\nType: ${serviceType}\nDate: ${serviceDate}\nTime: ${serviceTime}`);
-        closeModal(repairModal);
-        repairForm.reset();
-    });
-});
-
-// Customization Options Modal Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const customModal = document.getElementById('custom-options');
-    const customLinks = document.querySelectorAll('a[href="#custom-options"]');
-    const closeCustomBtn = customModal.querySelector('.close');
-    const customForm = document.getElementById('customization-form');
-
-    customLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            openModal(customModal);
-        });
-    });
-
-    closeCustomBtn.addEventListener('click', () => closeModal(customModal));
-
-    window.addEventListener('click', (e) => {
-        if (e.target === customModal) {
-            closeModal(customModal);
-        }
-    });
-
-    customForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const selectedOptions = Array.from(document.querySelectorAll('input[name="customization[]"]:checked'))
-            .map(checkbox => checkbox.value);
-        const bikeType = document.getElementById('bike-type').value;
-        const notes = document.getElementById('customization-notes').value;
-        
-        // Calculate rough estimate
-        let estimatedCost = 0;
-        selectedOptions.forEach(option => {
-            switch(option) {
-                case 'custom-paint': estimatedCost += 200; break;
-                case 'custom-decals': estimatedCost += 50; break;
-                case 'custom-gears': estimatedCost += 300; break;
-                case 'custom-brakes': estimatedCost += 250; break;
-                case 'custom-saddle': estimatedCost += 100; break;
-                case 'custom-handlebars': estimatedCost += 80; break;
-            }
-        });
-
-        alert(`Customization request submitted!\nEstimated Cost: $${estimatedCost}\nWe'll contact you with a detailed quote soon.`);
-        closeModal(customModal);
-        customForm.reset();
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Menu toggle functionality
-    const menuToggle = document.getElementById('menu-toggle');
-    const navMenu = document.getElementById('nav-menu');
-    
-    menuToggle.addEventListener('click', function() {
-        navMenu.classList.toggle('open');
-        document.body.classList.toggle('menu-open');
-    });
-
-    // Update cart count
-    function updateCartCount() {
-        const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        document.getElementById('cart-count').textContent = totalItems;
-    }
-    
-    updateCartCount();
-});
-function displayCart() {
-    const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-    const cartContainer = document.getElementById('cart-items');
-    const subtotalElement = document.getElementById('order-subtotal');
-    let subtotal = 0;
-
-    // Clear existing cart items
-    cartContainer.innerHTML = '';
-
-    // Display each cart item
-    cart.forEach(item => {
-        const total = item.price * item.quantity;
-        subtotal += total;
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>
-                <div class="cart-item">
-                    <img src="${item.image}" alt="${item.name}" style="width: 50px; height: 50px;">
-                    <span>${item.name}</span>
-                </div>
-            </td>
-            <td>
-                <div class="quantity-controls">
-                    <button onclick="updateQuantity('${item.id}', ${item.quantity - 1})">-</button>
-                    <span>${item.quantity}</span>
-                    <button onclick="updateQuantity('${item.id}', ${item.quantity + 1})">+</button>
-                </div>
-            </td>
-            <td>${item.price} EG</td>
-            <td>${total} EG</td>
-            <td>
-                <button onclick="removeItem('${item.id}')" class="remove-btn">×</button>
-            </td>
-        `;
-        cartContainer.appendChild(row);
-    });
-
-    // Update subtotal
-    subtotalElement.textContent = subtotal + ' EG';
-
-    // Show/hide empty cart message
-    if (cart.length === 0) {
-        cartContainer.innerHTML = '<tr><td colspan="4">Your cart is empty</td></tr>';
-    }
-
-    updateCartCount();
-}
-
-function updateQuantity(productId, newQuantity) {
-    if (newQuantity < 1) return;
-    
-    let cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-    const itemIndex = cart.findIndex(item => item.id === productId);
-    
-    if (itemIndex > -1) {
-        cart[itemIndex].quantity = newQuantity;
-        localStorage.setItem('bikeYardCart', JSON.stringify(cart));
-        displayCart();
-    }
-}
-
-function removeItem(productId) {
-    let cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-    cart = cart.filter(item => item.id !== productId);
-    localStorage.setItem('bikeYardCart', JSON.stringify(cart));
-    displayCart();
-}
-
-function updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.getElementById('cart-count').textContent = totalItems;
-}
-
-// Initialize cart display when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    displayCart();
-    updateCartCount();
-});
-
-// Handle form submission
-document.getElementById('checkout-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-    if (cart.length === 0) {
-        alert('Your cart is empty!');
-        return;
-    }
-    // Add your checkout logic here
-    alert('Order submitted successfully!');
-    localStorage.removeItem('bikeYardCart');
-    displayCart();
 });
