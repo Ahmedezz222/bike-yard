@@ -70,8 +70,43 @@ app.post('/api/orders', async (req, res) => {
     try {
         const order = new Order(req.body);
         await order.save();
-        res.status(201).json({ message: 'Order placed successfully', orderId: order._id });
+
+        // Send confirmation email
+        const emailBody = `
+            New order received!
+            Order ID: ${order._id}
+            Customer: ${order.customerName}
+            Total Amount: ${order.subtotal} EGP
+            View full details in your admin dashboard.
+        `;
+
+        // Send email using your preferred email service
+        // Example using nodemailer (you'll need to install it):
+        const nodemailer = require('nodemailer');
+        
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'gmass',
+                pass: '6eca2716-3faa-4081-be4e-83b883e37ba2' // Use app-specific password from Gmail
+            }
+        });
+
+        await transporter.sendMail({
+            host: 'smtp.gmail.com',
+            port: 2525,
+            from: 'byard7689@gmail.com',
+            to: 'byard7689@gmail.com',
+            subject: `New Order #${order._id}`,
+            text: emailBody
+        });
+
+        res.status(201).json({ 
+            message: 'Order placed successfully', 
+            orderId: order._id 
+        });
     } catch (error) {
+        console.error('Order processing error:', error);
         res.status(500).json({ error: 'Error placing order' });
     }
 });
