@@ -213,21 +213,51 @@ class ApplicationError extends Error {
     }
 }
 
+// Debug logging utility
+const Debug = {
+    enabled: true,
+    log: function(message, data) {
+        if (this.enabled) {
+            console.log(`[Debug] ${message}`, data || '');
+        }
+    },
+    error: function(message, error) {
+        console.error(`[Error] ${message}`, error);
+    }
+};
+
+// Error handler
+function handleError(error, context) {
+    Debug.error(`${context}:`, error);
+    if (error instanceof ApplicationError) {
+        alert(error.message);
+    } else {
+        alert('An unexpected error occurred. Please try again.');
+    }
+}
+
 class Cart {
     #items;
     #storage;
 
     constructor() {
-        this.#storage = localStorage;
-        this.#items = this.#loadCart();
-        this.updateCartDisplay();
+        try {
+            this.#storage = localStorage;
+            this.#items = this.#loadCart();
+            this.updateCartDisplay();
+            Debug.log('Cart initialized successfully');
+        } catch (error) {
+            handleError(error, 'Cart initialization');
+        }
     }
 
     #loadCart() {
         try {
-            return JSON.parse(this.#storage.getItem('cart')) || [];
+            const cart = JSON.parse(this.#storage.getItem('bikeYardCart')) || [];
+            Debug.log('Cart loaded:', cart);
+            return cart;
         } catch (error) {
-            console.error('Failed to load cart:', error);
+            handleError(error, 'Loading cart');
             return [];
         }
     }
@@ -259,15 +289,18 @@ class Cart {
     }
 
     updateCartDisplay() {
-        const cartCount = document.getElementById('cart-count');
-        if (cartCount) {
-            cartCount.textContent = this.#items.length;
-        }
+        try {
+            const cartCount = document.getElementById('cart-count');
+            if (!cartCount) {
+                Debug.log('Cart count element not found');
+                return;
+            }
 
-        // Update cart table if on cart page
-        const cartItems = document.getElementById('cart-items');
-        if (cartItems) {
-            this.renderCartItems(cartItems);
+            const totalItems = this.#items.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            Debug.log('Cart display updated', { totalItems });
+        } catch (error) {
+            handleError(error, 'Updating cart display');
         }
     }
 
@@ -365,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitButton?.setAttribute('disabled', 'true');
                     await FormHandler.submitForm(e.target);
                 } catch (error) {
-                    alert(error.message);
+                    handleError(error, 'Form submission');
                 } finally {
                     submitButton?.removeAttribute('disabled');
                 }
@@ -744,3 +777,128 @@ function addToCart() {
     alert('Product added to cart successfully!');
     window.location.href = 'bikeyardcart.html';
 }
+
+// Form validation and submission
+document.getElementById('checkout-form')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    try {
+        Debug.log('Processing checkout form submission');
+        
+        // Form validation
+        const requiredFields = ['name', 'email', 'address', 'phone'];
+        const missingFields = requiredFields.filter(field => 
+            !document.getElementById(field)?.value.trim()
+        );
+
+        if (missingFields.length > 0) {
+            throw new ApplicationError(
+                `Please fill in all required fields: ${missingFields.join(', ')}`,
+                'VALIDATION_ERROR'
+            );
+        }
+
+        const formData = {
+            name: document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            address: document.getElementById('address').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            otherPhone: document.getElementById('other-phone')?.value.trim(),
+            notes: document.getElementById('notes')?.value.trim(),
+            payment: document.getElementById('payment').value
+        };
+
+        Debug.log('Form data collected:', formData);
+
+        const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+        if (!cart.length) {
+            throw new ApplicationError('Your cart is empty', 'EMPTY_CART');
+        }
+
+        // Process order
+        await processOrder(formData, cart);
+        
+        Debug.log('Order processed successfully');
+        alert('Order placed successfully! You will receive a confirmation email shortly.');
+        localStorage.removeItem('bikeYardCart');
+        window.location.href = 'index.html';
+
+    } catch (error) {
+        handleError(error, 'Checkout process');
+    }
+});
+
+// Add to cart with error handling
+function addToCart(productId, quantity = 1) {
+    try {
+        Debug.log('Adding to cart', { productId, quantity });
+        
+        if (!productId) {
+            throw new ApplicationError('Invalid product', 'INVALID_PRODUCT');
+        }
+
+        const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
+        const existingItem = cart.find(item => item.id === productId);
+
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.push({
+                id: productId,
+                quantity: quantity
+            });
+        }
+
+        localStorage.setItem('bikeYardCart', JSON.stringify(cart));
+        Debug.log('Cart updated successfully', cart);
+
+        updateCartDisplay();
+        return true;
+
+    } catch (error) {
+        handleError(error, 'Adding to cart');
+        return false;
+    }
+}
+
+// Initialize error handlers
+window.addEventListener('error', (event) => {
+    Debug.error('Global error:', event.error);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    Debug.error('Unhandled promise rejection:', event.reason);
+});
+
+// DOM Content Loaded handler with error handling
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        Debug.log('Initializing application');
+        
+        // Initialize cart
+        const cart = new Cart();
+        
+        // Setup form handlers
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitButton = e.target.querySelector('[type="submit"]');
+                
+                try {
+                    submitButton?.setAttribute('disabled', 'true');
+                    await FormHandler.submitForm(e.target);
+                } catch (error) {
+                    handleError(error, 'Form submission');
+                } finally {
+                    submitButton?.removeAttribute('disabled');
+                }
+            });
+        });
+
+        Debug.log('Application initialized successfully');
+    } catch (error) {
+        handleError(error, 'Application initialization');
+    }
+});
+
+// ...existing code...
