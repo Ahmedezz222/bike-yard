@@ -24,7 +24,7 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="products.html">Products</a></li>
                 <li><a href="services.html">Services</a></li>
-                <li><a href="Menu.pdf">Cafe Menu</a><li>
+                <li>
                     <a href="bikeyardcart.html" class="cart-link">
                         <i class="fas fa-shopping-cart"></i>
                         Cart
@@ -45,23 +45,36 @@
                 <!-- Cart Summary -->
                 <div class="cart-summary">
                     <h3>Order Summary</h3>
-                    <table class="shopping-data-table">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cart-items">
-                            <!-- Cart items will be inserted here -->
-                        </tbody>
-                    </table>
-                    <p>
-                        <span><strong>Order Total:</strong></span>
-                        <span id="order-subtotal">0 EGP</span>
-                    </p>
+                    <div id="cart-content">
+                        <!-- This div will be shown when cart has items -->
+                        <div class="cart-has-items">
+                            <table class="shopping-data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-items">
+                                    <!-- Cart items will be inserted here by JavaScript -->
+                                </tbody>
+                            </table>
+                            <p>
+                                <strong>Subtotal:</strong> 
+                                <span id="order-subtotal">0 EGP</span>
+                            </p>
+                        </div>
+                        
+                        <!-- This div will be shown when cart is empty -->
+                        <div class="cart-empty" style="display: none;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>Your cart is empty</p>
+                            <a href="products.html" class="btn-primary">Continue Shopping</a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Customer Details Form -->
@@ -118,140 +131,5 @@
     </footer>
 
     <script src="scripts.js"></script>
-    <script src="https://smtpjs.com/v3/smtp.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCartDisplay();
-        });
-
-        function updateCartDisplay() {
-            const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-            const cartItems = document.getElementById('cart-items');
-            const orderSubtotal = document.getElementById('order-subtotal');
-            
-            if (cart.length === 0) {
-                cartItems.innerHTML = '<tr><td colspan="4">Your cart is empty</td></tr>';
-                orderSubtotal.textContent = '0 EGP';
-                return;
-            }
-
-            // Render cart items with quantity controls
-            let total = 0;
-            cartItems.innerHTML = cart.map((item, index) => {
-                const itemTotal = item.price * item.quantity;
-                total += itemTotal;
-                return `
-                    <tr>
-                        <td data-label="Product">
-                            <div class="cart-item">
-                                <img src="${item.image}" alt="${item.name}" width="50">
-                                <span>${item.name}</span>
-                            </div>
-                        </td>
-                        <td data-label="Quantity">
-                            <div class="quantity-controls">
-                                <button onclick="updateQuantity(${index}, -1)" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
-                                <span>${item.quantity}</span>
-                                <button onclick="updateQuantity(${index}, 1)">+</button>
-                                <button onclick="removeItem(${index})" class="remove-btn">Remove</button>
-                            </div>
-                        </td>
-                        <td data-label="Price">${item.price} EGP</td>
-                        <td data-label="Total">${itemTotal} EGP</td>
-                    </tr>
-                `;
-            }).join('');
-
-            orderSubtotal.textContent = `${total} EGP`;
-        }
-
-        function updateQuantity(index, change) {
-            const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-            if (cart[index]) {
-                cart[index].quantity += change;
-                if (cart[index].quantity < 1) cart[index].quantity = 1;
-                localStorage.setItem('bikeYardCart', JSON.stringify(cart));
-                updateCartDisplay();
-            }
-        }
-
-        function removeItem(index) {
-            const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-            if (confirm('Are you sure you want to remove this item?')) {
-                cart.splice(index, 1);
-                localStorage.setItem('bikeYardCart', JSON.stringify(cart));
-                updateCartDisplay();
-                
-                // Update cart count in header
-                const cartCount = document.getElementById('cart-count');
-                if (cartCount) {
-                    cartCount.textContent = cart.length;
-                }
-            }
-        }
-
-        document.getElementById('checkout-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                address: document.getElementById('address').value,
-                phone: document.getElementById('phone').value,
-                otherPhone: document.getElementById('other-phone').value,
-                notes: document.getElementById('notes').value,
-                payment: document.getElementById('payment').value
-            };
-
-            const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-            try {
-                // Send email using SMTP.js
-                await Email.send({
-                    SecureToken: "YOUR_SMTP_SECURE_TOKEN", // Replace with your SMTP.js token
-                    To: 'byard7689@gmail.com',
-                    From: formData.email,
-                    Subject: `New Order from ${formData.name}`,
-                    Body: `
-                        <h2>New Order Details</h2>
-                        <p><strong>Customer Name:</strong> ${formData.name}</p>
-                        <p><strong>Email:</strong> ${formData.email}</p>
-                        <p><strong>Address:</strong> ${formData.address}</p>
-                        <p><strong>Phone:</strong> ${formData.phone}</p>
-                        <p><strong>Other Phone:</strong> ${formData.otherPhone}</p>
-                        <p><strong>Payment Method:</strong> ${formData.payment}</p>
-                        <p><strong>Notes:</strong> ${formData.notes}</p>
-                        <h3>Order Items:</h3>
-                        <table border="1">
-                            <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                            </tr>
-                            ${cart.map(item => `
-                                <tr>
-                                    <td>${item.name}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.price} EGP</td>
-                                    <td>${item.price * item.quantity} EGP</td>
-                                </tr>
-                            `).join('')}
-                        </table>
-                        <p><strong>Total Order Amount:</strong> ${total} EGP</p>
-                    `
-                });
-
-                alert('Order placed successfully! You will receive a confirmation email shortly.');
-                localStorage.removeItem('bikeYardCart');
-                updateCartDisplay();
-            } catch (error) {
-                console.error('Error submitting order:', error);
-                alert('There was an error placing your order. Please try again.');
-            }
-        });
-    </script>
-    <server src= "server.js"></server>
 </body>
 </html>

@@ -44,6 +44,70 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Add this near the top of the file, after existing event listeners
+
+function updateQuantity(action) {
+    const quantityInput = document.getElementById('quantity');
+    let currentValue = parseInt(quantityInput.value);
+    
+    if (action === 'increase' && currentValue < 10) {
+        currentValue++;
+    } else if (action === 'decrease' && currentValue > 1) {
+        currentValue--;
+    }
+    
+    quantityInput.value = currentValue;
+}
+
+// Add this CSS for quantity controls
+const quantityStyles = document.createElement('style');
+quantityStyles.textContent = `
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 5px;
+    }
+
+    .quantity-btn {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #ddd;
+        background: #f5f5f5;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .quantity-btn:hover {
+        background: #e0e0e0;
+    }
+
+    .quantity-btn:active {
+        background: #d0d0d0;
+    }
+
+    #quantity {
+        width: 50px;
+        height: 30px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    #quantity::-webkit-inner-spin-button,
+    #quantity::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+`;
+document.head.appendChild(quantityStyles);
+
 // Filtering Products by Category
 function filterProducts() {
     console.debug('Filtering products...');
@@ -213,51 +277,21 @@ class ApplicationError extends Error {
     }
 }
 
-// Debug logging utility
-const Debug = {
-    enabled: true,
-    log: function(message, data) {
-        if (this.enabled) {
-            console.log(`[Debug] ${message}`, data || '');
-        }
-    },
-    error: function(message, error) {
-        console.error(`[Error] ${message}`, error);
-    }
-};
-
-// Error handler
-function handleError(error, context) {
-    Debug.error(`${context}:`, error);
-    if (error instanceof ApplicationError) {
-        alert(error.message);
-    } else {
-        alert('An unexpected error occurred. Please try again.');
-    }
-}
-
 class Cart {
     #items;
     #storage;
 
     constructor() {
-        try {
-            this.#storage = localStorage;
-            this.#items = this.#loadCart();
-            this.updateCartDisplay();
-            Debug.log('Cart initialized successfully');
-        } catch (error) {
-            handleError(error, 'Cart initialization');
-        }
+        this.#storage = localStorage;
+        this.#items = this.#loadCart();
+        this.updateCartDisplay();
     }
 
     #loadCart() {
         try {
-            const cart = JSON.parse(this.#storage.getItem('bikeYardCart')) || [];
-            Debug.log('Cart loaded:', cart);
-            return cart;
+            return JSON.parse(this.#storage.getItem('cart')) || [];
         } catch (error) {
-            handleError(error, 'Loading cart');
+            console.error('Failed to load cart:', error);
             return [];
         }
     }
@@ -289,18 +323,15 @@ class Cart {
     }
 
     updateCartDisplay() {
-        try {
-            const cartCount = document.getElementById('cart-count');
-            if (!cartCount) {
-                Debug.log('Cart count element not found');
-                return;
-            }
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+            cartCount.textContent = this.#items.length;
+        }
 
-            const totalItems = this.#items.reduce((sum, item) => sum + item.quantity, 0);
-            cartCount.textContent = totalItems;
-            Debug.log('Cart display updated', { totalItems });
-        } catch (error) {
-            handleError(error, 'Updating cart display');
+        // Update cart table if on cart page
+        const cartItems = document.getElementById('cart-items');
+        if (cartItems) {
+            this.renderCartItems(cartItems);
         }
     }
 
@@ -359,6 +390,78 @@ class Cart {
 // Initialize cart
 const cart = new Cart();
 
+// Add to Cart Function
+function addToCart(productId, productName, price, quantity) {
+    try {
+        // Convert quantity to number
+        const qty = parseInt(quantity) || 1;
+        
+        // Create item object
+        const item = {
+            id: productId,
+            name: productName,
+            price: parseFloat(price),
+            quantity: qty
+        };
+
+        // Add to cart using the Cart class instance
+        cart.addItem(item);
+
+        // Show success message
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = `
+            <div class="toast-content">
+                <i class="fas fa-check-circle"></i>
+                Added ${qty} x ${productName} to cart
+            </div>
+        `;
+        document.body.appendChild(toast);
+
+        // Remove toast after 3 seconds
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        alert('Failed to add item to cart. Please try again.');
+    }
+}
+
+// Add this CSS to handle the toast message
+const style = document.createElement('style');
+style.textContent = `
+    .toast-message {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 4px;
+        z-index: 1000;
+        animation: slideIn 0.5s, fadeOut 0.5s 2.5s;
+    }
+
+    .toast-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
+
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+
 // Enhanced form handling
 const FormHandler = {
     async submitForm(formElement) {
@@ -398,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitButton?.setAttribute('disabled', 'true');
                     await FormHandler.submitForm(e.target);
                 } catch (error) {
-                    handleError(error, 'Form submission');
+                    alert(error.message);
                 } finally {
                     submitButton?.removeAttribute('disabled');
                 }
@@ -724,181 +827,3 @@ class ServiceFormHandler {
 document.addEventListener('DOMContentLoaded', () => {
     const serviceHandler = new ServiceFormHandler();
 });
-
-let cartCount = 0;
-
-function updateCartCount() {
-    const cartCountElement = document.getElementById('cart-count');
-    cartCountElement.textContent = cartCount;
-}
-
-function addToCart() {
-    cartCount++;
-    updateCartCount();
-}
-
-// Initialize cart count on page load
-document.addEventListener('DOMContentLoaded', () => {
-    updateCartCount();
-});
-
-function updateMainImage(src) {
-    document.getElementById('main-product-image').src = src;
-}
-
-function addToCart() {
-    const quantity = parseInt(document.getElementById('quantity').value);
-    const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-    
-    const product = {
-        id: 'trail-blazer-mountain-bike',
-        name: 'Trail Blazer Mountain Bike',
-        price: 2000,
-        image: 'Mountain Bike.png',
-        quantity: quantity
-    };
-
-    const existingProduct = cart.find(item => item.id === product.id);
-    if (existingProduct) {
-        existingProduct.quantity += quantity;
-    } else {
-        cart.push(product);
-    }
-
-    // Save cart and update display
-    localStorage.setItem('bikeYardCart', JSON.stringify(cart));
-    
-    // Update cart count in header
-    const cartCount = document.getElementById('cart-count');
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartCount.textContent = totalItems;
-
-    // Show success message and redirect
-    alert('Product added to cart successfully!');
-    window.location.href = 'bikeyardcart.html';
-}
-
-// Form validation and submission
-document.getElementById('checkout-form')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    try {
-        Debug.log('Processing checkout form submission');
-        
-        // Form validation
-        const requiredFields = ['name', 'email', 'address', 'phone'];
-        const missingFields = requiredFields.filter(field => 
-            !document.getElementById(field)?.value.trim()
-        );
-
-        if (missingFields.length > 0) {
-            throw new ApplicationError(
-                `Please fill in all required fields: ${missingFields.join(', ')}`,
-                'VALIDATION_ERROR'
-            );
-        }
-
-        const formData = {
-            name: document.getElementById('name').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            address: document.getElementById('address').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            otherPhone: document.getElementById('other-phone')?.value.trim(),
-            notes: document.getElementById('notes')?.value.trim(),
-            payment: document.getElementById('payment').value
-        };
-
-        Debug.log('Form data collected:', formData);
-
-        const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-        if (!cart.length) {
-            throw new ApplicationError('Your cart is empty', 'EMPTY_CART');
-        }
-
-        // Process order
-        await processOrder(formData, cart);
-        
-        Debug.log('Order processed successfully');
-        alert('Order placed successfully! You will receive a confirmation email shortly.');
-        localStorage.removeItem('bikeYardCart');
-        window.location.href = 'index.html';
-
-    } catch (error) {
-        handleError(error, 'Checkout process');
-    }
-});
-
-// Add to cart with error handling
-function addToCart(productId, quantity = 1) {
-    try {
-        Debug.log('Adding to cart', { productId, quantity });
-        
-        if (!productId) {
-            throw new ApplicationError('Invalid product', 'INVALID_PRODUCT');
-        }
-
-        const cart = JSON.parse(localStorage.getItem('bikeYardCart')) || [];
-        const existingItem = cart.find(item => item.id === productId);
-
-        if (existingItem) {
-            existingItem.quantity += quantity;
-        } else {
-            cart.push({
-                id: productId,
-                quantity: quantity
-            });
-        }
-
-        localStorage.setItem('bikeYardCart', JSON.stringify(cart));
-        Debug.log('Cart updated successfully', cart);
-
-        updateCartDisplay();
-        return true;
-
-    } catch (error) {
-        handleError(error, 'Adding to cart');
-        return false;
-    }
-}
-
-// Initialize error handlers
-window.addEventListener('error', (event) => {
-    Debug.error('Global error:', event.error);
-});
-
-window.addEventListener('unhandledrejection', (event) => {
-    Debug.error('Unhandled promise rejection:', event.reason);
-});
-
-// DOM Content Loaded handler with error handling
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        Debug.log('Initializing application');
-        
-        // Initialize cart
-        const cart = new Cart();
-        
-        // Setup form handlers
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const submitButton = e.target.querySelector('[type="submit"]');
-                
-                try {
-                    submitButton?.setAttribute('disabled', 'true');
-                    await FormHandler.submitForm(e.target);
-                } catch (error) {
-                    handleError(error, 'Form submission');
-                } finally {
-                    submitButton?.removeAttribute('disabled');
-                }
-            });
-        });
-
-        Debug.log('Application initialized successfully');
-    } catch (error) {
-        handleError(error, 'Application initialization');
-    }
-});
-
-// ...existing code...

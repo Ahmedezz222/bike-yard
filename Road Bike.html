@@ -24,7 +24,7 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="products.html">Products</a></li>
                 <li><a href="services.html">Services</a></li>
-                <li><a href="Menu.pdf">Cafe Menu</a><li>
+                <li>
                     <a href="bikeyardcart.html" class="cart-link">
                         <i class="fas fa-shopping-cart"></i>
                         Cart
@@ -67,15 +67,19 @@
                 <div class="purchase-options">
                     <div class="quantity-selector">
                         <label for="quantity">Quantity:</label>
-                        <select id="quantity">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
+                        <div class="quantity-controls">
+                            <button type="button" class="quantity-btn minus" onclick="updateQuantity('decrease')">-</button>
+                            <input type="number" id="quantity" value="1" min="1" max="10" readonly>
+                            <button type="button" class="quantity-btn plus" onclick="updateQuantity('increase')">+</button>
+                        </div>
                     </div>
-                    <button class="btn-primary" onclick="addToCart()">Add to Cart</button>
+                    <button class="btn-primary" 
+                        onclick="addToCart('road-bike', 'Road Bike', 999.99, document.getElementById('quantity').value)"
+                        data-product-id="road-bike"
+                        data-product-name="Road Bike"
+                        data-product-price="999.99">
+                        Add to Cart
+                    </button>
                 </div>
             </div>
         </div>
