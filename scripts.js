@@ -171,58 +171,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Contact Form Submission (Using EmailJS)
-const contactForm = document.getElementById("contact-form");
-if (contactForm) {
-    contactForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        
-        const name = document.getElementById("name").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const message = document.getElementById("message").value.trim();
+ // emailjs
+function resetForm() {
+    let emailparms ={
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        note: document.getElementById("notes").value
+    };
+    const service_id = 'service_qnsvf0k';
+    consttemp_id = 'template_gsefiem';
 
-        if (!name || !email || !message) {
-            alert("Please fill in all fields.");
-            return;
-        }
-
-        // Show loading state
-        const submitBtn = contactForm.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-
-        // Send email using EmailJS
-        Email.send(
-            'service_w6adgtg', // EmailJS service ID
-            'template_liact1f', // EmailJS template ID
-            {
-                host: 'smtp.gmail.com',
-                username: 'byard7689@gmail.com',
-                password: 'pwxt azuc mknx rpyw',
-                from_name: name,
-                from_email: email,
-                message: message,
-                to_email: 'byard7689@gmail.com',
-            },
-            'pwxt azuc mknx rpyw' // EmailJS public key
-        ).then(
-            function(response) {
-                console.log("SUCCESS", response);
-                alert("Message sent successfully!");
-                contactForm.reset();
-            },
-            function(error) {
-                console.error("FAILED", error);
-                alert("Failed to send message. Please try again.");
-            }
-        ).finally(() => {
-            // Reset button state
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
-        });
-    });
-}
+    emailjs
+    .send(service_id, temp_id, emailparms)
+    .then((res) => {
+            dociment.getElementById("name").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("phone").value = "";
+            document.getElementById("notes").value = "";
+            console.log(res);
+            alert("Email Sent Successfully");
+        })
+        .catch((err) => console.log(err));
+    }
 
 // Registration Form Submission
 const registerForm = document.getElementById("register-form");
