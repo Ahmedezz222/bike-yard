@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Add EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("-wDZ6NmB97G6Gt_kX");
+        })();
+    </script>
 </head>
 <body>
 
@@ -53,9 +61,9 @@
                                     <tr>
                                         <th>Product</th>
                                         <th>Quantity</th>
+                                        <th>Action</th>
                                         <th>Price</th>
                                         <th>Total</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="cart-items">
@@ -78,7 +86,7 @@
                 </div>
 
                 <!-- Customer Details Form -->
-                <form id="checkout-form">
+                <form id="checkout-form" onsubmit="return sendOrderEmail(event)">
                     <h3>Customer Details</h3>
                     <div class="form-group">
                         <label for="name">Full Name:</label>
@@ -105,15 +113,18 @@
                         <textarea id="notes" name="notes" placeholder="Any additional notes for your order"></textarea>
                     </div>
 
+                    <!-- Hidden fields for email template -->
+                    <input type="hidden" id="order-details" name="order-details">
+                    <input type="hidden" id="order-total" name="order-total">
+
                     <!-- Payment Options -->
                     <h3>Payment Method</h3>
                     <div class="form-group">
                         <label for="payment">Select Payment Method:</label>
-                        <select id="payment" name="payment" required="">
+                        <select id="payment" name="payment" required>
+                            <option value="">Select a payment method</option>
                             <option value="credit">Credit Card</option>
-                            <option value="instapay">instapay
-                                
-                            </option>
+                            <option value="instapay">InstaPay</option>
                             <option value="cash">Cash on Delivery</option>
                         </select>
                     </div>
@@ -131,5 +142,105 @@
     </footer>
 
     <script src="scripts.js"></script>
+    <script>
+        function sendOrderEmail(event) {
+            event.preventDefault();
+            
+            // Validate email format
+            const email = document.getElementById('email').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address');
+                return false;
+            }
+
+            // Validate phone number
+            const phone = document.getElementById('phone').value;
+            if (phone.length < 11) {
+                alert('Please enter a valid phone number');
+                return false;
+            }
+
+            // Generate order number with date prefix
+            const date = new Date();
+            const orderNumber = `ORD-${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}-${date.getTime().toString().slice(-4)}`;
+            
+            // Get form data
+            const name = document.getElementById('name').value;
+            const address = document.getElementById('address').value;
+            const payment = document.getElementById('payment').value;
+            const notes = document.getElementById('notes').value;
+            
+            // Get cart items and total
+            const cartItems = Array.from(document.getElementById('cart-items').getElementsByTagName('tr'));
+            const total = document.getElementById('order-subtotal').textContent;
+
+            // Store order data for confirmation page
+            const orderData = {
+                orderNumber: orderNumber,
+                customerName: name,
+                customerEmail: email,
+                items: cartItems.map(row => {
+                    const cells = row.getElementsByTagName('td');
+                    return {
+                        name: cells[0].textContent,
+                        quantity: cells[1].textContent,
+                        price: cells[3].textContent,
+                        total: cells[4].textContent
+                    };
+                }),
+                total: total,
+                date: new Date().toISOString()
+            };
+            localStorage.setItem('orderData', JSON.stringify(orderData));
+
+            // Format cart items for email
+            const cartItemsList = cartItems
+                .map(row => {
+                    const cells = row.getElementsByTagName('td');
+                    return `
+                        Product: ${cells[0].textContent}
+                        Quantity: ${cells[1].textContent}
+                        Price: ${cells[3].textContent}
+                        Total: ${cells[4].textContent}
+                    `;
+                }).join('\n');
+
+            // Show loading state
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            // Prepare template parameters
+            const templateParams = {
+                name: name,
+                email: email,
+                address: address,
+                phone: phone,
+                payment: payment,
+                notes: notes,
+                items: cartItemsList,
+                total: total
+            };
+
+            // Send email using EmailJS
+            emailjs.send('service_qnsvf0k', 'template_gsefiem', templateParams)
+                .then(function(response) {
+                    alert('Order placed successfully! You will receive a confirmation email shortly.');
+                    localStorage.removeItem('cart');
+                    window.location.href = 'order-confirmation.html';
+                })
+                .catch(function(error) {
+                    console.error("Failed to send email:", error);
+                    alert('Failed to place order. Please try again.');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Confirm Order';
+                });
+
+            return false;
+        }
+    </script>
 </body>
 </html>

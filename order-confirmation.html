@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - Bike Yard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .confirmation-container {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .order-details, .customer-info, .order-summary {
+            margin: 20px 0;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .thank-you {
+            text-align: center;
+            color: #2c8a2c;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+        .return-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #2c8a2c;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .order-tracking {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .order-tracking h3 {
+            color: #2c8a2c;
+            margin-bottom: 10px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #2c8a2c;
+            color: white;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <h1 class="thank-you">Thank You for Your Order!</h1>
+        
+        <div class="order-details">
+            <h2>Order Details</h2>
+            <p>Order Number: <span id="orderNumber"></span></p>
+            <p>Order Date: <span id="orderDate"></span></p>
+        </div>
+
+        <div class="customer-info">
+            <h2>Customer Information</h2>
+            <p>Name: <span id="customerName"></span></p>
+            <p>Email: <span id="customerEmail"></span></p>
+        </div>
+
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div id="orderItems"></div>
+            <p><strong>Total Amount: </strong><span id="totalAmount"></span></p>
+        </div>
+
+        <div class="order-tracking">
+            <h3>Order Status</h3>
+            <p><span class="status-badge">Order Received</span></p>
+            <p style="margin-top: 10px;">We'll send you updates about your order status via email.</p>
+        </div>
+
+        <p style="text-align: center; margin-top: 30px;">
+            A confirmation email has been sent to your email address.
+            <br>
+            <a href="index.html" class="return-link">Return to Homepage</a>
+        </p>
+    </div>
+
+    <script>
+        // Get order data from localStorage
+        const orderData = JSON.parse(localStorage.getItem('orderData'));
+        
+        if (orderData) {
+            document.getElementById('orderNumber').textContent = orderData.orderNumber;
+            document.getElementById('orderDate').textContent = new Date(orderData.date).toLocaleString();
+            document.getElementById('customerName').textContent = orderData.customerName;
+            document.getElementById('customerEmail').textContent = orderData.customerEmail;
+
+            const orderItemsContainer = document.getElementById('orderItems');
+            orderData.items.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item-row';
+                itemDiv.innerHTML = `
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>${item.total}</span>
+                `;
+                orderItemsContainer.appendChild(itemDiv);
+            });
+
+            document.getElementById('totalAmount').textContent = orderData.total;
+
+            // Clear the order data from localStorage
+            localStorage.removeItem('orderData');
+        } else {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

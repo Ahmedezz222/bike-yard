@@ -171,12 +171,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Contact Form Submission (Using SMTP.js)
+// Contact Form Submission (Using EmailJS)
 const contactForm = document.getElementById("contact-form");
 if (contactForm) {
     contactForm.addEventListener("submit", function (e) {
         e.preventDefault();
-
+        
         const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
         const message = document.getElementById("message").value.trim();
@@ -186,27 +186,40 @@ if (contactForm) {
             return;
         }
 
-        email.send({
-            SecureToken: "YOUR_SECURE_TOKEN", // Replace with your SMTP.js secure token
-            To: "byard7689@gmail.com",
-            From: email,
-            Subject: `New Contact Form Submission from ${name}`,
-            Body: `
-                <h2>New Contact Form Submission</h2>
-                <p><strong>Name:</strong> ${name}</p>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Message:</strong> ${message}</p>
-            `,
-        }).then((response) => {
-            if (response === "OK") {
+        // Show loading state
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+        // Send email using EmailJS
+        Email.send(
+            'service_w6adgtg', // EmailJS service ID
+            'template_liact1f', // EmailJS template ID
+            {
+                host: 'smtp.gmail.com',
+                username: 'byard7689@gmail.com',
+                password: 'pwxt azuc mknx rpyw',
+                from_name: name,
+                from_email: email,
+                message: message,
+                to_email: 'byard7689@gmail.com',
+            },
+            'pwxt azuc mknx rpyw' // EmailJS public key
+        ).then(
+            function(response) {
+                console.log("SUCCESS", response);
                 alert("Message sent successfully!");
                 contactForm.reset();
-            } else {
-                alert("Failed to send the message. Please try again.");
+            },
+            function(error) {
+                console.error("FAILED", error);
+                alert("Failed to send message. Please try again.");
             }
-        }).catch((error) => {
-            console.error("Error sending email:", error);
-            alert("An error occurred. Please try again later.");
+        ).finally(() => {
+            // Reset button state
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
         });
     });
 }
@@ -338,15 +351,24 @@ class Cart {
     renderCartItems(container) {
         container.innerHTML = this.#items.map((item, index) => `
             <tr>
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>${item.price} EGP</td>
-                <td>${item.quantity * item.price} EGP</td>
+                <td class="cart-item">
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <span>${item.name}</span>
+                </td>
+                <td>
+                    <div class="quantity-controls">
+                        <button type="button" class="quantity-btn minus" onclick="cart.updateItemQuantity(${index}, 'decrease')">-</button>
+                        <span>${item.quantity}</span>
+                        <button type="button" class="quantity-btn plus" onclick="cart.updateItemQuantity(${index}, 'increase')">+</button>
+                    </div>
+                </td>
                 <td>
                     <button onclick="cart.removeItem(${index})" class="remove-item">
-                        Remove
+                        <i class="fas fa-trash"></i> Remove
                     </button>
                 </td>
+                <td>${item.price} EGP</td>
+                <td>${item.quantity * item.price} EGP</td>
             </tr>
         `).join('');
 
@@ -368,11 +390,19 @@ class Cart {
                 throw new ApplicationError('Cart is empty', 'EMPTY_CART');
             }
             
-            // Implement checkout logic here
-            await this.#processPayment();
-            this.#items = [];
-            this.saveCart();
-            this.updateCartDisplay();
+            // Format items for email
+            const itemsList = this.#items.map(item => `
+                Product: ${item.name}
+                Quantity: ${item.quantity}
+                Price: ${item.price} EGP
+                Total: ${item.quantity * item.price} EGP
+                -------------------------
+            `).join('\n');
+
+            // Store formatted items for email template
+            localStorage.setItem('cartItemsForEmail', itemsList);
+            localStorage.setItem('cartTotal', this.#items.reduce((sum, item) => 
+                sum + (item.price * item.quantity), 0));
             
             return { success: true };
         } catch (error) {
@@ -385,6 +415,17 @@ class Cart {
         // Simulate payment processing
         return new Promise((resolve) => setTimeout(resolve, 1000));
     }
+
+    updateItemQuantity(index, action) {
+        const item = this.#items[index];
+        if (action === 'increase' && item.quantity < 10) {
+            item.quantity++;
+        } else if (action === 'decrease' && item.quantity > 1) {
+            item.quantity--;
+        }
+        this.saveCart();
+        this.updateCartDisplay();
+    }
 }
 
 // Initialize cart
@@ -393,18 +434,19 @@ const cart = new Cart();
 // Add to Cart Function
 function addToCart(productId, productName, price, quantity) {
     try {
-        // Convert quantity to number
         const qty = parseInt(quantity) || 1;
         
-        // Create item object
+        // Get the main product image src
+        const mainImage = document.getElementById('main-product-image').src;
+        
         const item = {
             id: productId,
             name: productName,
             price: parseFloat(price),
-            quantity: qty
+            quantity: qty,
+            image: mainImage // Add image to item object
         };
 
-        // Add to cart using the Cart class instance
         cart.addItem(item);
 
         // Show success message
