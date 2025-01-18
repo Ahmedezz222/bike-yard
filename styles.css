@@ -82,7 +82,7 @@ header nav ul li a.active {
     font-weight: 600;
     text-transform: uppercase;
     cursor: pointer;
-    padding: 12px 30px;
+    padding: 10px 0px;
     background: rgb(79, 162, 0);
     border-width: initial;
     border-style: none;
@@ -1340,9 +1340,9 @@ h1 {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 37px 20px;
 }
 
 .checkout-section h1 {
