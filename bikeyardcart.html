@@ -10,9 +10,9 @@
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-       (function(){
-          emailjs.init("-wDZ6NmB97G6Gt_kX"); // Replace with your actual EmailJS public key
-       })();
+        (function() {
+            emailjs.init("-wDZ6NmB97G6Gt_kX"); // Replace with your actual public key
+        })();
     </script>
 </head>
 <body>
@@ -118,54 +118,55 @@
         document.getElementById('orderForm').addEventListener('submit', function(event) {
             event.preventDefault();
             
+            // Get the order details
+            const cartItems = document.getElementById('cart-items');
+            if (!cartItems || cartItems.children.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+
             // Show loading state
             const submitBtn = event.target.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
             submitBtn.textContent = 'Processing...';
 
-            // Get form data
-            const formData = {
+            // Format cart items for email
+            const itemsList = Array.from(cartItems.getElementsByTagName('tr'))
+                .map(row => {
+                    const cells = row.getElementsByTagName('td');
+                    return `${cells[0].textContent.trim()} x${cells[1].textContent.trim()} - ${cells[4].textContent.trim()}`;
+                }).join('\n');
+
+            // Prepare email parameters
+            const templateParams = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
                 address: document.getElementById('address').value,
                 payment: document.getElementById('payment').value,
-                notes: document.getElementById('notes').value,
-                items: Array.from(document.getElementById('cart-items').getElementsByTagName('tr'))
-                    .map(row => {
-                        const cells = row.getElementsByTagName('td');
-                        return `${cells[0].textContent.trim()} - Quantity: ${cells[1].textContent.trim()} - Total: ${cells[4].textContent.trim()}`;
-                    }).join('\n'),
-                total: document.getElementById('order-subtotal').textContent
+                notes: document.getElementById('notes').value || 'No notes provided',
+                order_items: itemsList,
+                total: document.getElementById('order-subtotal').textContent,
+                to_email: 'YOUR_SHOP_EMAIL@example.com' // Replace with your email
             };
 
-            // Send email using EmailJS
+            // Send email
             emailjs.send(
-                "service_qnsvf0k", // Replace with your EmailJS service ID
-                "template_gsefiem", // Replace with your EmailJS template ID
-                {
-                    to_name: "Bike Yard Shop",
-                    from_name: formData.name,
-                    customer_email: formData.email,
-                    phone_number: formData.phone,
-                    delivery_address: formData.address,
-                    payment_method: formData.payment,
-                    order_notes: formData.notes || 'No notes provided',
-                    order_items: formData.items,
-                    order_total: formData.total,
-                    message: `New Order:\n\nCustomer Details:\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nAddress: ${formData.address}\n\nOrder Details:\n${formData.items}\n\nTotal: ${formData.total}\nPayment Method: ${formData.payment}\nNotes: ${formData.notes || 'None'}`
-                }
+                'service_qnsvf0k', // Replace with your EmailJS service ID
+                'template_gsefiem', // Replace with your EmailJS template ID
+                templateParams
             )
             .then(function() {
-                // Success handling
-                alert("Order placed successfully! We'll contact you soon.");
+                alert('Order placed successfully! We will contact you soon.');
                 
-                // Clear cart and form
+                // Clear cart
                 localStorage.removeItem('cart');
-                document.getElementById('cart-items').innerHTML = '';
+                cartItems.innerHTML = '';
                 document.getElementById('cart-count').textContent = '0';
                 document.getElementById('order-subtotal').textContent = '0 EGP';
-                document.getElementById('orderForm').reset();
+                
+                // Reset form
+                event.target.reset();
                 
                 // Update UI
                 document.querySelector('.cart-has-items').style.display = 'none';
@@ -176,9 +177,8 @@
                 submitBtn.textContent = 'Confirm Order';
             })
             .catch(function(error) {
-                // Error handling
-                console.error("Error sending order:", error);
-                alert("Failed to place order. Please try again or contact us directly.");
+                console.error('Failed to send order:', error);
+                alert('Failed to place order. Please try again or contact us directly.');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Confirm Order';
             });
