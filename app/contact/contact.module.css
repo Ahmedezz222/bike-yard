@@ -1,0 +1,231 @@
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--background-secondary, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .container {
+    --background-secondary: #1a1a1a;
+    --border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.title {
+  font-size: 2.5rem;
+  color: var(--text-primary, #333);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .title {
+    --text-primary: #ffffff;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.label {
+  font-size: 0.95rem;
+  color: var(--text-secondary, #555);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .label {
+    --text-secondary: #a0a0a0;
+  }
+}
+
+.input,
+.textarea {
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: var(--background-primary, #ffffff);
+  color: var(--text-primary, #333);
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .input,
+  .textarea {
+    --background-primary: #2a2a2a;
+    --text-primary: #ffffff;
+    --border-color: #404040;
+  }
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent-color, #007bff);
+  box-shadow: 0 0 0 3px var(--accent-color-light, rgba(0, 123, 255, 0.15));
+}
+
+@media (prefers-color-scheme: dark) {
+  .input:focus,
+  .textarea:focus {
+    --accent-color: #3b82f6;
+    --accent-color-light: rgba(59, 130, 246, 0.2);
+  }
+}
+
+.textarea {
+  min-height: 150px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.button {
+  background: var(--accent-color, #007bff);
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .button {
+    --accent-color: #3b82f6;
+  }
+}
+
+.button:hover {
+  background: var(--accent-color-hover, #0056b3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  .button:hover {
+    --accent-color-hover: #2563eb;
+  }
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.button:disabled {
+  background: var(--disabled-color, #ccc);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .button:disabled {
+    --disabled-color: #404040;
+  }
+}
+
+.status {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.status.success {
+  background: var(--success-bg, #d4edda);
+  color: var(--success-text, #155724);
+  border: 1px solid var(--success-border, #c3e6cb);
+}
+
+@media (prefers-color-scheme: dark) {
+  .status.success {
+    --success-bg: #1a472a;
+    --success-text: #4ade80;
+    --success-border: #2d5a3f;
+  }
+}
+
+.status.error {
+  background: var(--error-bg, #f8d7da);
+  color: var(--error-text, #721c24);
+  border: 1px solid var(--error-border, #f5c6cb);
+}
+
+@media (prefers-color-scheme: dark) {
+  .status.error {
+    --error-bg: #472a2a;
+    --error-text: #f87171;
+    --error-border: #5a3f3f;
+  }
+}
+
+.status.submitting {
+  background: var(--info-bg, #e2e3e5);
+  color: var(--info-text, #383d41);
+  border: 1px solid var(--info-border, #d6d8db);
+}
+
+@media (prefers-color-scheme: dark) {
+  .status.submitting {
+    --info-bg: #2a2a2a;
+    --info-text: #a0a0a0;
+    --info-border: #404040;
+  }
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+  .container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .button {
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* Add focus-visible styles for better accessibility */
+.input:focus-visible,
+.textarea:focus-visible,
+.button:focus-visible {
+  outline: 2px solid var(--accent-color, #007bff);
+  outline-offset: 2px;
+}
+

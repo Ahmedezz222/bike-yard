@@ -1,0 +1,225 @@
+.footer {
+  --footer-bg: #1a1a1a;
+  --footer-text: #ffffff;
+  --footer-text-secondary: #e0e0e0;
+  --footer-border: #333333;
+  --footer-hover: #007bff;
+  --footer-spacing-xs: 1.5rem;
+  --footer-spacing-sm: 1.4rem;
+  --footer-spacing-md: 1.8rem;
+  --footer-spacing-lg: 2.2rem;
+  --footer-spacing-xl: 2.5rem;
+  --footer-max-width: 1200px;
+  --footer-transition: all 0.3s ease;
+}
+
+.footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  padding: var(--footer-spacing-md) 0 0;
+  margin-top: var(--footer-spacing-lg);
+  position: relative;
+  isolation: isolate;
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--footer-border), transparent);
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.footerContent {
+  max-width: var(--footer-max-width);
+  margin: 0 auto;
+  padding: 0 var(--footer-spacing-md);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--footer-spacing-md);
+  flex: 0 1 auto;
+}
+
+.footerSection h3 {
+  color: var(--footer-text);
+  margin-bottom: var(--footer-spacing-xs);
+  font-size: 1rem;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: var(--footer-spacing-xs);
+}
+
+.footerSection h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 30px;
+  height: 1px;
+  background-color: var(--footer-hover);
+  transition: var(--footer-transition);
+}
+
+.footerSection:hover h3::after {
+  width: 40px;
+}
+
+.footerSection p {
+  color: var(--footer-text-secondary);
+  line-height: 1.4;
+  margin-bottom: var(--footer-spacing-xs);
+  font-size: 0.85rem;
+}
+
+.socialLinks {
+  display: flex;
+  gap: var(--footer-spacing-xs);
+  margin-top: var(--footer-spacing-xs);
+}
+
+.socialLinks a {
+  color: var(--footer-text);
+  font-size: 1rem;
+  transition: var(--footer-transition);
+  opacity: 0.9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.socialLinks a:hover {
+  color: var(--footer-hover);
+  opacity: 1;
+  transform: translateY(-2px);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.footerLinks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footerLinks li {
+  margin-bottom: var(--footer-spacing-xs);
+}
+
+.footerLinks a {
+  color: var(--footer-text-secondary);
+  text-decoration: none;
+  transition: var(--footer-transition);
+  display: inline-block;
+  padding: 0.1rem 0;
+  font-size: 0.85rem;
+  position: relative;
+}
+
+.footerLinks a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--footer-hover);
+  transition: var(--footer-transition);
+}
+
+.footerLinks a:hover {
+  color: var(--footer-text);
+  transform: translateX(4px);
+}
+
+.footerLinks a:hover::after {
+  width: 100%;
+}
+
+.contactInfo p {
+  display: flex;
+  align-items: center;
+  gap: var(--footer-spacing-xs);
+  margin-bottom: var(--footer-spacing-xs);
+  color: var(--footer-text-secondary);
+  font-size: 0.85rem;
+}
+
+.contactInfo i {
+  width: 16px;
+  color: var(--footer-hover);
+  font-size: 0.9rem;
+}
+
+.footerBottom {
+  margin-top: var(--footer-spacing-md);
+  padding: var(--footer-spacing-xs) 0;
+  text-align: center;
+  border-top: 1px solid var(--footer-border);
+  background-color: rgba(0, 0, 0, 0.2);
+  width: 100%;
+}
+
+.footerBottom p {
+  color: var(--footer-text-secondary);
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding-top: var(--footer-spacing-sm);
+  }
+
+  .footerContent {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--footer-spacing-sm);
+  }
+
+  .footerSection h3::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .footerSection:hover h3::after {
+    width: 50px;
+  }
+
+  .socialLinks {
+    justify-content: center;
+  }
+
+  .contactInfo p {
+    justify-content: center;
+  }
+
+  .footerLinks a:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding-top: var(--footer-spacing-xs);
+  }
+
+  .footerContent {
+    gap: var(--footer-spacing-sm);
+  }
+
+  .footerBottom {
+    margin-top: var(--footer-spacing-sm);
+    padding: var(--footer-spacing-xs) 0;
+  }
+} 
+

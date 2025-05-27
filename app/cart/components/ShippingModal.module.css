@@ -1,0 +1,215 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  border: 1px solid var(--border-color);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  background: var(--card-background);
+  z-index: 1;
+}
+
+.modalHeader h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  color: var(--foreground);
+  background: var(--background-alt);
+}
+
+.form {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.formGroup input:hover,
+.formGroup select:hover {
+  border-color: var(--primary);
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.formGroup input.error,
+.formGroup select.error {
+  border-color: var(--error);
+}
+
+.errorText {
+  color: var(--error);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.cancelButton,
+.submitButton {
+  flex: 1;
+  padding: 0.875rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton {
+  background: var(--background-alt);
+  color: var(--foreground);
+  border: 1px solid var(--border-color);
+}
+
+.cancelButton:hover {
+  background: var(--background);
+  border-color: var(--text-muted);
+}
+
+.submitButton {
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-dark) 100%
+  );
+  color: white;
+  border: none;
+}
+
+.submitButton:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .modal {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+
+  .cancelButton,
+  .submitButton {
+    width: 100%;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .modal {
+    background: var(--card-background-dark);
+    border-color: var(--border-color-dark);
+  }
+
+  .modalHeader {
+    background: var(--card-background-dark);
+    border-color: var(--border-color-dark);
+  }
+
+  .formGroup input,
+  .formGroup select {
+    background: var(--background-dark);
+    border-color: var(--border-color-dark);
+  }
+
+  .cancelButton {
+    background: var(--background-alt-dark);
+    border-color: var(--border-color-dark);
+  }
+
+  .cancelButton:hover {
+    background: var(--background-dark);
+  }
+} 
