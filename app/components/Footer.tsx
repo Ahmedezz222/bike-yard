@@ -7,7 +7,7 @@ export default function Footer() {
       <div className={styles.footerContent}>
         <div className={styles.footerSection}>
           <h3>About Bike Yard</h3>
-          <p>Your one-stop destination for quality bikes, accessories, and expert service. We're passionate about cycling and committed to providing the best experience for our customers.</p>
+          <p>Your one-stop destination for quality bikes, accessories, and expert service. We&apos;re passionate about cycling and committed to providing the best experience for our customers.</p>
           <div className={styles.socialLinks}>
             {[
               { icon: 'facebook-f', href: '#' },

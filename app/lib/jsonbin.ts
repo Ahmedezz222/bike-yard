@@ -8,24 +8,6 @@ const BIN_IDS = {
 
 const getBinUrl = (binId: string) => `https://api.jsonbin.io/v3/b/${binId}`;
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  image: string;
-  category: string;
-}
-
-interface Order {
-  id: string;
-  customerName: string;
-  items: Product[];
-  total: number;
-  status: string;
-  date: string;
-}
-
 export async function fetchFromJsonBin(collection: 'products' | 'orders') {
   try {
     const response = await fetch(getBinUrl(BIN_IDS[collection]), {
@@ -47,7 +29,7 @@ export async function fetchFromJsonBin(collection: 'products' | 'orders') {
   }
 }
 
-export async function updateJsonBin(collection: 'products' | 'orders', data: Product[] | Order[]) {
+export async function updateJsonBin(collection: 'products' | 'orders', data: unknown[]) {
   try {
     const response = await fetch(getBinUrl(BIN_IDS[collection]), {
       method: 'PUT',

@@ -1,18 +1,12 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import styles from './page.module.css';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { useCart } from '../lib/CartContext';
 import { formatPrice } from '../lib/currency';
-
-// Add this configuration for Next.js Image component
-const imageLoader = ({ src }: { src: string }) => {
-  return src;
-};
 
 interface Product {
   _id: string;
@@ -221,34 +215,15 @@ const ProductsPage = () => {
               filteredProducts.map((product) => (
                 <div key={product._id} className={styles.productCard}>
                   <div className={styles.productImage}>
-                    {product.image ? (
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        style={{ 
-                          width: '100%',
-                          height: '200px',
-                          objectFit: 'cover'
-                        }}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = '/bike-yard-logo.png';
-                          target.alt = 'Product image not available';
-                          target.onerror = null; // Prevent infinite loop
-                        }}
-                      />
-                    ) : (
-                      <img
-                        src="/bike-yard-logo.png"
-                        alt="No image available"
-                        style={{ 
-                          width: '100%',
-                          height: '200px',
-                          objectFit: 'cover',
-                          opacity: 0.5
-                        }}
-                      />
-                    )}
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      width={300}
+                      height={200}
+                      style={{
+                        objectFit: 'cover'
+                      }}
+                    />
                   </div>
                   <div className={styles.productInfo}>
                     <h3>{product.name}</h3>

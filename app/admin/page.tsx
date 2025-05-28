@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import styles from './admin.module.css';
 import { formatPrice } from '../lib/currency';
 
@@ -80,17 +81,7 @@ export default function AdminPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-    fetchOrders();
-  }, []);
-
-  useEffect(() => {
-    filterProducts();
-    filterOrders();
-  }, [products, filters, orders, orderFilters]);
-
-  const filterProducts = () => {
+  const filterProducts = useCallback(() => {
     let filtered = [...products];
 
     // Apply category filter
@@ -131,9 +122,9 @@ export default function AdminPage() {
     });
 
     setFilteredProducts(filtered);
-  };
+  }, [products, filters]);
 
-  const filterOrders = () => {
+  const filterOrders = useCallback(() => {
     let filtered = [...orders];
 
     // Apply status filter
@@ -176,9 +167,9 @@ export default function AdminPage() {
     });
 
     setFilteredOrders(filtered);
-  };
+  }, [orders, orderFilters]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setIsLoading(true);
       const queryParams = new URLSearchParams();
@@ -209,9 +200,9 @@ export default function AdminPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filters]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch('/api/orders');
@@ -227,7 +218,17 @@ export default function AdminPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+    fetchOrders();
+  }, [fetchProducts, fetchOrders]);
+
+  useEffect(() => {
+    filterProducts();
+    filterOrders();
+  }, [products, filters, orders, orderFilters, filterProducts, filterOrders]);
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
@@ -563,12 +564,15 @@ export default function AdminPage() {
                     />
                     {(editingProduct?.image || newProduct.image) && (
                       <div className={styles.imagePreview}>
-                        <img 
-                          src={editingProduct ? editingProduct.image : newProduct.image} 
-                          alt="Preview" 
-                          onError={(e) => {
-                            e.currentTarget.src = '/placeholder-image.jpg';
-                            e.currentTarget.alt = 'Invalid image URL';
+                        <Image
+                          src={
+                            (editingProduct ? editingProduct.image : newProduct.image) || '/bike-yard-logo.png'
+                          }
+                          alt="Preview"
+                          width={150}
+                          height={150}
+                          style={{
+                            objectFit: 'cover'
                           }}
                         />
                       </div>
@@ -640,15 +644,17 @@ export default function AdminPage() {
               <div className={styles.productGrid}>
                 {filteredProducts.map((product) => (
                   <div key={product._id} className={styles.productCard}>
-                    <img 
-                      src={product.image} 
-                      alt={product.name} 
-                      className={styles.productImage}
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder-image.jpg';
-                        e.currentTarget.alt = 'Product image not available';
-                      }}
-                    />
+                    <div className={styles.productImage}>
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        width={150}
+                        height={150}
+                        style={{
+                          objectFit: 'cover'
+                        }}
+                      />
+                    </div>
                     {product.featured && (
                       <div className={styles.productFeatured}>Featured</div>
                     )}
@@ -821,7 +827,15 @@ export default function AdminPage() {
                     <div className={styles.orderItemsList}>
                       {selectedOrder.items.map((item, index) => (
                         <div key={index} className={styles.detailedItem}>
-                          <img src={item.product.image} alt={item.product.name} className={styles.detailedItemImage} />
+                          <Image
+                            src={item.product.image}
+                            alt={item.product.name}
+                            width={100}
+                            height={100}
+                            style={{
+                              objectFit: 'cover'
+                            }}
+                          />
                           <div className={styles.detailedItemInfo}>
                             <h4>{item.product.name}</h4>
                             <p><strong>Category:</strong> {item.product.category}</p>

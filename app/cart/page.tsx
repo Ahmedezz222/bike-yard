@@ -99,12 +99,12 @@ export default function CartPage() {
                 {items.map((item) => (
                   <div key={item.id} className={styles.cartItem}>
                     <div className={styles.itemImage}>
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.name}
+                        width={150}
+                        height={150}
                         style={{
-                          width: '100%',
-                          height: '150px',
                           objectFit: 'cover'
                         }}
                         onError={(e) => {

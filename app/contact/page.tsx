@@ -105,7 +105,7 @@ export default function ContactPage() {
 
           {status === 'success' && (
             <div className={`${styles.status} ${styles.success}`}>
-              Thank you for your message! We'll get back to you soon.
+              Thank you for your message! We&apos;ll get back to you soon.
             </div>
           )}
 
