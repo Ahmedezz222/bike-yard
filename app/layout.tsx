@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Roboto } from "next/font/google";
 import "./globals.css";
+import { CartProvider } from "./lib/CartContext";
 
 const inter = Inter({ subsets: ["latin"] });
 const roboto = Roboto({
@@ -33,7 +34,11 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className={`${inter.className} ${roboto.className}`}>{children}</body>
+      <body className={`${inter.className} ${roboto.className}`}>
+        <CartProvider>
+          {children}
+        </CartProvider>
+      </body>
     </html>
   );
 }

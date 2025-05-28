@@ -15,8 +15,6 @@ export interface ShippingData {
   address: string;
   city: string;
   state: string;
-  zipCode: string;
-  country: string;
   phone: string;
 }
 
@@ -27,8 +25,6 @@ export default function ShippingModal({ isOpen, onClose, onSubmit }: ShippingMod
     address: '',
     city: '',
     state: '',
-    zipCode: '',
-    country: '',
     phone: ''
   });
 
@@ -61,8 +57,6 @@ export default function ShippingModal({ isOpen, onClose, onSubmit }: ShippingMod
     if (!formData.address.trim()) newErrors.address = 'Address is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.state.trim()) newErrors.state = 'State is required';
-    if (!formData.zipCode.trim()) newErrors.zipCode = 'ZIP code is required';
-    if (!formData.country.trim()) newErrors.country = 'Country is required';
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
     } else if (!/^\+?[\d\s-]{10,}$/.test(formData.phone)) {
@@ -180,41 +174,6 @@ export default function ShippingModal({ isOpen, onClose, onSubmit }: ShippingMod
                 placeholder="NY"
               />
               {errors.state && <span className={styles.errorText}>{errors.state}</span>}
-            </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="zipCode">ZIP/Postal Code *</label>
-              <input
-                type="text"
-                id="zipCode"
-                name="zipCode"
-                value={formData.zipCode}
-                onChange={handleChange}
-                className={errors.zipCode ? styles.error : ''}
-                placeholder="10001"
-              />
-              {errors.zipCode && <span className={styles.errorText}>{errors.zipCode}</span>}
-            </div>
-
-            <div className={styles.formGroup}>
-              <label htmlFor="country">Country *</label>
-              <select
-                id="country"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                className={errors.country ? styles.error : ''}
-              >
-                <option value="">Select Country</option>
-                <option value="US">United States</option>
-                <option value="CA">Canada</option>
-                <option value="UK">United Kingdom</option>
-                <option value="AU">Australia</option>
-                {/* Add more countries as needed */}
-              </select>
-              {errors.country && <span className={styles.errorText}>{errors.country}</span>}
             </div>
           </div>
 

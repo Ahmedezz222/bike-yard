@@ -7,40 +7,18 @@ import styles from './page.module.css';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import ShippingModal from './components/ShippingModal';
+import PaymentModal from './components/PaymentModal';
 import type { ShippingData } from './components/ShippingModal';
-
-// Mock cart data - this would typically come from a cart context or state management
-const initialCartItems = [
-  {
-    id: 1,
-    title: 'Mountain Bike',
-    price: 899.99,
-    quantity: 1,
-    image: {
-      src: '/products/Mountain_Bike.png',
-      alt: 'Mountain Bike',
-      width: 200,
-      height: 120
-    }
-  },
-  {
-    id: 2,
-    title: 'Bike Helmet',
-    price: 49.99,
-    quantity: 2,
-    image: {
-      src: '/products/Accessories.png',
-      alt: 'Bike Helmet',
-      width: 200,
-      height: 120
-    }
-  }
-];
+import type { PaymentData } from './components/PaymentModal';
+import { useCart } from '../lib/CartContext';
+import { formatPrice } from '../lib/currency';
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const { items, removeFromCart, updateQuantity } = useCart();
   const [isLoading, setIsLoading] = useState(true);
   const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [shippingData, setShippingData] = useState<ShippingData | null>(null);
 
   useEffect(() => {
     // Simulate loading cart data
@@ -51,20 +29,12 @@ export default function CartPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const updateQuantity = (id: number, newQuantity: number) => {
+  const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    updateQuantity(id, newQuantity);
   };
 
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const tax = subtotal * 0.1; // 10% tax
   const total = subtotal + tax;
 
@@ -72,14 +42,27 @@ export default function CartPage() {
     setIsShippingModalOpen(true);
   };
 
-  const handleShippingSubmit = (shippingData: ShippingData) => {
-    // Here you would typically:
-    // 1. Save the shipping data
-    // 2. Process the order
-    // 3. Redirect to payment or confirmation page
-    console.log('Shipping data:', shippingData);
+  const handleShippingSubmit = (data: ShippingData) => {
+    setShippingData(data);
     setIsShippingModalOpen(false);
-    // TODO: Implement actual checkout flow
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentSubmit = async (paymentData: PaymentData) => {
+    try {
+      // Here you would typically:
+      // 1. Process the payment
+      // 2. Create the order
+      // 3. Clear the cart
+      // 4. Redirect to confirmation page
+      console.log('Payment data:', paymentData);
+      console.log('Shipping data:', shippingData);
+      setIsPaymentModalOpen(false);
+      // TODO: Implement actual payment processing and order creation
+    } catch (error) {
+      console.error('Payment processing error:', error);
+      // TODO: Show error message to user
+    }
   };
 
   if (isLoading) {
@@ -103,7 +86,7 @@ export default function CartPage() {
         <div className={styles.container}>
           <h1 className={styles.title}>Shopping Cart</h1>
           
-          {cartItems.length === 0 ? (
+          {items.length === 0 ? (
             <div className={styles.emptyCart}>
               <p>Your cart is empty</p>
               <Link href="/products" className={styles.continueShopping}>
@@ -113,29 +96,38 @@ export default function CartPage() {
           ) : (
             <div className={styles.cartContent}>
               <div className={styles.cartItems}>
-                {cartItems.map((item) => (
+                {items.map((item) => (
                   <div key={item.id} className={styles.cartItem}>
                     <div className={styles.itemImage}>
-                      <Image
-                        src={item.image.src}
-                        alt={item.image.alt}
-                        width={item.image.width}
-                        height={item.image.height}
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        style={{
+                          width: '100%',
+                          height: '150px',
+                          objectFit: 'cover'
+                        }}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/bike-yard-logo.png';
+                          target.alt = 'Product image not available';
+                          target.onerror = null;
+                        }}
                       />
                     </div>
                     <div className={styles.itemDetails}>
-                      <h3>{item.title}</h3>
-                      <p className={styles.price}>${item.price.toFixed(2)}</p>
+                      <h3>{item.name}</h3>
+                      <p className={styles.price}>{formatPrice(item.price)}</p>
                       <div className={styles.quantityControls}>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                           className={styles.quantityButton}
                         >
                           -
                         </button>
                         <span className={styles.quantity}>{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                           className={styles.quantityButton}
                         >
                           +
@@ -143,9 +135,9 @@ export default function CartPage() {
                       </div>
                     </div>
                     <div className={styles.itemTotal}>
-                      <p>${(item.price * item.quantity).toFixed(2)}</p>
+                      <p>{formatPrice(item.price * item.quantity)}</p>
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeFromCart(item.id)}
                         className={styles.removeButton}
                       >
                         Remove
@@ -159,15 +151,15 @@ export default function CartPage() {
                 <h2>Order Summary</h2>
                 <div className={styles.summaryRow}>
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>{formatPrice(subtotal)}</span>
                 </div>
                 <div className={styles.summaryRow}>
                   <span>Tax (10%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>{formatPrice(tax)}</span>
                 </div>
                 <div className={`${styles.summaryRow} ${styles.total}`}>
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>{formatPrice(total)}</span>
                 </div>
                 <button
                   onClick={handleCheckout}
@@ -185,6 +177,13 @@ export default function CartPage() {
         isOpen={isShippingModalOpen}
         onClose={() => setIsShippingModalOpen(false)}
         onSubmit={handleShippingSubmit}
+      />
+
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSubmit={handlePaymentSubmit}
+        totalAmount={total}
       />
 
       <Footer />

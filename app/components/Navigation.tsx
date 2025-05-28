@@ -5,15 +5,20 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import styles from '../page.module.css';
+import { useCart } from '../lib/CartContext';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const pathname = usePathname();
+  const { items } = useCart();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  // Calculate total items in cart
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -100,7 +105,9 @@ export default function Navigation() {
             >
               <i className="fas fa-shopping-cart" aria-hidden="true"></i>
               <span>Cart</span>
-              <span className={styles.cartCount} id="cart-count">0</span>
+              {totalItems > 0 && (
+                <span className={styles.cartCount}>{totalItems}</span>
+              )}
             </Link>
           </li>
         </ul>
