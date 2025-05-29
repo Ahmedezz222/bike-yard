@@ -96,11 +96,11 @@ export default function ContactPage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8">
+      <main className={styles.mainContainer}>
         <div className={styles.container}>
           {/* Order Tracker Section */}
           <div className={styles.orderTracker}>
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Track Your Order</h2>
+            <h2 className={styles.sectionTitle}>Track Your Order</h2>
             <form onSubmit={handleTrackOrder} className={styles.contactForm}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Order ID</label>
@@ -124,23 +124,23 @@ export default function ContactPage() {
 
             {orderStatus === 'found' && orderDetails && (
               <div className={styles.orderStatus}>
-                <h3 className="font-bold mb-2 text-gray-800">Order Status</h3>
-                <p className="text-gray-700">Order ID: <strong>#{orderDetails.orderNumber}</strong></p>
-                <p className="text-gray-700">Status: <span className={`${getStatusColor(orderDetails.status)} font-medium`}>
+                <h3 className={styles.orderStatusTitle}>Order Status</h3>
+                <p className={styles.orderInfo}>Order ID: <strong>#{orderDetails.orderNumber}</strong></p>
+                <p className={styles.orderInfo}>Status: <span className={`${styles.statusText} ${getStatusColor(orderDetails.status)}`}>
                   {orderDetails.status.charAt(0).toUpperCase() + orderDetails.status.slice(1)}
                 </span></p>
-                <p className="text-gray-700">Estimated Delivery: <strong>{new Date(orderDetails.estimatedDelivery).toLocaleDateString()}</strong></p>
+                <p className={styles.orderInfo}>Estimated Delivery: <strong>{new Date(orderDetails.estimatedDelivery).toLocaleDateString()}</strong></p>
                 <div className={styles.orderItems}>
-                  <h4 className="font-semibold mb-2 text-gray-800">Order Items</h4>
+                  <h4 className={styles.orderItemsTitle}>Order Items</h4>
                   {orderDetails.items.map((item, index) => (
-                    <div key={index} className="flex justify-between text-sm text-gray-700">
+                    <div key={index} className={styles.orderItem}>
                       <span>{item.name} x{item.quantity}</span>
                       <span>${item.price.toFixed(2)}</span>
                     </div>
                   ))}
-                  <div className="flex justify-between font-bold mt-2 pt-2 border-t border-gray-200">
-                    <span className="text-gray-800">Total</span>
-                    <span className="text-gray-800">${orderDetails.totalAmount.toFixed(2)}</span>
+                  <div className={styles.orderTotal}>
+                    <span>Total</span>
+                    <span>${orderDetails.totalAmount.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -155,7 +155,7 @@ export default function ContactPage() {
 
           {/* Contact Us Section */}
           <div className={styles.contactForm}>
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Contact Us</h2>
+            <h2 className={styles.sectionTitle}>Contact Us</h2>
             <form onSubmit={handleSubmit}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Name</label>

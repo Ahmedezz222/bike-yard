@@ -1,35 +1,40 @@
+.mainContainer {
+  min-height: 130vh;
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+  padding: 2rem 0;
+}
+
 .container {
-  max-width: var(--max-width);
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 3rem;
+  padding: 2rem;
   min-height: calc(100vh - 200px);
-  background: 
-    linear-gradient(135deg, 
-      rgba(255, 255, 255, 0.98),
-      rgba(248, 250, 252, 0.98)
-    ),
-    url('/images/bike-pattern.png') repeat;
-  background-blend-mode: overlay;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 3rem;
   position: relative;
-  overflow: hidden;
 }
 
-.container::before {
+.sectionTitle {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.sectionTitle::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 30%),
-    radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 30%);
-  opacity: 0.8;
-  pointer-events: none;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #3b82f6);
+  border-radius: 2px;
 }
 
 .contactForm {
@@ -38,78 +43,70 @@
   gap: 1.5rem;
   width: 100%;
   max-width: 500px;
-  margin: 0;
-  position: relative;
-  padding: 2.5rem;
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid rgba(16, 185, 129, 0.1);
 }
 
 .contactForm:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-  border-color: rgba(16, 185, 129, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  position: relative;
 }
 
 .label {
-  font-weight: 600;
-  color: #0f172a;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-left: 0.5rem;
-  position: relative;
-  display: inline-block;
+  font-weight: 500;
+  color: #ffffff;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  margin-bottom: 10px;
 }
 
 .input,
 .textarea {
-  padding: 1rem;
-  border: 2px solid rgba(16, 185, 129, 0.2);
-  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
   font-size: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
   transition: all 0.2s ease;
-  color: #0f172a;
+  line-height: 1.5;
+  margin-bottom: 10px;
 }
 
 .input:hover,
 .textarea:hover {
   border-color: rgba(16, 185, 129, 0.3);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .input:focus,
 .textarea:focus {
   outline: none;
-  border-color: rgba(16, 185, 129, 0.5);
+  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-  background: #fff;
 }
 
 .textarea {
-  min-height: 150px;
+  min-height: 120px;
   resize: vertical;
   line-height: 1.6;
+  padding: 1rem;
 }
 
 .submitButton {
-  background: linear-gradient(135deg, 
-    rgba(16, 185, 129, 0.9),
-    rgba(5, 150, 105, 0.9)
-  );
+  background: linear-gradient(135deg, #3b82f6, #3b82f6);
   color: white;
   padding: 1rem 2rem;
   border: none;
@@ -118,89 +115,130 @@
   font-weight: 600;
   cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 6px rgba(16, 185, 129, 0.1);
+  letter-spacing: 0.05em;
   transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
+  margin-top: 0.5rem;
 }
 
-.submitButton:hover {
+.submitButton:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 12px rgba(16, 185, 129, 0.15);
-  background: linear-gradient(135deg, 
-    rgba(5, 150, 105, 0.95),
-    rgba(16, 185, 129, 0.95)
-  );
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
-.submitButton:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-}
-
-.submitButton:active {
-  transform: translateY(1px);
+.submitButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .error {
   color: #ef4444;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  padding: 0.75rem;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+  padding: 1rem;
   background: rgba(239, 68, 68, 0.1);
   border-radius: 8px;
   border-left: 4px solid rgba(239, 68, 68, 0.5);
   animation: shake 0.5s ease-in-out;
+  line-height: 1.5;
 }
 
 .success {
-  color: #10b981;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  padding: 0.75rem;
+  color: #3b82f6;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+  padding: 1rem;
   background: rgba(16, 185, 129, 0.1);
   border-radius: 8px;
-  border-left: 4px solid rgba(16, 185, 129, 0.5);
+  border-left: 4px solid rgba(16, 114, 185, 0.5);
   animation: fadeIn 0.3s ease-in-out;
+  line-height: 1.5;
 }
 
-/* Order Tracker Styles */
 .orderTracker {
   width: 100%;
   max-width: 500px;
   padding: 2.5rem;
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid rgba(16, 185, 129, 0.1);
 }
 
 .orderTracker:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-  border-color: rgba(16, 185, 129, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .orderStatus {
-  margin-top: 1.5rem;
-  padding: 1.25rem;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-  transition: all 0.2s ease;
-  border: 1px solid rgba(16, 185, 129, 0.1);
+  margin-top: 2rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.orderStatusTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+.orderInfo {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.statusText {
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .orderItems {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.orderItemsTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.01em;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  line-height: 1.5;
+}
+
+.orderItem:last-child {
+  border-bottom: none;
+}
+
+.orderTotal {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  color: #ffffff;
   margin-top: 1.25rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  border: 1px solid rgba(16, 185, 129, 0.1);
+  padding-top: 1.25rem;
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  font-size: 1.1rem;
+  letter-spacing: 0.01em;
 }
 
 @keyframes shake {
@@ -214,21 +252,12 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 1200px) {
-  .container {
-    padding: 2.5rem;
-  }
-}
-
 @media (max-width: 1024px) {
   .container {
     flex-direction: column;
+    align-items: center;
     gap: 2rem;
-    padding: 2rem;
-  }
-
-  .orderTracker {
-    margin-bottom: 2rem;
+    padding: 1.5rem;
   }
 
   .contactForm,
@@ -238,47 +267,40 @@
 }
 
 @media (max-width: 768px) {
-  .container {
-    padding: 1.5rem;
+  .mainContainer {
+    padding: 1rem 0;
   }
-  
+
+  .container {
+    padding: 1rem;
+  }
+
   .contactForm,
   .orderTracker {
     padding: 1.5rem;
   }
 
-  .input,
-  .textarea {
-    padding: 0.875rem;
-  }
-
-  .submitButton {
-    padding: 0.875rem 1.75rem;
+  .sectionTitle {
+    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 1rem;
+    padding: 0.75rem;
   }
-  
+
   .contactForm,
   .orderTracker {
     padding: 1.25rem;
   }
 
-  .label {
-    font-size: 0.85rem;
-  }
-
   .input,
   .textarea {
     padding: 0.75rem;
-    font-size: 0.95rem;
   }
 
   .submitButton {
     padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
   }
 }
