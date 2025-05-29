@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import styles from './contact.module.css';
-
+  
 
 interface OrderDetails {
   orderNumber: string;
