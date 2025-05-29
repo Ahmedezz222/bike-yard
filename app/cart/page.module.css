@@ -290,6 +290,35 @@
   font-weight: 500;
 }
 
+.error {
+  background: var(--error-bg);
+  color: var(--error);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error p {
+  margin: 0;
+}
+
+.closeError {
+  background: none;
+  border: none;
+  color: var(--error);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+}
+
+.closeError:hover {
+  opacity: 0.8;
+}
+
 @media (max-width: 1024px) {
   .container {
     padding: 0 1.5rem;

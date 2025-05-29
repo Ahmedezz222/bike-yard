@@ -8,6 +8,7 @@ interface PaymentModalProps {
   onClose: () => void;
   onSubmit: (paymentData: PaymentData) => void;
   totalAmount: number;
+  isSubmitting?: boolean;
 }
 
 export interface PaymentData {
@@ -18,7 +19,7 @@ export interface PaymentData {
   mobileNumber?: string;
 }
 
-export default function PaymentModal({ isOpen, onClose, onSubmit, totalAmount }: PaymentModalProps) {
+export default function PaymentModal({ isOpen, onClose, onSubmit, totalAmount, isSubmitting }: PaymentModalProps) {
   const [paymentMethod, setPaymentMethod] = useState<PaymentData['method']>('credit');
   const [formData, setFormData] = useState<PaymentData>({
     method: 'credit',
@@ -219,11 +220,11 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, totalAmount }:
           )}
 
           <div className={styles.formActions}>
-            <button type="button" className={styles.cancelButton} onClick={onClose}>
+            <button type="button" className={styles.cancelButton} onClick={onClose} disabled={isSubmitting}>
               Back
             </button>
-            <button type="submit" className={styles.submitButton}>
-              Complete Payment
+            <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+              {isSubmitting ? 'Processing...' : 'Complete Payment'}
             </button>
           </div>
         </form>

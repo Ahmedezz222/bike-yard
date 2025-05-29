@@ -14,11 +14,13 @@ import { useCart } from '../lib/CartContext';
 import { formatPrice } from '../lib/currency';
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity } = useCart();
+  const { items, removeFromCart, updateQuantity, clearCart } = useCart();
   const [isLoading, setIsLoading] = useState(true);
   const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [shippingData, setShippingData] = useState<ShippingData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // Simulate loading cart data
@@ -50,18 +52,61 @@ export default function CartPage() {
 
   const handlePaymentSubmit = async (paymentData: PaymentData) => {
     try {
-      // Here you would typically:
-      // 1. Process the payment
-      // 2. Create the order
-      // 3. Clear the cart
-      // 4. Redirect to confirmation page
-      console.log('Payment data:', paymentData);
-      console.log('Shipping data:', shippingData);
+      setIsSubmitting(true);
+      setError(null);
+
+      // Create order data
+      const orderData = {
+        customerName: shippingData?.fullName || '',
+        customerEmail: shippingData?.email || '',
+        items: items.map(item => ({
+          product: {
+            _id: item.id,
+            name: item.name,
+            price: item.price,
+            image: item.image
+          },
+          quantity: item.quantity,
+          price: item.price
+        })),
+        totalAmount: total,
+        status: 'pending',
+        shippingAddress: {
+          street: shippingData?.address || '',
+          city: shippingData?.city || '',
+          state: shippingData?.state || '',
+          zipCode: '', // Not collected in shipping form
+          country: 'US' // Default to US since not collected
+        }
+      };
+
+      // Send order to API
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create order');
+      }
+
+      const order = await response.json();
+
+      // Clear cart and close modal
       setIsPaymentModalOpen(false);
-      // TODO: Implement actual payment processing and order creation
+      clearCart(); // Clear the cart after successful order
+      
+      // Redirect to order confirmation page
+      window.location.href = `/order-confirmation/${order._id}`;
     } catch (error) {
       console.error('Payment processing error:', error);
-      // TODO: Show error message to user
+      setError(error instanceof Error ? error.message : 'Failed to process payment. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -85,6 +130,15 @@ export default function CartPage() {
       <main className={styles.main}>
         <div className={styles.container}>
           <h1 className={styles.title}>Shopping Cart</h1>
+          
+          {error && (
+            <div className={styles.error}>
+              <p>{error}</p>
+              <button onClick={() => setError(null)} className={styles.closeError}>
+                ×
+              </button>
+            </div>
+          )}
           
           {items.length === 0 ? (
             <div className={styles.emptyCart}>
@@ -181,9 +235,13 @@ export default function CartPage() {
 
       <PaymentModal
         isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
+        onClose={() => {
+          setIsPaymentModalOpen(false);
+          setError(null);
+        }}
         onSubmit={handlePaymentSubmit}
         totalAmount={total}
+        isSubmitting={isSubmitting}
       />
 
       <Footer />

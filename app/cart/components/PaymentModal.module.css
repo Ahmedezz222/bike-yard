@@ -233,11 +233,15 @@
   box-shadow: 0 2px 4px rgba(15, 118, 110, 0.2);
 }
 
-.submitButton:disabled {
-  background: #99f6e4;
+.submitButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.7;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
+}
+
+.submitButton:disabled {
+  background: var(--primary-muted);
 }
 
 @media (max-width: 480px) {
