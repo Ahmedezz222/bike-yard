@@ -12,6 +12,7 @@ import type { ShippingData } from './components/ShippingModal';
 import type { PaymentData } from './components/PaymentModal';
 import { useCart } from '../lib/CartContext';
 import { formatPrice } from '../lib/currency';
+import { updateJsonBin } from '../lib/jsonbin';
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, clearCart } = useCart();
