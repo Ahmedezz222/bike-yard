@@ -16,6 +16,8 @@ export interface ShippingData {
   city: string;
   state: string;
   phone: string;
+  zipCode?: string;
+  country?: string;
 }
 
 export default function ShippingModal({ isOpen, onClose, onSubmit }: ShippingModalProps) {
@@ -25,7 +27,9 @@ export default function ShippingModal({ isOpen, onClose, onSubmit }: ShippingMod
     address: '',
     city: '',
     state: '',
-    phone: ''
+    phone: '',
+    zipCode: '',
+    country: 'US'
   });
 
   const [errors, setErrors] = useState<Partial<ShippingData>>({});

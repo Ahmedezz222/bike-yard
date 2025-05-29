@@ -12,7 +12,6 @@ import type { ShippingData } from './components/ShippingModal';
 import type { PaymentData } from './components/PaymentModal';
 import { useCart } from '../lib/CartContext';
 import { formatPrice } from '../lib/currency';
-import { updateJsonBin } from '../lib/jsonbin';
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -56,10 +55,19 @@ export default function CartPage() {
       setIsSubmitting(true);
       setError(null);
 
+      // Validate required data
+      if (!shippingData?.fullName || !shippingData?.email || !shippingData?.address || !shippingData?.city || !shippingData?.state) {
+        throw new Error('Please complete all shipping information');
+      }
+
+      if (items.length === 0) {
+        throw new Error('Your cart is empty');
+      }
+
       // Create order data
       const orderData = {
-        customerName: shippingData?.fullName || '',
-        customerEmail: shippingData?.email || '',
+        customerName: shippingData.fullName,
+        customerEmail: shippingData.email,
         items: items.map(item => ({
           product: {
             _id: item.id,
@@ -73,13 +81,15 @@ export default function CartPage() {
         totalAmount: total,
         status: 'pending',
         shippingAddress: {
-          street: shippingData?.address || '',
-          city: shippingData?.city || '',
-          state: shippingData?.state || '',
-          zipCode: '', // Not collected in shipping form
-          country: 'US' // Default to US since not collected
+          street: shippingData.address,
+          city: shippingData.city,
+          state: shippingData.state,
+          zipCode: shippingData.zipCode || '',
+          country: shippingData.country || 'US'
         }
       };
+
+      console.log('Attempting to create order:', orderData);
 
       // Send order to API
       const response = await fetch('/api/orders', {
@@ -90,22 +100,33 @@ export default function CartPage() {
         body: JSON.stringify(orderData),
       });
 
+      const responseData = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create order');
+        console.error('Order creation failed:', responseData);
+        throw new Error(responseData.error || 'Failed to create order. Please try again later.');
       }
 
-      const order = await response.json();
+      // Only proceed if we have a valid order ID
+      if (!responseData || !responseData._id) {
+        console.error('Invalid order response:', responseData);
+        throw new Error('Invalid order response from server. Please try again later.');
+      }
+
+      console.log('Order created successfully:', responseData);
 
       // Clear cart and close modal
       setIsPaymentModalOpen(false);
       clearCart(); // Clear the cart after successful order
       
-      // Redirect to order confirmation page
-      window.location.href = `/order-confirmation/${order._id}`;
+      // Use router for navigation instead of window.location
+      const orderId = responseData._id;
+      window.location.href = `/order-confirmation/${encodeURIComponent(orderId)}`;
     } catch (error) {
       console.error('Payment processing error:', error);
       setError(error instanceof Error ? error.message : 'Failed to process payment. Please try again.');
+      // Don't clear the cart or close the modal on error
+      setIsPaymentModalOpen(true);
     } finally {
       setIsSubmitting(false);
     }

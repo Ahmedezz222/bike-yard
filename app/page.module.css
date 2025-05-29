@@ -493,6 +493,7 @@ a.secondary:hover {
   margin: 0;
   padding: 0;
   background: var(--background);
+  overflow-x: hidden;
 }
 
 /* Main content wrapper */
@@ -501,6 +502,7 @@ a.secondary:hover {
   width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 0;
 }
 
 /* Header Grid */
@@ -1343,10 +1345,12 @@ a.secondary:hover {
 @media (max-width: 768px) {
   .container {
     min-height: 100vh;
+    padding: 0;
   }
   
   .mainContent {
     flex: 1 0 auto;
+    gap: 0;
   }
   
   .footer {
@@ -1455,7 +1459,11 @@ a.secondary:hover {
 
 @media (max-width: 480px) {
   .container {
-    padding: 0 0.75rem;
+    padding: 0;
+  }
+  
+  .mainContent {
+    gap: 0;
   }
 
   .productGrid {

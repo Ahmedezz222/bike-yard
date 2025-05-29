@@ -40,6 +40,14 @@ interface Order {
   };
   createdAt: string;
   updatedAt: string;
+  trackingNumber?: string;
+  carrier?: string;
+  statusHistory?: {
+    status: string;
+    date: string;
+    location: string;
+    notes: string;
+  }[];
 }
 
 export default function AdminPage() {
@@ -328,6 +336,19 @@ export default function AdminPage() {
       const order = orders.find(o => o._id === orderId);
       if (!order) return;
 
+      // Get tracking information if status is shipped
+      let trackingNumber = order.trackingNumber;
+      let carrier = order.carrier;
+      let location = '';
+      let notes = '';
+
+      if (newStatus === 'shipped' && (!trackingNumber || !carrier)) {
+        trackingNumber = prompt('Enter tracking number:') || '';
+        carrier = prompt('Enter carrier name:') || '';
+        location = prompt('Enter current location:') || '';
+        notes = prompt('Enter any additional notes:') || '';
+      }
+
       const response = await fetch('/api/orders', {
         method: 'PUT',
         headers: {
@@ -336,6 +357,17 @@ export default function AdminPage() {
         body: JSON.stringify({
           ...order,
           status: newStatus,
+          trackingNumber,
+          carrier,
+          statusHistory: [
+            ...(order.statusHistory || []),
+            {
+              status: newStatus,
+              date: new Date().toISOString(),
+              location,
+              notes
+            }
+          ]
         }),
       });
 

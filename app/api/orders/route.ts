@@ -73,14 +73,25 @@ export async function POST(request: Request) {
     const orderData = await request.json();
     const orders = await fetchFromJsonBin('orders') as Order[];
 
-    // Generate a unique ID
-    const newId = Date.now().toString();
+    // Generate a more URL-friendly ID
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 1000);
+    const newId = `ORD-${timestamp}-${random}`;
+    
     const newOrder: Order = {
       ...orderData,
       _id: newId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+
+    // Validate required fields
+    if (!newOrder.customerName || !newOrder.customerEmail || !newOrder.items || newOrder.items.length === 0) {
+      return NextResponse.json(
+        { error: 'Missing required order information' },
+        { status: 400 }
+      );
+    }
 
     orders.push(newOrder);
     await updateJsonBin('orders', orders);

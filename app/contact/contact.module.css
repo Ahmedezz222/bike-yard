@@ -1,228 +1,285 @@
 .mainContainer {
-  min-height: 130vh;
-  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
   padding: 2rem 0;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  min-height: calc(100vh - 200px);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 3rem;
-  position: relative;
 }
 
 .sectionTitle {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--foreground);
   margin-bottom: 2rem;
+  text-align: center;
   position: relative;
-  padding-bottom: 0.75rem;
-  letter-spacing: -0.02em;
 }
 
 .sectionTitle::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, #3b82f6, #3b82f6);
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
   border-radius: 2px;
 }
 
 .contactForm {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
-  max-width: 500px;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--card-background);
+  padding: 2.5rem;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
 }
 
 .contactForm:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--foreground);
   font-weight: 500;
-  color: #ffffff;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
-  margin-bottom: 10px;
-}
-
-.input,
-.textarea {
-  padding: 0.875rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
   font-size: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
-  transition: all 0.2s ease;
-  line-height: 1.5;
-  margin-bottom: 10px;
 }
 
-.input:hover,
-.textarea:hover {
-  border-color: rgba(16, 185, 129, 0.3);
-  background: rgba(255, 255, 255, 0.08);
+.input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 1rem;
+  background: var(--background);
+  color: var(--foreground);
+  transition: all 0.3s ease;
 }
 
-.input:focus,
-.textarea:focus {
+.input:focus {
   outline: none;
-  border-color: #3b82f6;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.instruction {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
 }
 
 .textarea {
-  min-height: 120px;
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 1rem;
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 180px;
   resize: vertical;
   line-height: 1.6;
-  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .submitButton {
-  background: linear-gradient(135deg, #3b82f6, #3b82f6);
+  background: var(--primary);
   color: white;
-  padding: 1rem 2rem;
+  padding: 1.25rem 2rem;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  transition: all 0.2s ease;
-  margin-top: 0.5rem;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
 }
 
 .submitButton:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .submitButton:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  background: var(--text-muted);
 }
 
 .error {
-  color: #ef4444;
-  font-size: 0.95rem;
+  color: var(--error);
+  font-size: 1rem;
   margin-top: 1rem;
-  padding: 1rem;
-  background: rgba(239, 68, 68, 0.1);
-  border-radius: 8px;
-  border-left: 4px solid rgba(239, 68, 68, 0.5);
+  padding: 1.25rem;
+  background: var(--error-light);
+  border-radius: 12px;
+  border-left: 4px solid var(--error);
   animation: shake 0.5s ease-in-out;
   line-height: 1.5;
 }
 
 .success {
-  color: #3b82f6;
-  font-size: 0.95rem;
+  color: var(--primary);
+  font-size: 1rem;
   margin-top: 1rem;
-  padding: 1rem;
-  background: rgba(16, 185, 129, 0.1);
-  border-radius: 8px;
-  border-left: 4px solid rgba(16, 114, 185, 0.5);
+  padding: 1.25rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
   animation: fadeIn 0.3s ease-in-out;
   line-height: 1.5;
 }
 
 .orderTracker {
-  width: 100%;
-  max-width: 500px;
+  background: var(--card-background);
   padding: 2.5rem;
-  background: rgba(255, 255, 255, 0.05);
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
 }
 
 .orderTracker:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .orderStatus {
   margin-top: 2rem;
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--card-background);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
 }
 
-.orderStatusTitle {
-  font-size: 1.25rem;
+.orderInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.orderInfoSection {
+  background: var(--background);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.sectionSubtitle {
+  color: var(--foreground);
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .orderInfo {
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 0.75rem;
-  font-size: 1rem;
-  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.orderInfo strong {
+  color: var(--foreground);
+  font-weight: 600;
 }
 
 .statusText {
-  font-weight: 500;
-  letter-spacing: 0.01em;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.timelineContainer {
+  margin-top: 1.5rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--border-color);
+}
+
+.timelineItem {
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: -1.5rem;
+  top: 0;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2px solid var(--background);
+}
+
+.timelineDate {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.timelineContent {
+  background: var(--background);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.timelineLocation {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 
 .orderItems {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
+  background: var(--background);
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
 }
 
 .orderItemsTitle {
-  font-size: 1.1rem;
+  color: var(--foreground);
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 1.25rem;
-  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
 }
 
 .orderItem {
   display: flex;
   justify-content: space-between;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
   padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  line-height: 1.5;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .orderItem:last-child {
@@ -232,13 +289,11 @@
 .orderTotal {
   display: flex;
   justify-content: space-between;
+  padding: 1rem 0;
+  margin-top: 1rem;
   font-weight: 600;
-  color: #ffffff;
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 2px solid rgba(255, 255, 255, 0.1);
-  font-size: 1.1rem;
-  letter-spacing: 0.01em;
+  color: var(--foreground);
+  border-top: 2px solid var(--border-color);
 }
 
 @keyframes shake {
@@ -248,59 +303,36 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 1024px) {
-  .container {
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-    padding: 1.5rem;
-  }
-
-  .contactForm,
-  .orderTracker {
-    max-width: 100%;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @media (max-width: 768px) {
-  .mainContainer {
-    padding: 1rem 0;
-  }
-
   .container {
-    padding: 1rem;
+    padding: 0 1rem;
   }
-
+  
   .contactForm,
   .orderTracker {
     padding: 1.5rem;
   }
-
-  .sectionTitle {
-    font-size: 1.5rem;
+  
+  .orderInfoGrid {
+    grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 480px) {
-  .container {
-    padding: 0.75rem;
+@media (prefers-color-scheme: dark) {
+  .orderTracker,
+  .orderStatus,
+  .orderInfoSection,
+  .timelineContent,
+  .orderItems {
+    background: var(--card-background);
   }
-
-  .contactForm,
-  .orderTracker {
-    padding: 1.25rem;
-  }
-
+  
   .input,
   .textarea {
-    padding: 0.75rem;
-  }
-
-  .submitButton {
-    padding: 0.75rem 1.5rem;
+    background: var(--background);
   }
 }

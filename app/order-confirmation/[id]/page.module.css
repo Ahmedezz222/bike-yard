@@ -198,7 +198,7 @@
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 
@@ -232,11 +232,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
   padding: 1rem 2.5rem;
-  background-color: var(--primary);
-  color: white;
-  border: none;
+  background: var(--background);
+  color: var(--text-color);
+  border: 2px solid var(--border-color);
   border-radius: 12px;
   font-weight: 600;
   font-size: 1.125rem;
@@ -247,7 +246,7 @@
 }
 
 .printButton:hover {
-  background-color: var(--primary-dark);
+  background: var(--card-background);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px var(--shadow-color);
 }
@@ -256,10 +255,10 @@
   transform: translateY(0);
 }
 
-/* Print styles */
 @media print {
   .pageWrapper {
-    background: none;
+    padding: 0;
+    margin: 0;
   }
 
   .main {
@@ -267,57 +266,45 @@
   }
 
   .container {
-    max-width: none;
-    padding: 0;
+    max-width: 100%;
+    padding: 20px;
   }
 
-  /* Hide navigation and footer */
-  .pageWrapper > :first-child,
-  .pageWrapper > :last-child {
-    display: none;
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
   }
 
-  /* Hide print button and continue shopping link */
   .actions {
     display: none;
   }
 
-  /* Optimize confirmation card for printing */
-  .confirmation {
-    box-shadow: none;
-    border: 1px solid #e2e8f0;
-    padding: 2rem;
-    margin: 0;
+  .printButton {
+    display: none;
   }
 
-  /* Ensure images print properly */
+  .timelineItem {
+    break-inside: avoid;
+  }
+
+  .item {
+    break-inside: avoid;
+  }
+
+  .section {
+    break-inside: avoid;
+    margin-bottom: 20px;
+  }
+
+  .statusBadge {
+    border: 1px solid #000;
+    padding: 5px 10px;
+    border-radius: 3px;
+  }
+
   .itemImage img {
     max-width: 100px;
     height: auto;
-  }
-
-  /* Ensure text is black for better printing */
-  .confirmation {
-    color: black;
-  }
-
-  .confirmation h1,
-  .confirmation h2,
-  .confirmation h3,
-  .confirmation p {
-    color: black;
-  }
-
-  /* Add page break before items if needed */
-  .items {
-    page-break-inside: avoid;
-  }
-
-  /* Ensure status badge is visible in print */
-  .statusBadge {
-    border: 1px solid currentColor;
-    background: none !important;
-    color: black !important;
   }
 }
 
@@ -344,6 +331,77 @@
   .continueShopping,
   .printButton {
     width: 100%;
-    min-width: unset;
   }
+}
+
+.trackingInfo {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.trackingInfo p {
+  margin: 0.5rem 0;
+  color: var(--text-color);
+}
+
+.timeline {
+  margin-top: 1rem;
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-color);
+}
+
+.timelineItem {
+  position: relative;
+  margin-bottom: 2rem;
+  padding-left: 1.5rem;
+}
+
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: -0.5rem;
+  top: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--primary-color);
+  border: 2px solid var(--background-color);
+}
+
+.timelineDate {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.timelineContent {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.location {
+  margin: 0.5rem 0;
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.notes {
+  margin: 0.5rem 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
 } 
