@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && cd backend && composer install --no-dev --optimize-autoloader && php artisan config:cache && php artisan route:cache",
     "start": "next start",
     "lint": "next lint"
   },

@@ -1,5 +1,6 @@
 [build]
-  command = "npm run build && cd backend && composer install --no-dev --optimize-autoloader && php artisan config:cache && php artisan route:cache"
+  base = "."
+  command = "npm run build"
   publish = ".next"
 
 [build.environment]
@@ -16,5 +17,5 @@
   status = 200
 
 [functions]
-  directory = "backend/public"
+  directory = "netlify/functions"
   node_bundler = "esbuild" 
