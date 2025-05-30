@@ -1,6 +1,6 @@
 [build]
   base = "."
-  command = "npm run build && npm run build:backend"
+  command = "chmod +x netlify/build.sh && ./netlify/build.sh"
   publish = ".next"
 
 [build.environment]
@@ -8,6 +8,9 @@
   PHP_VERSION = "8.2"
   COMPOSER_VERSION = "2.6"
   NODE_VERSION = "18"
+  LARAVEL_ENV = "production"
+  APP_ENV = "production"
+  APP_DEBUG = "false"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
