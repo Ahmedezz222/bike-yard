@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import styles from './PaymentModal.module.css';
 import stripePromise from '../../lib/stripe';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -20,127 +21,155 @@ export interface PaymentData {
   mobileNumber?: string;
 }
 
-export default function PaymentModal({ isOpen, onClose, onSubmit, totalAmount, isSubmitting }: PaymentModalProps) {
+const CARD_ELEMENT_OPTIONS = {
+  style: {
+    base: {
+      fontSize: '16px',
+      color: '#424770',
+      '::placeholder': {
+        color: '#aab7c4',
+      },
+    },
+    invalid: {
+      color: '#9e2146',
+    },
+  },
+};
+
+function PaymentForm({ onSubmit, totalAmount, isSubmitting }: { onSubmit: (data: PaymentData) => void, totalAmount: number, isSubmitting?: boolean }) {
+  const stripe = useStripe();
+  const elements = useElements();
   const [paymentMethod, setPaymentMethod] = useState<PaymentData['method']>('credit');
-  const [formData, setFormData] = useState<PaymentData>({
-    method: 'credit',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    mobileNumber: ''
-  });
-  const [stripeError, setStripeError] = useState<string | null>(null);
-  const [errors, setErrors] = useState<Partial<PaymentData>>({});
-
-  useEffect(() => {
-    // Initialize Stripe when the component mounts
-    const initializeStripe = async () => {
-      try {
-        const stripe = await stripePromise;
-        if (!stripe) {
-          throw new Error('Failed to load Stripe');
-        }
-      } catch (error) {
-        console.error('Stripe initialization error:', error);
-        setStripeError('Failed to initialize payment system. Please try again later.');
-      }
-    };
-
-    if (isOpen) {
-      initializeStripe();
-    }
-  }, [isOpen]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    if (errors[name as keyof PaymentData]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: undefined
-      }));
-    }
-  };
-
-  const handleMethodChange = (method: PaymentData['method']) => {
-    setPaymentMethod(method);
-    setFormData(prev => ({
-      ...prev,
-      method
-    }));
-  };
-
-  const validateForm = () => {
-    const newErrors: Partial<PaymentData> = {};
-    
-    if (paymentMethod === 'credit' || paymentMethod === 'debit') {
-      if (!formData.cardNumber) {
-        newErrors.cardNumber = 'Card number is required';
-      } else if (!/^\d{16}$/.test(formData.cardNumber.replace(/\s/g, ''))) {
-        newErrors.cardNumber = 'Invalid card number';
-      }
-      
-      if (!formData.expiryDate) {
-        newErrors.expiryDate = 'Expiry date is required';
-      } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(formData.expiryDate)) {
-        newErrors.expiryDate = 'Invalid expiry date (MM/YY)';
-      }
-      
-      if (!formData.cvv) {
-        newErrors.cvv = 'CVV is required';
-      } else if (!/^\d{3,4}$/.test(formData.cvv)) {
-        newErrors.cvv = 'Invalid CVV';
-      }
-    } else if (paymentMethod === 'mobile') {
-      if (!formData.mobileNumber) {
-        newErrors.mobileNumber = 'Mobile number is required';
-      } else if (!/^\+?[\d\s-]{10,}$/.test(formData.mobileNumber)) {
-        newErrors.mobileNumber = 'Invalid mobile number';
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      try {
-        const stripe = await stripePromise;
-        if (!stripe) {
-          throw new Error('Stripe not initialized');
-        }
+    setError(null);
 
-        // For credit/debit card payments, create a payment method
-        if (paymentMethod === 'credit' || paymentMethod === 'debit') {
-          const { error: stripeError } = await stripe.createPaymentMethod({
-            type: 'card',
-            card: {
-              number: formData.cardNumber?.replace(/\s/g, ''),
-              exp_month: parseInt(formData.expiryDate?.split('/')[0] || '0'),
-              exp_year: parseInt('20' + (formData.expiryDate?.split('/')[1] || '0')),
-              cvc: formData.cvv,
-            },
-          });
+    if (!stripe || !elements) {
+      return;
+    }
 
-          if (stripeError) {
-            throw new Error(stripeError.message);
-          }
-        }
-
-        // If everything is successful, call the onSubmit handler
-        onSubmit(formData);
-      } catch (error) {
-        console.error('Payment processing error:', error);
-        setStripeError(error instanceof Error ? error.message : 'Failed to process payment');
+    if (paymentMethod === 'credit' || paymentMethod === 'debit') {
+      const cardElement = elements.getElement(CardElement);
+      if (!cardElement) {
+        return;
       }
+
+      const { error: stripeError, paymentMethod: stripePaymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+      });
+
+      if (stripeError) {
+        setError(stripeError.message || 'An error occurred while processing your payment.');
+        return;
+      }
+
+      onSubmit({
+        method: paymentMethod,
+        cardNumber: '**** **** **** ****', // We don't store the actual card number
+        expiryDate: '**/**',
+        cvv: '***'
+      });
+    } else if (paymentMethod === 'mobile') {
+      if (!mobileNumber) {
+        setError('Please enter your mobile number');
+        return;
+      }
+      onSubmit({
+        method: 'mobile',
+        mobileNumber
+      });
+    } else {
+      onSubmit({
+        method: 'cash'
+      });
     }
   };
 
+  return (
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.paymentMethods}>
+        <button
+          type="button"
+          className={`${styles.methodButton} ${paymentMethod === 'credit' ? styles.active : ''}`}
+          onClick={() => setPaymentMethod('credit')}
+        >
+          Credit Card
+        </button>
+        <button
+          type="button"
+          className={`${styles.methodButton} ${paymentMethod === 'debit' ? styles.active : ''}`}
+          onClick={() => setPaymentMethod('debit')}
+        >
+          Debit Card
+        </button>
+        <button
+          type="button"
+          className={`${styles.methodButton} ${paymentMethod === 'mobile' ? styles.active : ''}`}
+          onClick={() => setPaymentMethod('mobile')}
+        >
+          Mobile Payment
+        </button>
+        <button
+          type="button"
+          className={`${styles.methodButton} ${paymentMethod === 'cash' ? styles.active : ''}`}
+          onClick={() => setPaymentMethod('cash')}
+        >
+          Cash on Delivery
+        </button>
+      </div>
+
+      {(paymentMethod === 'credit' || paymentMethod === 'debit') && (
+        <div className={styles.formGroup}>
+          <label>Card Details</label>
+          <div className={styles.cardElement}>
+            <CardElement options={CARD_ELEMENT_OPTIONS} />
+          </div>
+        </div>
+      )}
+
+      {paymentMethod === 'mobile' && (
+        <div className={styles.formGroup}>
+          <label htmlFor="mobileNumber">Mobile Number *</label>
+          <input
+            type="tel"
+            id="mobileNumber"
+            value={mobileNumber}
+            onChange={(e) => setMobileNumber(e.target.value)}
+            placeholder="+20 123 456 7890"
+            className={error ? styles.error : ''}
+          />
+        </div>
+      )}
+
+      {paymentMethod === 'cash' && (
+        <div className={styles.cashInfo}>
+          <p>You will pay in cash when your order is delivered.</p>
+        </div>
+      )}
+
+      {error && (
+        <div className={styles.errorMessage}>
+          {error}
+        </div>
+      )}
+
+      <div className={styles.formActions}>
+        <button type="button" className={styles.cancelButton} onClick={() => window.history.back()} disabled={isSubmitting}>
+          Back
+        </button>
+        <button type="submit" className={styles.submitButton} disabled={isSubmitting || !stripe}>
+          {isSubmitting ? 'Processing...' : 'Complete Payment'}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+export default function PaymentModal({ isOpen, onClose, onSubmit, totalAmount, isSubmitting }: PaymentModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -162,126 +191,9 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, totalAmount, i
           <span className={styles.amount}>EGP {totalAmount.toFixed(2)}</span>
         </div>
 
-        {stripeError && (
-          <div className={styles.errorMessage}>
-            {stripeError}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.paymentMethods}>
-            <button
-              type="button"
-              className={`${styles.methodButton} ${paymentMethod === 'credit' ? styles.active : ''}`}
-              onClick={() => handleMethodChange('credit')}
-            >
-              Credit Card
-            </button>
-            <button
-              type="button"
-              className={`${styles.methodButton} ${paymentMethod === 'debit' ? styles.active : ''}`}
-              onClick={() => handleMethodChange('debit')}
-            >
-              Debit Card
-            </button>
-            <button
-              type="button"
-              className={`${styles.methodButton} ${paymentMethod === 'mobile' ? styles.active : ''}`}
-              onClick={() => handleMethodChange('mobile')}
-            >
-              Mobile Payment
-            </button>
-            <button
-              type="button"
-              className={`${styles.methodButton} ${paymentMethod === 'cash' ? styles.active : ''}`}
-              onClick={() => handleMethodChange('cash')}
-            >
-              Cash on Delivery
-            </button>
-          </div>
-
-          {(paymentMethod === 'credit' || paymentMethod === 'debit') && (
-            <>
-              <div className={styles.formGroup}>
-                <label htmlFor="cardNumber">Card Number *</label>
-                <input
-                  type="text"
-                  id="cardNumber"
-                  name="cardNumber"
-                  value={formData.cardNumber}
-                  onChange={handleChange}
-                  className={errors.cardNumber ? styles.error : ''}
-                  placeholder="1234 5678 9012 3456"
-                  maxLength={19}
-                />
-                {errors.cardNumber && <span className={styles.errorText}>{errors.cardNumber}</span>}
-              </div>
-
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="expiryDate">Expiry Date *</label>
-                  <input
-                    type="text"
-                    id="expiryDate"
-                    name="expiryDate"
-                    value={formData.expiryDate}
-                    onChange={handleChange}
-                    className={errors.expiryDate ? styles.error : ''}
-                    placeholder="MM/YY"
-                    maxLength={5}
-                  />
-                  {errors.expiryDate && <span className={styles.errorText}>{errors.expiryDate}</span>}
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="cvv">CVV *</label>
-                  <input
-                    type="text"
-                    id="cvv"
-                    name="cvv"
-                    value={formData.cvv}
-                    onChange={handleChange}
-                    className={errors.cvv ? styles.error : ''}
-                    placeholder="123"
-                    maxLength={4}
-                  />
-                  {errors.cvv && <span className={styles.errorText}>{errors.cvv}</span>}
-                </div>
-              </div>
-            </>
-          )}
-
-          {paymentMethod === 'mobile' && (
-            <div className={styles.formGroup}>
-              <label htmlFor="mobileNumber">Mobile Number *</label>
-              <input
-                type="tel"
-                id="mobileNumber"
-                name="mobileNumber"
-                value={formData.mobileNumber}
-                onChange={handleChange}
-                className={errors.mobileNumber ? styles.error : ''}
-                placeholder="+20 123 456 7890"
-              />
-              {errors.mobileNumber && <span className={styles.errorText}>{errors.mobileNumber}</span>}
-            </div>
-          )}
-
-          {paymentMethod === 'cash' && (
-            <div className={styles.cashInfo}>
-              <p>You will pay in cash when your order is delivered.</p>
-            </div>
-          )}
-
-          <div className={styles.formActions}>
-            <button type="button" className={styles.cancelButton} onClick={onClose} disabled={isSubmitting}>
-              Back
-            </button>
-            <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
-              {isSubmitting ? 'Processing...' : 'Complete Payment'}
-            </button>
-          </div>
-        </form>
+        <Elements stripe={stripePromise}>
+          <PaymentForm onSubmit={onSubmit} totalAmount={totalAmount} isSubmitting={isSubmitting} />
+        </Elements>
       </div>
     </div>
   );
