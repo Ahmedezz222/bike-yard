@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import styles from './contact.module.css';
-import dynamic from 'next/dynamic';
+  
 
 interface OrderDetails {
   orderNumber: string;
@@ -33,7 +33,7 @@ interface OrderDetails {
   }[];
 }
 
-function ContactPageContent() {
+export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -312,9 +312,4 @@ function ContactPageContent() {
       <Footer />
     </>
   );
-}
-
-// Dynamically import the page component with no SSR
-const ContactPage = dynamic(() => Promise.resolve(ContactPageContent), { ssr: false });
-
-export default ContactPage; 
+} 
