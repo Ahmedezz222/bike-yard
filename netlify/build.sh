@@ -25,9 +25,25 @@ fi
 echo "Setting up Laravel environment..."
 if [ -f ".env.example" ]; then
     cp .env.example .env
-    php artisan key:generate
+    
+    # Set production environment variables
+    sed -i 's/APP_ENV=local/APP_ENV=production/' .env
+    sed -i 's/APP_DEBUG=true/APP_DEBUG=false/' .env
+    
+    # Generate application key if not set
+    if [ -z "$(grep '^APP_KEY=' .env)" ] || [ "$(grep '^APP_KEY=' .env | cut -d'=' -f2)" == "" ]; then
+        php artisan key:generate
+    fi
+    
+    # Cache configuration
     php artisan config:cache
     php artisan route:cache
+    php artisan view:cache
+    
+    # Run migrations if needed
+    if [ "$RUN_MIGRATIONS" = "true" ]; then
+        php artisan migrate --force
+    fi
 else
     echo "Error: .env.example not found"
     exit 1
