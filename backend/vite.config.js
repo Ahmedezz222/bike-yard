@@ -10,4 +10,17 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    build: {
+        rollupOptions: {
+            external: ['tippy.js'],
+            output: {
+                globals: {
+                    'tippy.js': 'tippy'
+                }
+            }
+        }
+    },
+    optimizeDeps: {
+        include: ['tippy.js']
+    }
 });

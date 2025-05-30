@@ -11,6 +11,8 @@
   LARAVEL_ENV = "production"
   APP_ENV = "production"
   APP_DEBUG = "false"
+  COMPOSER_ALLOW_SUPERUSER = "1"
+  COMPOSER_HOME = "/opt/buildhome/.composer"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
@@ -35,4 +37,8 @@
 [build.processing.html]
   pretty_urls = true
 [build.processing.images]
-  compress = true 
+  compress = true
+
+[build.processing.ignore]
+  - "backend/**"
+  - "netlify/**" 
