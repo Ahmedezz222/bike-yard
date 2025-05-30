@@ -1,12 +1,13 @@
 [build]
   base = "."
-  command = "npm run build"
+  command = "npm run build && npm run build:backend"
   publish = ".next"
 
 [build.environment]
   NEXT_TELEMETRY_DISABLED = "1"
   PHP_VERSION = "8.2"
   COMPOSER_VERSION = "2.6"
+  NODE_VERSION = "18"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
@@ -18,4 +19,17 @@
 
 [functions]
   directory = "netlify/functions"
-  node_bundler = "esbuild" 
+  node_bundler = "esbuild"
+
+[build.processing]
+  skip_processing = false
+[build.processing.css]
+  bundle = true
+  minify = true
+[build.processing.js]
+  bundle = true
+  minify = true
+[build.processing.html]
+  pretty_urls = true
+[build.processing.images]
+  compress = true 
