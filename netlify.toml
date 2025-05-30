@@ -2,6 +2,7 @@
   base = "."
   command = "chmod +x netlify/build.sh && ./netlify/build.sh"
   publish = ".next"
+  timeout = 900
 
 [build.environment]
   NEXT_TELEMETRY_DISABLED = "1"
@@ -13,6 +14,8 @@
   APP_DEBUG = "false"
   COMPOSER_ALLOW_SUPERUSER = "1"
   COMPOSER_HOME = "/opt/buildhome/.composer"
+  NPM_FLAGS = "--legacy-peer-deps"
+  NPM_USE_PACKAGE_LOCK = "true"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
