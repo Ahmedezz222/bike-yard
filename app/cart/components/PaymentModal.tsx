@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './PaymentModal.module.css';
+import stripePromise from '../../lib/stripe';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -28,8 +29,27 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, totalAmount, i
     cvv: '',
     mobileNumber: ''
   });
-
+  const [stripeError, setStripeError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Partial<PaymentData>>({});
+
+  useEffect(() => {
+    // Initialize Stripe when the component mounts
+    const initializeStripe = async () => {
+      try {
+        const stripe = await stripePromise;
+        if (!stripe) {
+          throw new Error('Failed to load Stripe');
+        }
+      } catch (error) {
+        console.error('Stripe initialization error:', error);
+        setStripeError('Failed to initialize payment system. Please try again later.');
+      }
+    };
+
+    if (isOpen) {
+      initializeStripe();
+    }
+  }, [isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -86,10 +106,38 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, totalAmount, i
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(formData);
+      try {
+        const stripe = await stripePromise;
+        if (!stripe) {
+          throw new Error('Stripe not initialized');
+        }
+
+        // For credit/debit card payments, create a payment method
+        if (paymentMethod === 'credit' || paymentMethod === 'debit') {
+          const { error: stripeError } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: {
+              number: formData.cardNumber?.replace(/\s/g, ''),
+              exp_month: parseInt(formData.expiryDate?.split('/')[0] || '0'),
+              exp_year: parseInt('20' + (formData.expiryDate?.split('/')[1] || '0')),
+              cvc: formData.cvv,
+            },
+          });
+
+          if (stripeError) {
+            throw new Error(stripeError.message);
+          }
+        }
+
+        // If everything is successful, call the onSubmit handler
+        onSubmit(formData);
+      } catch (error) {
+        console.error('Payment processing error:', error);
+        setStripeError(error instanceof Error ? error.message : 'Failed to process payment');
+      }
     }
   };
 
@@ -113,6 +161,12 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, totalAmount, i
           <span>Total Amount:</span>
           <span className={styles.amount}>EGP {totalAmount.toFixed(2)}</span>
         </div>
+
+        {stripeError && (
+          <div className={styles.errorMessage}>
+            {stripeError}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.paymentMethods}>
