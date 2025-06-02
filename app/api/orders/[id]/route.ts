@@ -6,35 +6,64 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    console.log('API: Fetching order with ID:', params.id);
-    
+    if (!params?.id) {
+      return NextResponse.json(
+        { error: 'Order ID is required' },
+        { status: 400 }
+      );
+    }
+
+    console.log('Fetching order with ID:', params.id);
     const orders = await fetchFromJsonBin('orders');
-    console.log('API: Total orders found:', orders.length);
+    console.log('Fetched orders:', orders);
     
+    if (!Array.isArray(orders)) {
+      console.error('Invalid orders data:', orders);
+      return NextResponse.json(
+        { error: 'Invalid orders data format' },
+        { status: 500 }
+      );
+    }
+
+    // Log all order IDs for debugging
+    console.log('Available order IDs:', orders.map((o: any) => o._id));
+
     // Try to find the order by exact ID match first
-    let order = orders.find((o: any) => o._id === params.id);
+    const searchId = String(params.id).trim();
+    let order = orders.find((o: any) => {
+      if (!o?._id) return false;
+      const orderId = String(o._id).trim();
+      console.log('Comparing:', { orderId, searchId, match: orderId === searchId });
+      return orderId === searchId;
+    });
     
     // If not found, try to find by the last 6 characters of the ID
     if (!order) {
-      const shortId = params.id.slice(-6);
-      order = orders.find((o: any) => o._id.endsWith(shortId));
+      const shortId = searchId.slice(-6);
+      console.log('Trying short ID match:', shortId);
+      order = orders.find((o: any) => {
+        if (!o?._id) return false;
+        const orderId = String(o._id).trim();
+        const match = orderId.endsWith(shortId);
+        console.log('Comparing short ID:', { orderId, shortId, match });
+        return match;
+      });
     }
 
-    console.log('API: Order found:', order ? 'Yes' : 'No');
-
     if (!order) {
-      console.log('API: Order not found for ID:', params.id);
+      console.log('Order not found. Search ID:', searchId);
       return NextResponse.json(
-        { error: 'Order not found. Please check the order ID and try again.' },
+        { error: 'Order not found' },
         { status: 404 }
       );
     }
 
+    console.log('Found order:', order);
     return NextResponse.json(order);
   } catch (error) {
-    console.error('API: Error fetching order:', error);
+    console.error('Error fetching order:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch order. Please try again later.' },
+      { error: 'Failed to fetch order details' },
       { status: 500 }
     );
   }

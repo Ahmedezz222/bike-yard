@@ -22,11 +22,12 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: `
               default-src 'self';
-              script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://r.stripe.com;
-              style-src 'self' 'unsafe-inline';
+              script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://r.stripe.com https://cdnjs.cloudflare.com https://va.vercel-scripts.com;
+              style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
               img-src 'self' data: https: http:;
               connect-src 'self' https://api.stripe.com https://r.stripe.com;
               frame-src 'self' https://js.stripe.com https://hooks.stripe.com;
+              font-src 'self' https://cdnjs.cloudflare.com;
             `.replace(/\s+/g, ' ').trim()
           }
         ]

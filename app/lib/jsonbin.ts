@@ -1,4 +1,6 @@
 // Get environment variables
+import fetch from 'node-fetch';
+
 const JSONBIN_API_KEY = process.env.NEXT_PUBLIC_JSONBIN_API_KEY || '$2a$10$fW..4YJWmJ38JaH84EVBXOj8I/SC9oR8PGuf.cukqD6pFqUeEfOFW';
 
 // Bin IDs for different collections

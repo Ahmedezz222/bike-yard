@@ -8,7 +8,6 @@ import styles from './page.module.css';
 import Navigation from '@/app/components/Navigation';
 import Footer from '@/app/components/Footer';
 import { formatPrice } from '@/app/lib/currency';
-import { fetchFromJsonBin } from '@/app/lib/jsonbin';
 
 interface OrderItem {
   product: {
@@ -32,7 +31,7 @@ interface Order {
   carrier?: string;
   statusHistory: {
     status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-    date: string;
+    date: string
     location?: string;
     notes?: string;
   }[];
@@ -67,32 +66,19 @@ export default function OrderConfirmationPage() {
 
       try {
         console.log('Fetching order with ID:', id);
-        const orders = await fetchFromJsonBin('orders');
-        console.log('Fetched orders:', orders);
+        const response = await fetch(`/api/orders/${id}`);
         
-        // Try to find the order by exact ID match first
-        let order = orders.find((o: any) => o._id === id);
-        console.log('Found order by exact match:', order);
-        
-        // If not found, try to find by the last 6 characters of the ID
-        if (!order) {
-          const shortId = id.slice(-6);
-          console.log('Trying to find order with short ID:', shortId);
-          order = orders.find((o: any) => o._id.endsWith(shortId));
-          console.log('Found order by short ID:', order);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch order: ${response.statusText}`);
         }
 
+        const order = await response.json();
+        
         if (!order) {
-          console.error('Order not found. Available orders:', orders);
           throw new Error('Order not found. Please check the order ID and try again.');
         }
 
         console.log('Full order details:', JSON.stringify(order, null, 2));
-        console.log('Order status history:', order.statusHistory);
-        console.log('Order status:', order.status);
-        console.log('Order items:', order.items);
-        console.log('Order shipping address:', order.shippingAddress);
-
         setOrder(order);
       } catch (error) {
         console.error('Error fetching order:', error);
@@ -176,39 +162,6 @@ export default function OrderConfirmationPage() {
 
             <div className={styles.sections}>
               <section className={styles.section}>
-                <h2>Order Timeline</h2>
-                <div className={styles.timeline}>
-                  {(order.statusHistory || []).map((history, index) => (
-                    <div key={index} className={styles.timelineItem}>
-                      <div className={styles.timelineDate}>
-                        {new Date(history.date).toLocaleString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </div>
-                      <div className={styles.timelineContent}>
-                        <span className={`${styles.statusBadge} ${styles[history.status]}`}>
-                          {history.status.charAt(0).toUpperCase() + history.status.slice(1)}
-                        </span>
-                        {history.location && <p className={styles.location}>{history.location}</p>}
-                        {history.notes && <p className={styles.notes}>{history.notes}</p>}
-                      </div>
-                    </div>
-                  ))}
-                  {(!order.statusHistory || order.statusHistory.length === 0) && (
-                    <div className={styles.timelineItem}>
-                      <div className={styles.timelineContent}>
-                        <p>No status history available</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </section>
-
-              <section className={styles.section}>
                 <h2>Customer Information</h2>
                 <p><strong>Name:</strong> {order.customerName}</p>
                 <p><strong>Email:</strong> {order.customerEmail}</p>
@@ -230,18 +183,20 @@ export default function OrderConfirmationPage() {
                         <Image
                           src={item.product.image}
                           alt={item.product.name}
-                          width={100}
-                          height={100}
+                          width={120}
+                          height={120}
                           style={{
-                            objectFit: 'cover'
+                            objectFit: 'cover',
+                            width: '100%',
+                            height: '100%'
                           }}
                         />
                       </div>
                       <div className={styles.itemDetails}>
                         <h3>{item.product.name}</h3>
-                        <p>Quantity: {item.quantity}</p>
-                        <p>Price: {formatPrice(item.price)}</p>
-                        <p>Subtotal: {formatPrice(item.price * item.quantity)}</p>
+                        <p><strong>Quantity:</strong> {item.quantity}</p>
+                        <p><strong>Price:</strong> {formatPrice(item.price)}</p>
+                        <p><strong>Subtotal:</strong> {formatPrice(item.price * item.quantity)}</p>
                       </div>
                     </div>
                   ))}
@@ -255,7 +210,26 @@ export default function OrderConfirmationPage() {
             </div>
 
             <div className={styles.actions}>
-              <button onClick={handlePrint} className={styles.printButton}>
+              <button 
+                onClick={handlePrint} 
+                className={styles.printButton}
+                aria-label="Print Order"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                  <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
                 Print Order
               </button>
               <Link href="/" className={styles.continueShopping}>
