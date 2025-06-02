@@ -18,8 +18,8 @@ export async function fetchFromJsonBin(collection: 'products' | 'orders') {
       headers: {
         'X-Master-Key': JSONBIN_API_KEY,
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
-      cache: 'no-store', // Disable caching
     });
 
     if (!response.ok) {
@@ -58,6 +58,7 @@ export async function updateJsonBin(collection: 'products' | 'orders', data: unk
       headers: {
         'X-Master-Key': JSONBIN_API_KEY,
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
       body: JSON.stringify(data),
     });
