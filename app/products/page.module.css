@@ -667,3 +667,380 @@
 .addToCartButton:disabled::before {
   display: none;
 }
+
+.imageModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease-out;
+  padding: 16px;
+}
+
+.modalContent {
+  position: relative;
+  background-color: var(--bg-secondary);
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+  border-radius: 16px;
+}
+
+.modalGrid {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.modalImageContainer {
+  position: relative;
+  background-color: var(--bg-tertiary);
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 250px;
+  max-height: 40vh;
+}
+
+.modalImageContainer img {
+  max-height: 100%;
+  width: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--shadow-md);
+}
+
+.modalDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modalTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+}
+
+.modalPrice {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modalPrice::before {
+  content: '💰';
+  font-size: 20px;
+}
+
+.modalDescription {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+  padding: 16px 0;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.modalMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 16px;
+  background-color: var(--bg-tertiary);
+  border-radius: 12px;
+}
+
+.modalCategory {
+  font-size: 14px;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.modalCategory::before {
+  content: '🏷️';
+}
+
+.modalStock {
+  font-size: 14px;
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.modalStock::before {
+  content: '📦';
+}
+
+.modalStock:empty::before {
+  content: '❌';
+}
+
+.modalStock:empty {
+  color: var(--error);
+}
+
+.modalAddToCart {
+  margin-top: auto;
+  padding: 16px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.modalAddToCart::before {
+  content: '🛒';
+  font-size: 18px;
+}
+
+.modalAddToCart:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-md);
+}
+
+.modalAddToCart:disabled {
+  background-color: var(--secondary-light);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px var(--shadow-md);
+  z-index: 1;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.closeButton:hover {
+  background-color: var(--primary);
+  color: white;
+  transform: rotate(90deg);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Tablet and larger screens */
+@media (min-width: 768px) {
+  .imageModal {
+    padding: 24px;
+  }
+
+  .modalContent {
+    width: 90%;
+    max-width: 1000px;
+    max-height: 85vh;
+  }
+
+  .modalGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .modalImageContainer {
+    min-height: 300px;
+    max-height: none;
+    padding: 24px;
+  }
+
+  .modalImageContainer img {
+    max-height: 400px;
+  }
+
+  .modalDetails {
+    padding: 24px;
+    gap: 16px;
+  }
+
+  .modalTitle {
+    font-size: 24px;
+  }
+
+  .modalPrice {
+    font-size: 22px;
+  }
+
+  .modalDescription {
+    font-size: 15px;
+    padding: 16px 0;
+  }
+
+  .modalMeta {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .modalCategory,
+  .modalStock {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  .modalAddToCart {
+    padding: 14px 24px;
+    font-size: 16px;
+  }
+
+  .closeButton {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .modalContent {
+    background-color: var(--bg-primary);
+  }
+
+  .modalImageContainer {
+    background-color: var(--bg-tertiary);
+  }
+
+  .modalMeta {
+    background-color: var(--bg-tertiary);
+  }
+
+  .modalCategory,
+  .modalStock {
+    background-color: var(--bg-primary);
+  }
+
+  .modalTitle {
+    color: var(--text-primary);
+  }
+
+  .modalDescription {
+    color: var(--text-secondary);
+  }
+
+  .modalCategory {
+    color: var(--text-tertiary);
+  }
+
+  .closeButton {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-out 2.7s;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

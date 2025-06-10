@@ -3,6 +3,7 @@ import { Inter, Roboto } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { CartProvider } from "./lib/CartContext";
+import { StorageProvider } from "./lib/StorageContext";
 
 const inter = Inter({ subsets: ["latin"] });
 const roboto = Roboto({
@@ -37,7 +38,9 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} ${roboto.className}`}>
         <CartProvider>
-          {children}
+          <StorageProvider>
+            {children}
+          </StorageProvider>
         </CartProvider>
         <Analytics />
       </body>

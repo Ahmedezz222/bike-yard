@@ -5,7 +5,9 @@ import Image from 'next/image';
 import styles from './page.module.css';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
+import Message from '../components/Message';
 import { useCart } from '../lib/CartContext';
+import { useStorage } from '../lib/StorageContext';
 import { formatPrice } from '../lib/currency';
 
 interface Product {
@@ -24,12 +26,17 @@ const ProductsPage = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filters, setFilters] = useState({
-    category: '',
-    minPrice: '',
-    maxPrice: ''
-  });
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const { addToCart } = useCart();
+  const { 
+    savedFilters, 
+    saveFilters, 
+    clearFilters: clearStorageFilters,
+    addRecentProduct 
+  } = useStorage();
+
+  const [filters, setFilters] = useState(savedFilters);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -83,18 +90,22 @@ const ProductsPage = () => {
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const { id, value } = e.target;
-    setFilters(prev => ({
-      ...prev,
+    const newFilters = {
+      ...filters,
       [id]: value
-    }));
+    };
+    setFilters(newFilters);
+    saveFilters(newFilters);
   };
 
   const clearFilters = () => {
-    setFilters({
+    const emptyFilters = {
       category: '',
       minPrice: '',
       maxPrice: ''
-    });
+    };
+    setFilters(emptyFilters);
+    clearStorageFilters();
   };
 
   const toggleFilters = () => {
@@ -110,14 +121,36 @@ const ProductsPage = () => {
       id: product._id,
       name: product.name,
       price: product.price,
-      image: product.image
+      image: product.image,
+      stock: product.stock
     });
+    setMessage({
+      text: `${product.name} added to cart!`,
+      type: 'success'
+    });
+  };
+
+  const handleImageClick = (product: Product) => {
+    setSelectedProduct(product);
+    addRecentProduct(product._id);
+  };
+
+  const closeImageModal = () => {
+    setSelectedProduct(null);
   };
 
   return (
     <div className={styles.pageWrapper}>
       <Navigation />
       
+      {message && (
+        <Message
+          message={message.text}
+          type={message.type}
+          onClose={() => setMessage(null)}
+        />
+      )}
+
       <main className={styles.main}>
         <div className={styles.container}>
           <h1 className={styles.title}>Our Products</h1>
@@ -214,7 +247,11 @@ const ProductsPage = () => {
             ) : (
               filteredProducts.map((product) => (
                 <div key={product._id} className={styles.productCard}>
-                  <div className={styles.productImage}>
+                  <div 
+                    className={styles.productImage}
+                    onClick={() => handleImageClick(product)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <Image
                       src={product.image}
                       alt={product.name}
@@ -250,6 +287,50 @@ const ProductsPage = () => {
         </div>
       </main>
 
+      {/* Product Details Modal */}
+      {selectedProduct && (
+        <div className={styles.imageModal} onClick={closeImageModal}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.closeButton} onClick={closeImageModal}>×</button>
+            <div className={styles.modalGrid}>
+              <div className={styles.modalImageContainer}>
+                <Image
+                  src={selectedProduct.image}
+                  alt={selectedProduct.name}
+                  width={600}
+                  height={400}
+                  style={{
+                    objectFit: 'contain',
+                    maxWidth: '100%',
+                    maxHeight: '70vh'
+                  }}
+                />
+              </div>
+              <div className={styles.modalDetails}>
+                <h2 className={styles.modalTitle}>{selectedProduct.name}</h2>
+                <p className={styles.modalPrice}>{formatPrice(selectedProduct.price)}</p>
+                <p className={styles.modalDescription}>{selectedProduct.description}</p>
+                <div className={styles.modalMeta}>
+                  <span className={styles.modalCategory}>Category: {selectedProduct.category}</span>
+                  <span className={styles.modalStock}>
+                    {selectedProduct.stock > 0 ? `In Stock (${selectedProduct.stock})` : 'Out of Stock'}
+                  </span>
+                </div>
+                <button
+                  className={styles.modalAddToCart}
+                  onClick={() => {
+                    handleAddToCart(selectedProduct);
+                    closeImageModal();
+                  }}
+                  disabled={selectedProduct.stock === 0}
+                >
+                  {selectedProduct.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       <Footer />
     </div>
