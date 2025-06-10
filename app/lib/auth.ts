@@ -46,10 +46,6 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
   },
-  pages: {
-    signIn: '/auth/signin',
-    signUp: '/auth/signup',
-  },
   callbacks: {
     async session({ session, token }) {
       if (session?.user) {
