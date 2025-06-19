@@ -2,28 +2,22 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-interface Filters {
-  category: string;
-  minPrice: string;
-  maxPrice: string;
-}
-
 interface StorageContextType {
-  savedFilters: Filters;
+  savedFilters: {
+    category?: string;
+    minPrice?: string;
+    maxPrice?: string;
+  };
   recentProducts: string[];
-  saveFilters: (filters: Filters) => void;
+  saveFilters: (filters: { category?: string; minPrice?: string; maxPrice?: string }) => void;
   clearFilters: () => void;
   addRecentProduct: (productId: string) => void;
 }
 
 const StorageContext = createContext<StorageContextType | undefined>(undefined);
 
-export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [savedFilters, setSavedFilters] = useState<Filters>({
-    category: '',
-    minPrice: '',
-    maxPrice: ''
-  });
+export function StorageProvider({ children }: { children: React.ReactNode }) {
+  const [savedFilters, setSavedFilters] = useState<StorageContextType['savedFilters']>({});
   const [recentProducts, setRecentProducts] = useState<string[]>([]);
 
   // Load saved data from localStorage on mount
@@ -34,23 +28,19 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (savedFiltersData) {
       setSavedFilters(JSON.parse(savedFiltersData));
     }
+
     if (recentProductsData) {
       setRecentProducts(JSON.parse(recentProductsData));
     }
   }, []);
 
-  const saveFilters = (filters: Filters) => {
+  const saveFilters = (filters: StorageContextType['savedFilters']) => {
     setSavedFilters(filters);
     localStorage.setItem('savedFilters', JSON.stringify(filters));
   };
 
   const clearFilters = () => {
-    const emptyFilters = {
-      category: '',
-      minPrice: '',
-      maxPrice: ''
-    };
-    setSavedFilters(emptyFilters);
+    setSavedFilters({});
     localStorage.removeItem('savedFilters');
   };
 
@@ -69,18 +59,18 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         recentProducts,
         saveFilters,
         clearFilters,
-        addRecentProduct
+        addRecentProduct,
       }}
     >
       {children}
     </StorageContext.Provider>
   );
-};
+}
 
-export const useStorage = () => {
+export function useStorage() {
   const context = useContext(StorageContext);
   if (context === undefined) {
     throw new Error('useStorage must be used within a StorageProvider');
   }
   return context;
-}; 
+} 

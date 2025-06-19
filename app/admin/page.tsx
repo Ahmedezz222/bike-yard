@@ -10,7 +10,8 @@ interface Product {
   name: string;
   price: number;
   description: string;
-  image: string;
+  image?: string;  // For backward compatibility
+  images?: string[];  // New field for multiple images
   category: string;
   stock: number;
   featured: boolean;
@@ -61,7 +62,7 @@ export default function AdminPage() {
     name: '',
     price: 0,
     description: '',
-    image: '',
+    images: [''],
     category: 'Mountain Bikes',
     stock: 0,
     featured: false,
@@ -284,13 +285,25 @@ export default function AdminPage() {
     e.preventDefault();
     try {
       setIsLoading(true);
+      const productData = editingProduct || newProduct;
+      
+      // Convert single image to images array if needed
+      if (productData.image && !productData.images) {
+        productData.images = [productData.image];
+      }
+      
+      // Filter out empty image URLs
+      if (productData.images) {
+        productData.images = productData.images.filter(img => img.trim() !== '');
+      }
+
       if (editingProduct) {
         const response = await fetch(`/api/products`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(editingProduct),
+          body: JSON.stringify(productData),
         });
         if (!response.ok) {
           throw new Error('Failed to update product');
@@ -302,7 +315,7 @@ export default function AdminPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(newProduct),
+          body: JSON.stringify(productData),
         });
         if (!response.ok) {
           throw new Error('Failed to create product');
@@ -314,7 +327,7 @@ export default function AdminPage() {
         name: '',
         price: 0,
         description: '',
-        image: '',
+        images: [''],
         category: 'Mountain Bikes',
         stock: 0,
         featured: false,
@@ -426,7 +439,7 @@ export default function AdminPage() {
       name: '',
       price: 0,
       description: '',
-      image: '',
+      images: [''],
       category: 'Mountain Bikes',
       stock: 0,
       featured: false,
@@ -581,32 +594,100 @@ export default function AdminPage() {
                     />
                   </div>
                   <div className={styles.formGroup}>
-                    <label htmlFor="image">Image URL</label>
-                    <input
-                      type="url"
-                      id="image"
-                      value={editingProduct ? editingProduct.image : newProduct.image}
-                      onChange={(e) => editingProduct
-                        ? setEditingProduct({ ...editingProduct, image: e.target.value })
-                        : setNewProduct({ ...newProduct, image: e.target.value })}
-                      placeholder="https://example.com/image.jpg"
-                      pattern="https?://.*\.(jpg|jpeg|png|gif|webp)"
-                      title="Please enter a valid image URL (jpg, jpeg, png, gif, or webp)"
-                      required
-                    />
-                    {(editingProduct?.image || newProduct.image) && (
-                      <div className={styles.imagePreview}>
-                        <Image
-                          src={
-                            (editingProduct ? editingProduct.image : newProduct.image) || '/bike-yard-logo.png'
-                          }
-                          alt="Preview"
-                          width={150}
-                          height={150}
-                          style={{
-                            objectFit: 'cover'
-                          }}
-                        />
+                    <label>Images</label>
+                    {editingProduct ? (
+                      (editingProduct.images || []).map((image, index) => (
+                        <div key={index} className={styles.imageInputGroup}>
+                          <input
+                            type="url"
+                            value={image}
+                            onChange={(e) => {
+                              const newImages = [...(editingProduct.images || [])];
+                              newImages[index] = e.target.value;
+                              setEditingProduct({ ...editingProduct, images: newImages });
+                            }}
+                            placeholder="https://example.com/image.jpg"
+                            pattern="https?://.*\.(jpg|jpeg|png|gif|webp)"
+                            title="Please enter a valid image URL (jpg, jpeg, png, gif, or webp)"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newImages = (editingProduct.images || []).filter((_, i) => i !== index);
+                              setEditingProduct({ ...editingProduct, images: newImages });
+                            }}
+                            className={styles.removeImageButton}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      newProduct.images?.map((image, index) => (
+                        <div key={index} className={styles.imageInputGroup}>
+                          <input
+                            type="url"
+                            value={image}
+                            onChange={(e) => {
+                              const newImages = [...(newProduct.images || [''])];
+                              newImages[index] = e.target.value;
+                              setNewProduct({ ...newProduct, images: newImages });
+                            }}
+                            placeholder="https://example.com/image.jpg"
+                            pattern="https?://.*\.(jpg|jpeg|png|gif|webp)"
+                            title="Please enter a valid image URL (jpg, jpeg, png, gif, or webp)"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newImages = (newProduct.images || ['']).filter((_, i) => i !== index);
+                              setNewProduct({ ...newProduct, images: newImages });
+                            }}
+                            className={styles.removeImageButton}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (editingProduct) {
+                          setEditingProduct({
+                            ...editingProduct,
+                            images: [...(editingProduct.images || []), '']
+                          });
+                        } else {
+                          setNewProduct({
+                            ...newProduct,
+                            images: [...(newProduct.images || ['']), '']
+                          });
+                        }
+                      }}
+                      className={styles.addImageButton}
+                    >
+                      Add Another Image
+                    </button>
+                    {(editingProduct?.images || newProduct.images) && (
+                      <div className={styles.imagePreviewGrid}>
+                        {(editingProduct ? editingProduct.images : newProduct.images)?.map((image, index) => (
+                          image && (
+                            <div key={index} className={styles.imagePreview}>
+                              <Image
+                                src={image}
+                                alt={`Preview ${index + 1}`}
+                                width={150}
+                                height={150}
+                                style={{
+                                  objectFit: 'cover'
+                                }}
+                              />
+                            </div>
+                          )
+                        ))}
                       </div>
                     )}
                   </div>
@@ -678,7 +759,7 @@ export default function AdminPage() {
                   <div key={product._id} className={styles.productCard}>
                     <div className={styles.productImage}>
                       <Image
-                        src={product.image}
+                        src={product.images?.[0] || product.image || '/bike-yard-logo.png'}
                         alt={product.name}
                         width={150}
                         height={150}
@@ -860,7 +941,11 @@ export default function AdminPage() {
                       {selectedOrder.items.map((item, index) => (
                         <div key={index} className={styles.detailedItem}>
                           <Image
-                            src={item.product.image}
+                            src={
+                              (item.product.images && item.product.images.length > 0)
+                                ? item.product.images[0]
+                                : (item.product.image || '/bike-yard-logo.png')
+                            }
                             alt={item.product.name}
                             width={100}
                             height={100}

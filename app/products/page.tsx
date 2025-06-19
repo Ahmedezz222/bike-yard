@@ -15,7 +15,7 @@ interface Product {
   name: string;
   price: number;
   description: string;
-  image: string;
+  images: string[];
   category: string;
   stock: number;
   featured: boolean;
@@ -60,7 +60,7 @@ const ProductsPage = () => {
     // Apply category filter
     if (filters.category) {
       filtered = filtered.filter(product => 
-        product.category.toLowerCase() === filters.category.toLowerCase()
+        product.category.toLowerCase() === (filters.category || '').toLowerCase()
       );
     }
 
@@ -121,8 +121,7 @@ const ProductsPage = () => {
       id: product._id,
       name: product.name,
       price: product.price,
-      image: product.image,
-      stock: product.stock
+      image: product.images[0],
     });
     setMessage({
       text: `${product.name} added to cart!`,
@@ -179,7 +178,7 @@ const ProductsPage = () => {
               <select 
                 id="category" 
                 className={styles.select}
-                value={filters.category}
+                value={filters.category || ''}
                 onChange={handleFilterChange}
               >
                 <option value="">All Categories</option>
@@ -253,14 +252,22 @@ const ProductsPage = () => {
                     style={{ cursor: 'pointer' }}
                   >
                     <Image
-                      src={product.image}
+                      src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.jpg'}
                       alt={product.name}
-                      width={300}
-                      height={200}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={false}
+                      loading="lazy"
+                      quality={85}
                       style={{
                         objectFit: 'cover'
                       }}
                     />
+                    {product.images && product.images.length > 1 && (
+                      <div className={styles.imageCount}>
+                        +{product.images.length - 1} more
+                      </div>
+                    )}
                   </div>
                   <div className={styles.productInfo}>
                     <h3>{product.name}</h3>
@@ -294,17 +301,52 @@ const ProductsPage = () => {
             <button className={styles.closeButton} onClick={closeImageModal}>×</button>
             <div className={styles.modalGrid}>
               <div className={styles.modalImageContainer}>
-                <Image
-                  src={selectedProduct.image}
-                  alt={selectedProduct.name}
-                  width={600}
-                  height={400}
-                  style={{
-                    objectFit: 'contain',
-                    maxWidth: '100%',
-                    maxHeight: '70vh'
-                  }}
-                />
+                <div className={styles.imageGallery}>
+                  {selectedProduct.images.map((image, index) => (
+                    <div key={index} className={styles.galleryImage}>
+                      <Image
+                        src={image}
+                        alt={`${selectedProduct.name} - Image ${index + 1}`}
+                        width={600}
+                        height={400}
+                        style={{
+                          objectFit: 'contain',
+                          maxWidth: '100%',
+                          maxHeight: '70vh'
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {selectedProduct.images.length > 1 && (
+                  <div className={styles.galleryThumbnails}>
+                    {selectedProduct.images.map((image, index) => (
+                      <div
+                        key={index}
+                        className={styles.thumbnail}
+                        onClick={() => {
+                          const gallery = document.querySelector(`.${styles.imageGallery}`);
+                          if (gallery) {
+                            gallery.scrollTo({
+                              left: index * gallery.clientWidth,
+                              behavior: 'smooth'
+                            });
+                          }
+                        }}
+                      >
+                        <Image
+                          src={image}
+                          alt={`Thumbnail ${index + 1}`}
+                          width={80}
+                          height={80}
+                          style={{
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className={styles.modalDetails}>
                 <h2 className={styles.modalTitle}>{selectedProduct.name}</h2>

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Roboto } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { CartProvider } from "./lib/CartContext";
 import { StorageProvider } from "./lib/StorageContext";
@@ -13,18 +12,18 @@ const roboto = Roboto({
   display: 'swap',
 });
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  themeColor: "#007bff",
-};
-
 export const metadata: Metadata = {
   title: "Bike Yard",
   description: "Your One-Stop Shop for All Things Cycling",
   icons: {
     icon: "/img/bike-yard-logo.png",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#007bff",
 };
 
 export default function RootLayout({
@@ -48,7 +47,6 @@ export default function RootLayout({
           </StorageProvider>
         </CartProvider>
         <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

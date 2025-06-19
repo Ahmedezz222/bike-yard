@@ -6,7 +6,8 @@ interface Product {
   name: string;
   price: number;
   description: string;
-  image: string;
+  image?: string;  // For backward compatibility
+  images?: string[];  // New field for multiple images
   category: string;
   stock: number;
   featured: boolean;
@@ -64,9 +65,19 @@ export async function POST(request: Request) {
 
     // Generate a unique ID
     const newId = Date.now().toString();
+    
+    // Handle image data
+    let images: string[] = [];
+    if (productData.images) {
+      images = productData.images.filter((img: string) => img.trim() !== '');
+    } else if (productData.image) {
+      images = [productData.image];
+    }
+
     const newProduct: Product = {
       ...productData,
       _id: newId,
+      images,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -98,8 +109,17 @@ export async function PUT(request: Request) {
       );
     }
 
+    // Handle image data
+    let images: string[] = [];
+    if (updatedProduct.images) {
+      images = updatedProduct.images.filter((img: string) => img.trim() !== '');
+    } else if (updatedProduct.image) {
+      images = [updatedProduct.image];
+    }
+
     products[index] = {
       ...updatedProduct,
+      images,
       updatedAt: new Date().toISOString(),
     };
 
