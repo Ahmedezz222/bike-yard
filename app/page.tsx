@@ -4,46 +4,6 @@ import styles from "./page.module.css";
 import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 
-
-const products = [
-  {
-    id: 1,
-    title: 'Mountain Bike',
-    description: 'Perfect for off-road adventures',
-    image: {
-      src: '/products/Mountain_Bike.png',
-      alt: 'Mountain Bike',
-      width: 500,
-      height: 300
-    },
-    category: 'bikes'
-  },
-  {
-    id: 2,
-    title: 'Road Bike',
-    description: 'Built for speed and efficiency',
-    image: {
-      src: '/products/Road_Bike.png',
-      alt: 'Road Bike',
-      width: 500,
-      height: 300
-    },
-    category: 'bikes'
-  },
-  {
-    id: 3,
-    title: 'Bike Accessories',
-    description: 'Essential gear for every cyclist',
-    image: {
-      src: '/products/Accessories.png',
-      alt: 'Bike Accessories',
-      width: 500,
-      height: 300
-    },
-    category: 'accessories'
-  }
-];
-
 export default function Home() {
   return (
     <div className={styles.container}>
