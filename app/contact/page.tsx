@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import styles from './contact.module.css';
+import { fetchFromJsonBin } from '../lib/jsonbin';
   
 
 interface OrderDetails {
@@ -64,24 +65,11 @@ export default function ContactPage() {
     
     try {
       console.log('Attempting to track order:', orderNumber);
-      const response = await fetch(`/api/admin/orders?orderId=${orderNumber}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      console.log('Response status:', response.status);
-      const responseData = await response.json();
-      console.log('Response data:', responseData);
-
-      if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to fetch order');
+      const orders = await fetchFromJsonBin('orders');
+      const order = orders.find((o: any) => o._id === orderNumber);
+      if (!order) {
+        throw new Error('Order not found');
       }
-
-      const order = responseData;
-      console.log('Received order data:', order);
-      
       // Transform the API order data to match the OrderDetails interface
       const transformedOrder: OrderDetails = {
         orderNumber: order._id || orderNumber,
@@ -109,7 +97,6 @@ export default function ContactPage() {
           { date: order.createdAt || new Date().toISOString(), status: order.status || 'pending' }
         ]
       };
-      
       setOrderDetails(transformedOrder);
       setOrderStatus('found');
     } catch (error) {

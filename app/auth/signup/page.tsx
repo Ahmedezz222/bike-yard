@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './signup.module.css';
+import Image from 'next/image';
 
 export default function SignUp() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   });
@@ -31,6 +33,7 @@ export default function SignUp() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
+          phone: formData.phone,
           password: formData.password,
         }),
       });
@@ -59,6 +62,9 @@ export default function SignUp() {
   return (
     <div className={styles.container}>
       <div className={styles.formWrapper}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1rem' }}>
+          <Image src="/bike-yard-logo.png" alt="Bike Yard Logo" width={80} height={80} />
+        </div>
         <h1>Create Account</h1>
         {error && <div className={styles.error}>{error}</div>}
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -80,6 +86,17 @@ export default function SignUp() {
               name="email"
               type="email"
               value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <label htmlFor="phone">Phone Number</label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              value={formData.phone}
               onChange={handleChange}
               required
             />
@@ -110,6 +127,11 @@ export default function SignUp() {
             Sign Up
           </button>
         </form>
+        <div style={{ margin: '1.5rem 0', textAlign: 'center' }}>
+          <div style={{ marginBottom: '0.5rem', color: '#888' }}>or sign up with</div>
+          <button className={styles.socialButton} style={{ background: '#fff', color: '#333', border: '1px solid #ddd', marginBottom: '0.5rem' }} onClick={() => alert('Google sign-up not implemented yet')}>Google</button>
+          <button className={styles.socialButton} style={{ background: '#1877f3', color: '#fff', border: 'none' }} onClick={() => alert('Facebook sign-up not implemented yet')}>Facebook</button>
+        </div>
         <p className={styles.signinLink}>
           Already have an account?{' '}
           <span onClick={() => router.push('/auth/signin')} className={styles.link}>

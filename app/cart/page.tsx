@@ -12,6 +12,7 @@ import type { ShippingData } from './components/ShippingModal';
 import type { PaymentData } from './components/PaymentModal';
 import { useCart } from '../lib/CartContext';
 import { formatPrice } from '../lib/currency';
+import { fetchFromJsonBin, updateJsonBin } from '../lib/jsonbin';
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -92,35 +93,19 @@ export default function CartPage() {
       console.log('Attempting to create order:', orderData);
 
       // Send order to API
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        console.error('Order creation failed:', responseData);
-        throw new Error(responseData.error || 'Failed to create order. Please try again later.');
-      }
-
-      // Only proceed if we have a valid order ID
-      if (!responseData || !responseData._id) {
-        console.error('Invalid order response:', responseData);
-        throw new Error('Invalid order response from server. Please try again later.');
-      }
-
-      console.log('Order created successfully:', responseData);
+      const orders = await fetchFromJsonBin('orders');
+      // Generate a new _id for the order (simple timestamp-based for demo)
+      const newOrder = { ...orderData, _id: Date.now().toString(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+      const newOrders = [...orders, newOrder];
+      await updateJsonBin('orders', newOrders);
+      console.log('Order created successfully:', newOrder);
 
       // Clear cart and close modal
       setIsPaymentModalOpen(false);
       clearCart(); // Clear the cart after successful order
       
       // Use router for navigation instead of window.location
-      const orderId = responseData._id;
+      const orderId = newOrder._id;
       window.location.href = `/order-confirmation/${encodeURIComponent(orderId)}`;
     } catch (error) {
       console.error('Payment processing error:', error);

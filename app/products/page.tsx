@@ -9,6 +9,7 @@ import Message from '../components/Message';
 import { useCart } from '../lib/CartContext';
 import { useStorage } from '../lib/StorageContext';
 import { formatPrice } from '../lib/currency';
+import { fetchFromJsonBin } from '../lib/jsonbin';
 
 interface Product {
   _id: string;
@@ -38,20 +39,20 @@ const ProductsPage = () => {
 
   const [filters, setFilters] = useState(savedFilters);
 
-  const fetchProducts = useCallback(async () => {
-    try {
-      const response = await fetch('/api/products');
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchFromJsonBin('products');
+        setProducts(data);
+        setFilteredProducts(data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setIsLoading(false);
       }
-      const data = await response.json();
-      setProducts(data);
-      setFilteredProducts(data);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    };
+    fetchProducts();
   }, []);
 
   const filterProducts = useCallback(() => {
@@ -79,10 +80,6 @@ const ProductsPage = () => {
 
     setFilteredProducts(filtered);
   }, [products, filters]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
 
   useEffect(() => {
     filterProducts();

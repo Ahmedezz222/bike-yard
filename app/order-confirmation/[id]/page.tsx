@@ -8,6 +8,7 @@ import styles from './page.module.css';
 import Navigation from '@/app/components/Navigation';
 import Footer from '@/app/components/Footer';
 import { formatPrice } from '@/app/lib/currency';
+import { fetchFromJsonBin } from '../../lib/jsonbin';
 
 interface OrderItem {
   product: {
@@ -66,19 +67,11 @@ export default function OrderConfirmationPage() {
 
       try {
         console.log('Fetching order with ID:', id);
-        const response = await fetch(`/api/orders/${id}`);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch order: ${response.statusText}`);
-        }
-
-        const order = await response.json();
-        
+        const orders = await fetchFromJsonBin('orders');
+        const order = orders.find((o: any) => o._id === id);
         if (!order) {
           throw new Error('Order not found. Please check the order ID and try again.');
         }
-
-        console.log('Full order details:', JSON.stringify(order, null, 2));
         setOrder(order);
       } catch (error) {
         console.error('Error fetching order:', error);

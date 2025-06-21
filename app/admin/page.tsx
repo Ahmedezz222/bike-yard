@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import styles from './admin.module.css';
 import { formatPrice } from '../lib/currency';
+import { fetchFromJsonBin, updateJsonBin } from '../lib/jsonbin';
 
 interface Product {
   _id: string;
@@ -181,25 +182,7 @@ export default function AdminPage() {
   const fetchProducts = useCallback(async () => {
     try {
       setIsLoading(true);
-      const queryParams = new URLSearchParams();
-      
-      if (filters.category !== 'all') {
-        queryParams.append('category', filters.category);
-      }
-      
-      if (filters.featured !== 'all') {
-        queryParams.append('featured', filters.featured);
-      }
-      
-      if (filters.search) {
-        queryParams.append('search', filters.search);
-      }
-
-      const response = await fetch(`/api/products?${queryParams.toString()}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-      const data = await response.json();
+      const data = await fetchFromJsonBin('products');
       setProducts(data);
       setFilteredProducts(data);
       setError(null);
@@ -209,16 +192,12 @@ export default function AdminPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [filters]);
+  }, []);
 
   const fetchOrders = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/orders');
-      if (!response.ok) {
-        throw new Error('Failed to fetch orders');
-      }
-      const data = await response.json();
+      const data = await fetchFromJsonBin('orders');
       setOrders(data);
       setError(null);
     } catch (error) {
@@ -250,25 +229,10 @@ export default function AdminPage() {
     if (confirm('Are you sure you want to delete this product?')) {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/products?id=${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to delete product');
-        }
-
-        if (data.message) {
-          setSuccess(data.message);
-        } else {
-          setSuccess('Product deleted successfully');
-        }
-        
+        const products = await fetchFromJsonBin('products');
+        const newProducts = products.filter((p: any) => p._id !== id);
+        await updateJsonBin('products', newProducts);
+        setSuccess('Product deleted successfully');
         await fetchProducts();
         setError(null);
       } catch (error) {
@@ -285,43 +249,25 @@ export default function AdminPage() {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const productData = editingProduct || newProduct;
-      
-      // Convert single image to images array if needed
-      if (productData.image && !productData.images) {
-        productData.images = [productData.image];
+      const products = await fetchFromJsonBin('products');
+      let newProducts;
+      let newProductData = editingProduct || newProduct;
+      if (newProductData.image && !newProductData.images) {
+        newProductData.images = [newProductData.image];
       }
-      
-      // Filter out empty image URLs
-      if (productData.images) {
-        productData.images = productData.images.filter(img => img.trim() !== '');
+      if (newProductData.images) {
+        newProductData.images = newProductData.images.filter(img => img.trim() !== '');
       }
-
       if (editingProduct) {
-        const response = await fetch(`/api/products`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(productData),
-        });
-        if (!response.ok) {
-          throw new Error('Failed to update product');
-        }
+        // Update
+        newProducts = products.map((p: any) => p._id === editingProduct._id ? { ...newProductData, updatedAt: new Date().toISOString() } : p);
         setSuccess('Product updated successfully');
       } else {
-        const response = await fetch('/api/products', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(productData),
-        });
-        if (!response.ok) {
-          throw new Error('Failed to create product');
-        }
+        // Create
+        newProducts = [...products, { ...newProductData, _id: Date.now().toString(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }];
         setSuccess('Product created successfully');
       }
+      await updateJsonBin('products', newProducts);
       setEditingProduct(null);
       setNewProduct({
         name: '',
@@ -346,48 +292,36 @@ export default function AdminPage() {
   const handleOrderStatusUpdate = async (orderId: string, newStatus: Order['status']) => {
     try {
       setIsLoading(true);
-      const order = orders.find(o => o._id === orderId);
+      const orders = await fetchFromJsonBin('orders');
+      const order = orders.find((o: any) => o._id === orderId);
       if (!order) return;
-
-      // Get tracking information if status is shipped
       let trackingNumber = order.trackingNumber;
       let carrier = order.carrier;
       let location = '';
       let notes = '';
-
       if (newStatus === 'shipped' && (!trackingNumber || !carrier)) {
         trackingNumber = prompt('Enter tracking number:') || '';
         carrier = prompt('Enter carrier name:') || '';
         location = prompt('Enter current location:') || '';
         notes = prompt('Enter any additional notes:') || '';
       }
-
-      const response = await fetch('/api/orders', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...order,
-          status: newStatus,
-          trackingNumber,
-          carrier,
-          statusHistory: [
-            ...(order.statusHistory || []),
-            {
-              status: newStatus,
-              date: new Date().toISOString(),
-              location,
-              notes
-            }
-          ]
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update order status');
-      }
-
+      const newOrders = orders.map((o: any) => o._id === orderId ? {
+        ...order,
+        status: newStatus,
+        trackingNumber,
+        carrier,
+        statusHistory: [
+          ...(order.statusHistory || []),
+          {
+            status: newStatus,
+            date: new Date().toISOString(),
+            location,
+            notes
+          }
+        ],
+        updatedAt: new Date().toISOString(),
+      } : o);
+      await updateJsonBin('orders', newOrders);
       await fetchOrders();
       setSuccess('Order status updated successfully');
       setError(null);
@@ -404,12 +338,9 @@ export default function AdminPage() {
     if (confirm('Are you sure you want to delete this order?')) {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/orders?id=${orderId}`, {
-          method: 'DELETE',
-        });
-        if (!response.ok) {
-          throw new Error('Failed to delete order');
-        }
+        const orders = await fetchFromJsonBin('orders');
+        const newOrders = orders.filter((o: any) => o._id !== orderId);
+        await updateJsonBin('orders', newOrders);
         await fetchOrders();
         setSuccess('Order deleted successfully');
         setError(null);

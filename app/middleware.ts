@@ -9,7 +9,6 @@ const ALLOWED_IPS = [
 
 // List of sensitive routes that need protection
 const PROTECTED_ROUTES = [
-  '/api/',
   '/admin/',
   '/products/',
 ]
@@ -58,7 +57,6 @@ export function middleware(request: NextRequest) {
 // Configure which routes the middleware should run on
 export const config = {
   matcher: [
-    '/api/:path*',
     '/admin/:path*',
     '/products/:path*',
   ],
