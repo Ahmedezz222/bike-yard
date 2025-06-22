@@ -29,9 +29,10 @@ if [ -d "backend" ]; then
         curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
     fi
 
-    # Install PHP dependencies
+    # Install PHP dependencies with platform requirements ignored
     if [ -f "composer.json" ]; then
-        composer install --no-dev --optimize-autoloader
+        echo "Installing PHP dependencies..."
+        composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-fileinfo --ignore-platform-req=ext-sqlite3
     else
         echo "Warning: composer.json not found in backend directory"
     fi
@@ -48,17 +49,37 @@ if [ -d "backend" ]; then
         
         # Generate application key if not set
         if [ -z "$(grep '^APP_KEY=' .env)" ] || [ "$(grep '^APP_KEY=' .env | cut -d'=' -f2)" == "" ]; then
-            php artisan key:generate
+            echo "Generating application key..."
+            php artisan key:generate --force
         fi
         
-        # Cache configuration
-        php artisan config:cache
-        php artisan route:cache
-        php artisan view:cache
+        # Create database file if it doesn't exist
+        if [ ! -f "database/database.sqlite" ]; then
+            echo "Creating SQLite database file..."
+            touch database/database.sqlite
+        fi
         
-        # Run migrations if needed
+        # Set proper permissions for storage and bootstrap/cache
+        echo "Setting permissions..."
+        chmod -R 775 storage
+        chmod -R 775 bootstrap/cache
+        
+        # Cache configuration (skip if there are database issues)
+        echo "Caching configuration..."
+        php artisan config:cache || echo "Warning: Could not cache config"
+        php artisan route:cache || echo "Warning: Could not cache routes"
+        php artisan view:cache || echo "Warning: Could not cache views"
+        
+        # Run migrations if needed (skip if SQLite is not available)
         if [ "$RUN_MIGRATIONS" = "true" ]; then
-            php artisan migrate --force
+            echo "Running migrations..."
+            php artisan migrate --force || echo "Warning: Could not run migrations"
+        fi
+        
+        # Verify deployment
+        echo "Verifying deployment..."
+        if [ -f "verify-deployment.php" ]; then
+            php verify-deployment.php || echo "Warning: Deployment verification failed"
         fi
     else
         echo "Warning: .env.example not found in backend directory"

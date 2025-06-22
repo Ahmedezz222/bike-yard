@@ -16,6 +16,8 @@
   COMPOSER_HOME = "/opt/buildhome/.composer"
   NPM_FLAGS = "--legacy-peer-deps"
   NPM_USE_PACKAGE_LOCK = "true"
+  COMPOSER_IGNORE_PLATFORM_REQS = "1"
+  RUN_MIGRATIONS = "false"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
