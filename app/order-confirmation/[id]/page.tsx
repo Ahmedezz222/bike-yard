@@ -5,10 +5,8 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './page.module.css';
-import Navigation from '@/app/components/Navigation';
 import Footer from '@/app/components/Footer';
 import { formatPrice } from '@/app/lib/currency';
-import { fetchFromJsonBin } from '../../lib/jsonbin';
 
 interface OrderItem {
   product: {
@@ -67,8 +65,8 @@ export default function OrderConfirmationPage() {
 
       try {
         console.log('Fetching order with ID:', id);
-        const orders = await fetchFromJsonBin('orders');
-        const order = orders.find((o: any) => o._id === id);
+        // const orders = await fetchFromJsonBin('orders');
+        const order = null; // Placeholder for the removed fetchFromJsonBin
         if (!order) {
           throw new Error('Order not found. Please check the order ID and try again.');
         }
@@ -88,7 +86,6 @@ export default function OrderConfirmationPage() {
     console.log('Loading state active');
     return (
       <div className={styles.pageWrapper}>
-        <Navigation />
         <main className={styles.main}>
           <div className={styles.container}>
             <div className={styles.loading}>Loading order details...</div>
@@ -104,7 +101,6 @@ export default function OrderConfirmationPage() {
     console.log('Order state:', order);
     return (
       <div className={styles.pageWrapper}>
-        <Navigation />
         <main className={styles.main}>
           <div className={styles.container}>
             <div className={styles.error}>
@@ -131,7 +127,6 @@ export default function OrderConfirmationPage() {
 
   return (
     <div className={styles.pageWrapper}>
-      <Navigation />
       <main className={styles.main}>
         <div className={styles.container}>
           <div className={styles.confirmation}>

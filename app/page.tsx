@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
-import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 
 
@@ -48,8 +47,6 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <div className={styles.mainContent}>
-        <Navigation />
-
         <section className={styles.hero}>
           <Image
             src="/img/Bike-Yard-Hero-Background.jpg"

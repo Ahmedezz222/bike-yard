@@ -3,22 +3,37 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f5f5f5;
+  background: var(--background);
 }
 
 .formWrapper {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--card-background);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
   width: 100%;
   max-width: 400px;
+  transition: box-shadow 0.2s;
+}
+
+.formWrapper:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.formWrapper h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.5px;
 }
 
 .inputGroup {
@@ -28,64 +43,157 @@
 }
 
 .inputGroup label {
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: var(--foreground);
+  font-size: 1.05rem;
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.01em;
 }
 
 .inputGroup input {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 1.08rem;
+  background: var(--background);
+  color: var(--foreground);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .button {
-  background-color: #0070f3;
-  color: white;
-  padding: 0.75rem;
+  background: var(--primary);
+  color: #fff;
+  padding: 1rem;
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 12px;
+  font-size: 1.15rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
+  margin-top: 0.5rem;
+  letter-spacing: 0.01em;
 }
 
 .button:hover {
-  background-color: #0051cc;
+  background: var(--primary-dark);
+  box-shadow: var(--shadow-lg);
 }
 
 .error {
-  color: #dc2626;
-  background-color: #fee2e2;
-  padding: 0.75rem;
-  border-radius: 4px;
+  color: var(--error);
+  background: var(--error-light);
+  padding: 1rem;
+  border-radius: 12px;
   margin-bottom: 1rem;
+  border-left: 4px solid var(--error);
+  font-size: 1rem;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
 }
 
 .signupLink {
   text-align: center;
   margin-top: 1rem;
-  color: #666;
+  font-size: 1.05rem;
+  color: var(--primary-dark);
+  font-weight: 500;
 }
 
 .link {
-  color: #0070f3;
+  color: var(--primary);
   cursor: pointer;
   text-decoration: underline;
+  transition: color 0.2s;
+  font-size: 1.05rem;
+  font-weight: 600;
 }
 
 .link:hover {
-  color: #0051cc;
+  color: var(--primary-dark);
+}
+
+.logoContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: 12px;
+  padding: 1.5rem 0;
+}
+
+.logoImage {
+  width: 90px !important;
+  height: 90px !important;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+  background: white;
+  border-radius: 50%;
+  padding: 0.5rem;
 }
 
 .socialButton {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   font-size: 1rem;
   font-weight: 500;
-  cursor: pointer;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: #fff;
+  color: var(--foreground);
   margin-bottom: 0.5rem;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.socialButton.google {
+  background: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.socialButton.facebook {
+  background: #1877f3;
+  color: #fff;
+  border: none;
+}
+
+.socialButton i {
+  font-size: 1.2em;
+  margin-right: 0.5em;
+}
+
+@media (max-width: 480px) {
+  .formWrapper {
+    padding: 1.25rem;
+    border-radius: 8px;
+  }
+  .inputGroup input {
+    padding: 0.75rem;
+    border-radius: 8px;
+  }
+  .button, .socialButton {
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
 }

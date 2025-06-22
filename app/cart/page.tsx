@@ -12,7 +12,6 @@ import type { ShippingData } from './components/ShippingModal';
 import type { PaymentData } from './components/PaymentModal';
 import { useCart } from '../lib/CartContext';
 import { formatPrice } from '../lib/currency';
-import { fetchFromJsonBin, updateJsonBin } from '../lib/jsonbin';
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -93,11 +92,8 @@ export default function CartPage() {
       console.log('Attempting to create order:', orderData);
 
       // Send order to API
-      const orders = await fetchFromJsonBin('orders');
       // Generate a new _id for the order (simple timestamp-based for demo)
       const newOrder = { ...orderData, _id: Date.now().toString(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-      const newOrders = [...orders, newOrder];
-      await updateJsonBin('orders', newOrders);
       console.log('Order created successfully:', newOrder);
 
       // Clear cart and close modal

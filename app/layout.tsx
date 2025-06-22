@@ -1,9 +1,13 @@
+// 'use client';
 import type { Metadata, Viewport } from "next";
 import { Inter, Roboto } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { CartProvider } from "./lib/CartContext";
 import { StorageProvider } from "./lib/StorageContext";
+import { SessionProvider } from "next-auth/react";
+import ClientProviders from "./components/ClientProviders";
+import Navigation from "./components/Navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 const roboto = Roboto({
@@ -41,11 +45,11 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} ${roboto.className}`}>
-        <CartProvider>
-          <StorageProvider>
-            {children}
-          </StorageProvider>
-        </CartProvider>
+        <ClientProviders>
+          <Navigation />
+          {/* <Header /> */}
+          {children}
+        </ClientProviders>
         <Analytics />
       </body>
     </html>

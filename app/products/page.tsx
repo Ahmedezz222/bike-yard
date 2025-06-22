@@ -3,13 +3,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import styles from './page.module.css';
-import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import Message from '../components/Message';
 import { useCart } from '../lib/CartContext';
 import { useStorage } from '../lib/StorageContext';
 import { formatPrice } from '../lib/currency';
-import { fetchFromJsonBin } from '../lib/jsonbin';
 
 interface Product {
   _id: string;
@@ -43,9 +41,6 @@ const ProductsPage = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const data = await fetchFromJsonBin('products');
-        setProducts(data);
-        setFilteredProducts(data);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -137,7 +132,7 @@ const ProductsPage = () => {
 
   return (
     <div className={styles.pageWrapper}>
-      <Navigation />
+      {/* <Navigation /> removed */}
       
       {message && (
         <Message

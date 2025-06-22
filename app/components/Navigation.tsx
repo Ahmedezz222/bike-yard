@@ -110,6 +110,16 @@ export default function Navigation() {
               )}
             </Link>
           </li>
+          <li>
+            <Link
+              href="/auth/signin"
+              className={styles.cartLink}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <i className="fas fa-user" aria-hidden="true"></i>
+              <span className="sr-only">Sign In</span>
+            </Link>
+          </li>
         </ul>
       </nav>
     </header>

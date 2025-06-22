@@ -2,7 +2,6 @@
 
 import React from 'react';
 import ImageGrid from '../components/ImageGrid';
-import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import styles from './page.module.css';
 
@@ -62,7 +61,6 @@ const images = [
 export default function GalleryPage() {
   return (
     <div className={styles.pageWrapper}>
-      <Navigation />
       <main className={styles.main}>
         <div className={styles.container}>
           <h1 className={styles.title}>Our Gallery</h1>

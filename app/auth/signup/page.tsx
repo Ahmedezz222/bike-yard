@@ -62,9 +62,6 @@ export default function SignUp() {
   return (
     <div className={styles.container}>
       <div className={styles.formWrapper}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1rem' }}>
-          <Image src="/bike-yard-logo.png" alt="Bike Yard Logo" width={80} height={80} />
-        </div>
         <h1>Create Account</h1>
         {error && <div className={styles.error}>{error}</div>}
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -129,8 +126,12 @@ export default function SignUp() {
         </form>
         <div style={{ margin: '1.5rem 0', textAlign: 'center' }}>
           <div style={{ marginBottom: '0.5rem', color: '#888' }}>or sign up with</div>
-          <button className={styles.socialButton} style={{ background: '#fff', color: '#333', border: '1px solid #ddd', marginBottom: '0.5rem' }} onClick={() => alert('Google sign-up not implemented yet')}>Google</button>
-          <button className={styles.socialButton} style={{ background: '#1877f3', color: '#fff', border: 'none' }} onClick={() => alert('Facebook sign-up not implemented yet')}>Facebook</button>
+          <button className={`${styles.socialButton} ${styles.google}`} onClick={() => alert('Google sign-up not implemented yet')}>
+            <i className="fab fa-google" aria-hidden="true"></i> Google
+          </button>
+          <button className={`${styles.socialButton} ${styles.facebook}`} onClick={() => alert('Facebook sign-up not implemented yet')}>
+            <i className="fab fa-facebook-f" aria-hidden="true"></i> Facebook
+          </button>
         </div>
         <p className={styles.signinLink}>
           Already have an account?{' '}

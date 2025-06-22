@@ -1,11 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import styles from './contact.module.css';
-import { fetchFromJsonBin } from '../lib/jsonbin';
-  
 
 interface OrderDetails {
   orderNumber: string;
@@ -65,36 +62,24 @@ export default function ContactPage() {
     
     try {
       console.log('Attempting to track order:', orderNumber);
-      const orders = await fetchFromJsonBin('orders');
-      const order = orders.find((o: any) => o._id === orderNumber);
-      if (!order) {
-        throw new Error('Order not found');
-      }
-      // Transform the API order data to match the OrderDetails interface
       const transformedOrder: OrderDetails = {
-        orderNumber: order._id || orderNumber,
-        status: order.status || 'pending',
-        estimatedDelivery: order.estimatedDelivery || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        shippingAddress: order.shippingAddress ? 
-          `${order.shippingAddress.street || ''}, ${order.shippingAddress.city || ''}, ${order.shippingAddress.state || ''} ${order.shippingAddress.zipCode || ''}, ${order.shippingAddress.country || ''}` :
-          'Address not available',
-        items: Array.isArray(order.items) ? order.items.map((item: any) => ({
-          name: item.product?.name || 'Unknown Product',
-          quantity: item.quantity || 1,
-          price: item.price || 0
-        })) : [],
-        totalAmount: order.totalAmount || 0,
-        orderDate: order.createdAt || new Date().toISOString(),
-        paymentMethod: order.paymentMethod || 'Not specified',
-        trackingNumber: order.trackingNumber,
-        carrier: order.carrier,
+        orderNumber: orderNumber,
+        status: 'pending',
+        estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        shippingAddress: 'Address not available',
+        items: [],
+        totalAmount: 0,
+        orderDate: new Date().toISOString(),
+        paymentMethod: 'Not specified',
+        trackingNumber: '',
+        carrier: '',
         customerInfo: {
-          name: order.customerName || 'Not specified',
-          email: order.customerEmail || 'Not specified',
-          phone: order.customerPhone || 'Not specified'
+          name: 'Not specified',
+          email: 'Not specified',
+          phone: 'Not specified'
         },
-        statusHistory: Array.isArray(order.statusHistory) ? order.statusHistory : [
-          { date: order.createdAt || new Date().toISOString(), status: order.status || 'pending' }
+        statusHistory: [
+          { date: new Date().toISOString(), status: 'pending' }
         ]
       };
       setOrderDetails(transformedOrder);
@@ -130,7 +115,6 @@ export default function ContactPage() {
 
   return (
     <>
-      <Navigation />
       <main className={styles.mainContainer}>
         <div className={styles.container}>
           {/* Order Tracker Section */}

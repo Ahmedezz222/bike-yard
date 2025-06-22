@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import styles from './admin.module.css';
 import { formatPrice } from '../lib/currency';
-import { fetchFromJsonBin, updateJsonBin } from '../lib/jsonbin';
 
 interface Product {
   _id: string;
@@ -182,9 +181,8 @@ export default function AdminPage() {
   const fetchProducts = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await fetchFromJsonBin('products');
-      setProducts(data);
-      setFilteredProducts(data);
+      setProducts(products);
+      setFilteredProducts(products);
       setError(null);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -197,8 +195,7 @@ export default function AdminPage() {
   const fetchOrders = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await fetchFromJsonBin('orders');
-      setOrders(data);
+      setOrders(orders);
       setError(null);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -229,11 +226,10 @@ export default function AdminPage() {
     if (confirm('Are you sure you want to delete this product?')) {
       try {
         setIsLoading(true);
-        const products = await fetchFromJsonBin('products');
         const newProducts = products.filter((p: any) => p._id !== id);
-        await updateJsonBin('products', newProducts);
         setSuccess('Product deleted successfully');
-        await fetchProducts();
+        setProducts(newProducts);
+        setFilteredProducts(newProducts);
         setError(null);
       } catch (error) {
         console.error('Error deleting product:', error);
@@ -249,7 +245,6 @@ export default function AdminPage() {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const products = await fetchFromJsonBin('products');
       let newProducts;
       let newProductData = editingProduct || newProduct;
       if (newProductData.image && !newProductData.images) {
@@ -267,7 +262,8 @@ export default function AdminPage() {
         newProducts = [...products, { ...newProductData, _id: Date.now().toString(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }];
         setSuccess('Product created successfully');
       }
-      await updateJsonBin('products', newProducts);
+      setProducts(newProducts);
+      setFilteredProducts(newProducts);
       setEditingProduct(null);
       setNewProduct({
         name: '',
@@ -292,7 +288,6 @@ export default function AdminPage() {
   const handleOrderStatusUpdate = async (orderId: string, newStatus: Order['status']) => {
     try {
       setIsLoading(true);
-      const orders = await fetchFromJsonBin('orders');
       const order = orders.find((o: any) => o._id === orderId);
       if (!order) return;
       let trackingNumber = order.trackingNumber;
@@ -321,8 +316,8 @@ export default function AdminPage() {
         ],
         updatedAt: new Date().toISOString(),
       } : o);
-      await updateJsonBin('orders', newOrders);
-      await fetchOrders();
+      setOrders(newOrders);
+      setFilteredOrders(newOrders);
       setSuccess('Order status updated successfully');
       setError(null);
     } catch (error) {
@@ -338,10 +333,9 @@ export default function AdminPage() {
     if (confirm('Are you sure you want to delete this order?')) {
       try {
         setIsLoading(true);
-        const orders = await fetchFromJsonBin('orders');
         const newOrders = orders.filter((o: any) => o._id !== orderId);
-        await updateJsonBin('orders', newOrders);
-        await fetchOrders();
+        setOrders(newOrders);
+        setFilteredOrders(newOrders);
         setSuccess('Order deleted successfully');
         setError(null);
       } catch (error) {
