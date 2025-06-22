@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './page.module.css';
-import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import ShippingModal from './components/ShippingModal';
 import PaymentModal from './components/PaymentModal';
@@ -116,7 +115,6 @@ export default function CartPage() {
   if (isLoading) {
     return (
       <div className={styles.pageWrapper}>
-        <Navigation />
         <main className={styles.main}>
           <div className={styles.container}>
             <div className={styles.loading}>Loading cart...</div>
@@ -129,7 +127,6 @@ export default function CartPage() {
 
   return (
     <div className={styles.pageWrapper}>
-      <Navigation />
       <main className={styles.main}>
         <div className={styles.container}>
           <h1 className={styles.title}>Shopping Cart</h1>
