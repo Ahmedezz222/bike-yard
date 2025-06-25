@@ -41,6 +41,22 @@ const ProductsPage = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
+        const res = await fetch('http://127.0.0.1:8000/api/products');
+        const data = await res.json();
+        // The API returns paginated data in data.data
+        const apiProducts = data.data.data || [];
+        // Map API products to the Product interface expected by the frontend
+        const mappedProducts = apiProducts.map((p: any) => ({
+          _id: p.id?.toString() || p._id || '',
+          name: p.name,
+          price: p.price,
+          description: p.description,
+          images: p.images && p.images.length > 0 ? p.images : ['/images/placeholder.jpg'],
+          category: p.category || '',
+          stock: p.stock ?? 0,
+          featured: p.featured ?? false,
+        }));
+        setProducts(mappedProducts);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
