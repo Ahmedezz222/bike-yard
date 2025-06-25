@@ -87,7 +87,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Admin routes (require admin privileges)
-Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+Route::prefix('admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard']);
     Route::get('/sales-report', [AdminController::class, 'salesReport']);
