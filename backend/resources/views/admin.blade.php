@@ -17,9 +17,9 @@
         <h1>Admin Dashboard</h1>
         <h2>Manage</h2>
         <ul>
-            <li><a href="#">Products</a></li>
-            <li><a href="#">Orders</a></li>
-            <li><a href="#">Users</a></li>
+            <li><a href="/admin/products">Products</a></li>
+            <li><a href="/admin/orders">Orders</a></li>
+            <li><a href="/admin/users">Users</a></li>
         </ul>
     </div>
 </body>

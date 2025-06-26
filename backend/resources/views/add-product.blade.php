@@ -23,6 +23,16 @@
         </select>
         <input type="number" name="price" placeholder="Price" step="0.01" required />
         <textarea name="description" placeholder="Description" rows="4" required></textarea>
+        <input type="text" name="brand" placeholder="Brand" />
+        <input type="text" name="model" placeholder="Model" />
+        <input type="number" name="year" placeholder="Year" min="1900" max="2100" />
+        <input type="number" name="stock" placeholder="Stock" min="0" required />
+        <select name="condition">
+            <option value="new">New</option>
+            <option value="used">Used</option>
+            <option value="refurbished">Refurbished</option>
+        </select>
+        <input type="text" name="warranty" placeholder="Warranty" />
         <input type="file" name="image" accept="image/*" required />
         <button type="submit">Add Product</button>
     </form>

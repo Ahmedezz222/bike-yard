@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Footer from '../components/Footer';
 import styles from './contact.module.css';
+import { apiFetch } from '../lib/api';
 
 interface OrderDetails {
   orderNumber: string;
@@ -45,10 +46,16 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('submitting');
-    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await apiFetch('http://127.0.0.1:8000/api/contact', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          subject: 'Contact Form',
+        }),
+      });
       setStatus('success');
       setFormData({ name: '', email: '', message: '' });
     } catch {
@@ -59,33 +66,34 @@ export default function ContactPage() {
   const handleTrackOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setOrderStatus('loading');
-    
     try {
-      console.log('Attempting to track order:', orderNumber);
+      const data = await apiFetch(`http://127.0.0.1:8000/api/orders/${orderNumber}`);
+      const order = data.data;
       const transformedOrder: OrderDetails = {
-        orderNumber: orderNumber,
-        status: 'pending',
-        estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        shippingAddress: 'Address not available',
-        items: [],
-        totalAmount: 0,
-        orderDate: new Date().toISOString(),
-        paymentMethod: 'Not specified',
-        trackingNumber: '',
-        carrier: '',
+        orderNumber: order.order_number,
+        status: order.status,
+        estimatedDelivery: order.estimated_delivery,
+        shippingAddress: order.shipping_address?.street || 'N/A',
+        items: order.items?.map((item: any) => ({
+          name: item.product_name || item.product?.name || '',
+          quantity: item.quantity,
+          price: item.unit_price,
+        })) || [],
+        totalAmount: order.total_amount,
+        orderDate: order.created_at,
+        paymentMethod: order.payment_method,
+        trackingNumber: order.tracking_number,
+        carrier: order.carrier,
         customerInfo: {
-          name: 'Not specified',
-          email: 'Not specified',
-          phone: 'Not specified'
+          name: order.customer_name,
+          email: order.customer_email,
+          phone: order.customer_phone,
         },
-        statusHistory: [
-          { date: new Date().toISOString(), status: 'pending' }
-        ]
+        statusHistory: order.status_history || [],
       };
       setOrderDetails(transformedOrder);
       setOrderStatus('found');
     } catch (error) {
-      console.error('Error tracking order:', error);
       setOrderStatus('not_found');
       setOrderDetails(null);
     }

@@ -5,21 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - Bike Yard</title>
     <style>
-        .categories { margin: 20px 0; }
-        .product-list { display: flex; flex-wrap: wrap; gap: 20px; }
-        .product-item { border: 1px solid #ddd; border-radius: 8px; padding: 16px; width: 200px; }
+        .product-table { max-width: 900px; margin: 40px auto; border-collapse: collapse; width: 100%; }
+        .product-table th, .product-table td { border: 1px solid #ddd; padding: 8px; }
+        .product-table th { background: #f4f4f4; }
+        .actions a { margin-right: 8px; }
     </style>
 </head>
 <body>
     <h1>Products</h1>
-    <div class="categories">
-        <strong>Categories:</strong> Mountain Bikes | Road Bikes | Accessories
-    </div>
-    <div class="product-list">
-        <div class="product-item">Mountain Bike</div>
-        <div class="product-item">Road Bike</div>
-        <div class="product-item">Helmet</div>
-        <div class="product-item">Gloves</div>
-    </div>
+    <table class="product-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($products as $product)
+            <tr>
+                <td>{{ $product->id }}</td>
+                <td>{{ $product->name }}</td>
+                <td>{{ $product->category }}</td>
+                <td>${{ number_format($product->price, 2) }}</td>
+                <td>{{ $product->stock }}</td>
+                <td class="actions">
+                    <a href="#">Edit</a>
+                    <a href="#">Delete</a>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 </body>
 </html> 

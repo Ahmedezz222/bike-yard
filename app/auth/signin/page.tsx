@@ -15,18 +15,27 @@ export default function SignIn() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
+      const response = await fetch('http://127.0.0.1:8000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
-
-      if (result?.error) {
-        setError('Invalid email or password');
-      } else {
-        router.push('/');
-        router.refresh();
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        setError(data.message || 'Invalid email or password');
+        return;
       }
+      // Store token in localStorage for future requests
+      localStorage.setItem('authToken', data.data.token);
+      // Optionally store user info
+      localStorage.setItem('user', JSON.stringify(data.data.user));
+      router.push('/');
+      router.refresh();
     } catch (error) {
       setError('An error occurred during sign in');
     }

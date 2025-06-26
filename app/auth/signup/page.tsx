@@ -25,7 +25,7 @@ export default function SignUp() {
     }
 
     try {
-      const response = await fetch('/api/auth/signup', {
+      const response = await fetch('http://127.0.0.1:8000/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,13 +35,14 @@ export default function SignUp() {
           email: formData.email,
           phone: formData.phone,
           password: formData.password,
+          password_confirmation: formData.confirmPassword,
         }),
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong');
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Something went wrong');
       }
 
       // Redirect to sign in page after successful registration

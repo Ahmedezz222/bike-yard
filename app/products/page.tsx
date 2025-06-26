@@ -8,6 +8,7 @@ import Message from '../components/Message';
 import { useCart } from '../lib/CartContext';
 import { useStorage } from '../lib/StorageContext';
 import { formatPrice } from '../lib/currency';
+import { apiFetch } from '../lib/api';
 
 interface Product {
   _id: string;
@@ -41,8 +42,7 @@ const ProductsPage = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch('http://127.0.0.1:8000/api/products');
-        const data = await res.json();
+        const data = await apiFetch('http://127.0.0.1:8000/api/products');
         // The API returns paginated data in data.data
         const apiProducts = data.data.data || [];
         // Map API products to the Product interface expected by the frontend
