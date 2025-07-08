@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Events\OrderPlaced;
 
 class OrderController extends Controller
 {
@@ -109,6 +110,8 @@ class OrderController extends Controller
                     'product_data' => $item['product']->toArray(),
                 ]);
             }
+
+            event(new OrderPlaced($order));
 
             DB::commit();
 

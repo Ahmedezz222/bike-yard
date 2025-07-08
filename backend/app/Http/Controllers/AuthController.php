@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
+use App\Events\UserRegistered;
 
 class AuthController extends Controller
 {
@@ -48,6 +49,7 @@ class AuthController extends Controller
             'country' => $request->country ?? 'US',
             'role' => 'user',
         ]);
+        event(new UserRegistered($user));
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

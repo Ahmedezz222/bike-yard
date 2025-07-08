@@ -4,23 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Bike Yard</title>
-    <style>
-        .dashboard { max-width: 600px; margin: 40px auto; }
-        .dashboard h2 { margin-bottom: 20px; }
-        .dashboard ul { list-style: none; padding: 0; }
-        .dashboard li { margin: 10px 0; }
-        .dashboard a { color: #007bff; text-decoration: none; }
-    </style>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="dashboard">
-        <h1>Admin Dashboard</h1>
-        <h2>Manage</h2>
-        <ul>
-            <li><a href="/admin/products">Products</a></li>
-            <li><a href="/admin/orders">Orders</a></li>
-            <li><a href="/admin/users">Users</a></li>
-        </ul>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="card shadow mx-auto" style="max-width: 500px;">
+            <div class="card-body">
+                <h1 class="card-title text-center mb-4">Admin Dashboard</h1>
+                <h2 class="h5 mb-3">Manage</h2>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item"><a class="text-decoration-none text-primary" href="/admin/products">Products</a></li>
+                    <li class="list-group-item"><a class="text-decoration-none text-primary" href="/admin/categories">Categories</a></li>
+                    <li class="list-group-item"><a class="text-decoration-none text-primary" href="/admin/brands">Brands</a></li>
+                    <li class="list-group-item"><a class="text-decoration-none text-primary" href="/add-product">Add Product</a></li>
+                    <li class="list-group-item"><a class="text-decoration-none text-primary" href="/admin/orders">Orders</a></li>
+                    <li class="list-group-item"><a class="text-decoration-none text-primary" href="/admin/users">Users</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
+    <!-- Bootstrap JS Bundle CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

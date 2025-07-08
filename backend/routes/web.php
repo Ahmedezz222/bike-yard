@@ -23,6 +23,7 @@ Route::view('/contact', 'contact');
 Route::view('/admin', 'admin');
 Route::view('/signin', 'auth-signin');
 Route::view('/signup', 'auth-signup');
+Route::view('/forgot-password', 'auth-forgot-password');
 Route::view('/order-confirmation', 'order-confirmation');
 
 Route::get('/add-product', function () {
@@ -88,8 +89,98 @@ Route::get('/admin/users', function () {
     $users = \App\Models\User::all();
     return view('user-management', compact('users'));
 });
+Route::get('/admin/categories', function () {
+    return view('categories');
+});
+Route::get('/admin/brands', function () {
+    return view('brands');
+});
 
 Route::get('/products', function () {
     $products = \App\Models\Product::all();
     return view('public-products', compact('products'));
+});
+
+Route::get('/order-confirmation/{id}', function ($id) {
+    // In a real application, you would fetch the order from the database
+    // For now, we'll pass a sample order to the view
+    $order = [
+        'id' => $id,
+        'order_number' => 'ORD-' . substr($id, -6),
+        'status' => 'pending',
+        'customer_name' => 'John Doe',
+        'customer_email' => 'john@example.com',
+        'created_at' => now(),
+        'subtotal' => 580.00,
+        'tax_amount' => 58.00,
+        'total_amount' => 638.00,
+        'shipping_address' => [
+            'street' => '123 Main St',
+            'city' => 'City',
+            'state' => 'State',
+            'zipCode' => '12345',
+            'country' => 'United States'
+        ],
+        'items' => [
+            [
+                'product' => [
+                    'name' => 'Mountain Bike',
+                    'price' => 500.00,
+                    'image' => '/products/Mountain_Bike.png'
+                ],
+                'quantity' => 1,
+                'price' => 500.00
+            ],
+            [
+                'product' => [
+                    'name' => 'Cycling Helmet',
+                    'price' => 40.00,
+                    'image' => '/products/Accessories.png'
+                ],
+                'quantity' => 2,
+                'price' => 40.00
+            ]
+        ]
+    ];
+    
+    return view('order-confirmation', compact('order'));
+});
+
+// Authentication POST routes
+Route::post('/signin', function (\Illuminate\Http\Request $request) {
+    $validated = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    // For now, just redirect back with a success message
+    // In a real application, you would implement actual authentication logic
+    return redirect('/admin')->with('success', 'Signed in successfully!');
+});
+
+Route::post('/signup', function (\Illuminate\Http\Request $request) {
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    // Create new user
+    $user = new \App\Models\User();
+    $user->name = $validated['name'];
+    $user->email = $validated['email'];
+    $user->password = bcrypt($validated['password']);
+    $user->save();
+
+    return redirect('/signin')->with('success', 'Account created successfully! Please sign in.');
+});
+
+Route::post('/forgot-password', function (\Illuminate\Http\Request $request) {
+    $validated = $request->validate([
+        'email' => 'required|email|exists:users,email',
+    ]);
+
+    // For now, just redirect back with a success message
+    // In a real application, you would implement actual password reset logic
+    return back()->with('success', 'Password reset link sent to your email!');
 });

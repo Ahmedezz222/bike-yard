@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 interface StorageContextType {
   savedFilters: {
@@ -12,6 +12,7 @@ interface StorageContextType {
   saveFilters: (filters: { category?: string; minPrice?: string; maxPrice?: string }) => void;
   clearFilters: () => void;
   addRecentProduct: (productId: string) => void;
+  clearRecentProducts: () => void;
 }
 
 const StorageContext = createContext<StorageContextType | undefined>(undefined);
@@ -19,49 +20,95 @@ const StorageContext = createContext<StorageContextType | undefined>(undefined);
 export function StorageProvider({ children }: { children: React.ReactNode }) {
   const [savedFilters, setSavedFilters] = useState<StorageContextType['savedFilters']>({});
   const [recentProducts, setRecentProducts] = useState<string[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Load saved data from localStorage on mount
   useEffect(() => {
-    const savedFiltersData = localStorage.getItem('savedFilters');
-    const recentProductsData = localStorage.getItem('recentProducts');
+    try {
+      const savedFiltersData = localStorage.getItem('savedFilters');
+      const recentProductsData = localStorage.getItem('recentProducts');
 
-    if (savedFiltersData) {
-      setSavedFilters(JSON.parse(savedFiltersData));
-    }
+      if (savedFiltersData) {
+        const parsedFilters = JSON.parse(savedFiltersData);
+        if (parsedFilters && typeof parsedFilters === 'object') {
+          setSavedFilters(parsedFilters);
+        }
+      }
 
-    if (recentProductsData) {
-      setRecentProducts(JSON.parse(recentProductsData));
+      if (recentProductsData) {
+        const parsedProducts = JSON.parse(recentProductsData);
+        if (Array.isArray(parsedProducts)) {
+          setRecentProducts(parsedProducts);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading storage data from localStorage:', error);
+      // Clear corrupted data
+      localStorage.removeItem('savedFilters');
+      localStorage.removeItem('recentProducts');
+    } finally {
+      setIsInitialized(true);
     }
   }, []);
 
-  const saveFilters = (filters: StorageContextType['savedFilters']) => {
+  const saveFilters = useCallback((filters: StorageContextType['savedFilters']) => {
     setSavedFilters(filters);
-    localStorage.setItem('savedFilters', JSON.stringify(filters));
-  };
+    if (isInitialized) {
+      try {
+        localStorage.setItem('savedFilters', JSON.stringify(filters));
+      } catch (error) {
+        console.error('Error saving filters to localStorage:', error);
+      }
+    }
+  }, [isInitialized]);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setSavedFilters({});
-    localStorage.removeItem('savedFilters');
-  };
+    if (isInitialized) {
+      try {
+        localStorage.removeItem('savedFilters');
+      } catch (error) {
+        console.error('Error clearing filters from localStorage:', error);
+      }
+    }
+  }, [isInitialized]);
 
-  const addRecentProduct = (productId: string) => {
+  const addRecentProduct = useCallback((productId: string) => {
     setRecentProducts(prev => {
       const updated = [productId, ...prev.filter(id => id !== productId)].slice(0, 5);
-      localStorage.setItem('recentProducts', JSON.stringify(updated));
+      if (isInitialized) {
+        try {
+          localStorage.setItem('recentProducts', JSON.stringify(updated));
+        } catch (error) {
+          console.error('Error saving recent products to localStorage:', error);
+        }
+      }
       return updated;
     });
-  };
+  }, [isInitialized]);
+
+  const clearRecentProducts = useCallback(() => {
+    setRecentProducts([]);
+    if (isInitialized) {
+      try {
+        localStorage.removeItem('recentProducts');
+      } catch (error) {
+        console.error('Error clearing recent products from localStorage:', error);
+      }
+    }
+  }, [isInitialized]);
+
+  const contextValue = React.useMemo(() => ({
+    savedFilters,
+    recentProducts,
+    saveFilters,
+    clearFilters,
+    addRecentProduct,
+    clearRecentProducts,
+  }), [savedFilters, recentProducts, saveFilters, clearFilters, addRecentProduct, clearRecentProducts]);
 
   return (
-    <StorageContext.Provider
-      value={{
-        savedFilters,
-        recentProducts,
-        saveFilters,
-        clearFilters,
-        addRecentProduct,
-      }}
-    >
+    <StorageContext.Provider value={contextValue}>
       {children}
     </StorageContext.Provider>
   );

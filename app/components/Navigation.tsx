@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -13,22 +13,22 @@ export default function Navigation() {
   const pathname = usePathname();
   const { items } = useCart();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen(prev => !prev);
+  }, []);
 
   // Calculate total items in cart
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   // Close menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = useCallback((event: MouseEvent) => {
       const nav = document.querySelector(`.${styles.nav}`);
       const menuToggle = document.querySelector(`.${styles.menuToggle}`);
       if (isMenuOpen && nav && !nav.contains(event.target as Node) && menuToggle && !menuToggle.contains(event.target as Node)) {
         setIsMenuOpen(false);
       }
-    };
+    }, [isMenuOpen]);
 
     // Prevent body scroll when menu is open
     if (isMenuOpen) {
@@ -43,6 +43,14 @@ export default function Navigation() {
       document.body.style.overflow = 'unset';
     };
   }, [isMenuOpen]);
+
+  const handleImageError = useCallback(() => {
+    setImgError(true);
+  }, []);
+
+  const handleNavLinkClick = useCallback(() => {
+    setIsMenuOpen(false);
+  }, []);
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -61,7 +69,7 @@ export default function Navigation() {
             height={45}
             priority
             className={styles.logoImage}
-            onError={() => setImgError(true)}
+            onError={handleImageError}
           />
         ) : (
           <div className={styles.logoText}>Bike Yard</div>
@@ -73,6 +81,7 @@ export default function Navigation() {
         onClick={toggleMenu}
         aria-label="Toggle menu"
         aria-expanded={isMenuOpen}
+        type="button"
       >
         <span></span>
         <span></span>
@@ -81,7 +90,7 @@ export default function Navigation() {
 
       <div 
         className={`${styles.menuOverlay} ${isMenuOpen ? styles.active : ''}`}
-        onClick={() => setIsMenuOpen(false)}
+        onClick={handleNavLinkClick}
       />
 
       <nav className={`${styles.nav} ${isMenuOpen ? styles.active : ''}`}>
@@ -90,7 +99,7 @@ export default function Navigation() {
             <li key={link.href}>
               <Link 
                 href={link.href} 
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleNavLinkClick}
                 className={`${styles.navLink} ${pathname === link.href ? styles.active : ''}`}
               >
                 {link.label}
@@ -101,7 +110,7 @@ export default function Navigation() {
             <Link 
               href="/cart" 
               className={`${styles.cartLink} ${pathname === '/cart' ? styles.active : ''}`}
-              onClick={() => setIsMenuOpen(false)}
+              onClick={handleNavLinkClick}
             >
               <i className="fas fa-shopping-cart" aria-hidden="true"></i>
               <span>Cart</span>
@@ -114,7 +123,7 @@ export default function Navigation() {
             <Link
               href="/auth/signin"
               className={styles.cartLink}
-              onClick={() => setIsMenuOpen(false)}
+              onClick={handleNavLinkClick}
             >
               <i className="fas fa-user" aria-hidden="true"></i>
               <span className="sr-only">Sign In</span>

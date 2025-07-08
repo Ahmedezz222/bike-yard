@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './page.module.css';
@@ -13,7 +13,7 @@ import { useCart } from '../lib/CartContext';
 import { formatPrice } from '../lib/currency';
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity, clearCart } = useCart();
+  const { items, removeFromCart, updateQuantity, clearCart, getTotalItems, getTotalPrice } = useCart();
   const [isLoading, setIsLoading] = useState(true);
   const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -30,87 +30,94 @@ export default function CartPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleQuantityChange = (id: string, newQuantity: number) => {
+  const handleQuantityChange = useCallback((id: string, newQuantity: number) => {
     if (newQuantity < 1) return;
     updateQuantity(id, newQuantity);
-  };
+  }, [updateQuantity]);
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const handleRemoveItem = useCallback((id: string) => {
+    removeFromCart(id);
+  }, [removeFromCart]);
+
+  const handleClearCart = useCallback(() => {
+    if (confirm('Are you sure you want to clear your cart?')) {
+      clearCart();
+    }
+  }, [clearCart]);
+
+  const subtotal = getTotalPrice();
   const tax = subtotal * 0.1; // 10% tax
   const total = subtotal + tax;
 
-  const handleCheckout = () => {
+  const handleCheckout = useCallback(() => {
+    if (items.length === 0) {
+      setError('Your cart is empty');
+      return;
+    }
     setIsShippingModalOpen(true);
-  };
+    setError(null);
+  }, [items]);
 
-  const handleShippingSubmit = (data: ShippingData) => {
+  const handleShippingSubmit = useCallback((data: ShippingData) => {
     setShippingData(data);
     setIsShippingModalOpen(false);
     setIsPaymentModalOpen(true);
-  };
+  }, []);
 
-  const handlePaymentSubmit = async (paymentData: PaymentData) => {
+  const handlePaymentSubmit = useCallback(async (paymentData: PaymentData) => {
+    setIsSubmitting(true);
+    setError(null);
+
     try {
-      setIsSubmitting(true);
-      setError(null);
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Validate required data
-      if (!shippingData?.fullName || !shippingData?.email || !shippingData?.address || !shippingData?.city || !shippingData?.state) {
-        throw new Error('Please complete all shipping information');
-      }
-
-      if (items.length === 0) {
-        throw new Error('Your cart is empty');
-      }
-
-      // Create order data
-      const orderData = {
-        customerName: shippingData.fullName,
-        customerEmail: shippingData.email,
+      // Create order object
+      const order = {
         items: items.map(item => ({
           product: {
             _id: item.id,
             name: item.name,
             price: item.price,
-            image: item.image
+            image: item.image,
           },
           quantity: item.quantity,
-          price: item.price
+          price: item.price,
         })),
         totalAmount: total,
+        shippingData,
+        paymentData,
         status: 'pending',
-        shippingAddress: {
-          street: shippingData.address,
-          city: shippingData.city,
-          state: shippingData.state,
-          zipCode: shippingData.zipCode || '',
-          country: shippingData.country || 'US'
-        }
+        createdAt: new Date().toISOString(),
       };
 
-      console.log('Attempting to create order:', orderData);
+      // Simulate API call to create order
+      console.log('Order created:', order);
 
-      // Send order to API
-      // Generate a new _id for the order (simple timestamp-based for demo)
-      const newOrder = { ...orderData, _id: Date.now().toString(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-      console.log('Order created successfully:', newOrder);
+      // Clear cart after successful order
+      clearCart();
 
-      // Clear cart and close modal
-      setIsPaymentModalOpen(false);
-      clearCart(); // Clear the cart after successful order
-      
-      // Use router for navigation instead of window.location
-      const orderId = newOrder._id;
-      window.location.href = `/order-confirmation/${encodeURIComponent(orderId)}`;
+      // Redirect to order confirmation
+      window.location.href = `/order-confirmation/${Date.now()}`;
     } catch (error) {
       console.error('Payment processing error:', error);
-      setError(error instanceof Error ? error.message : 'Failed to process payment. Please try again.');
-      // Don't clear the cart or close the modal on error
-      setIsPaymentModalOpen(true);
+      setError('Payment processing failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [items, total, shippingData, clearCart]);
+
+  const handleCloseShippingModal = useCallback(() => {
+    setIsShippingModalOpen(false);
+  }, []);
+
+  const handleClosePaymentModal = useCallback(() => {
+    setIsPaymentModalOpen(false);
+  }, []);
+
+  const handleCloseError = useCallback(() => {
+    setError(null);
+  }, []);
 
   if (isLoading) {
     return (
@@ -118,6 +125,25 @@ export default function CartPage() {
         <main className={styles.main}>
           <div className={styles.container}>
             <div className={styles.loading}>Loading cart...</div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className={styles.pageWrapper}>
+        <main className={styles.main}>
+          <div className={styles.container}>
+            <div className={styles.emptyCart}>
+              <h1>Your Cart is Empty</h1>
+              <p>Looks like you haven't added any items to your cart yet.</p>
+              <Link href="/products" className={styles.continueShopping}>
+                Continue Shopping
+              </Link>
+            </div>
           </div>
         </main>
         <Footer />
@@ -133,112 +159,110 @@ export default function CartPage() {
           
           {error && (
             <div className={styles.error}>
-              <p>{error}</p>
-              <button onClick={() => setError(null)} className={styles.closeError}>
+              {error}
+              <button onClick={handleCloseError} className={styles.closeError}>
                 ×
               </button>
             </div>
           )}
-          
-          {items.length === 0 ? (
-            <div className={styles.emptyCart}>
-              <p>Your cart is empty</p>
-              <Link href="/products" className={styles.continueShopping}>
-                Continue Shopping
-              </Link>
-            </div>
-          ) : (
-            <div className={styles.cartContent}>
-              <div className={styles.cartItems}>
-                {items.map((item) => (
-                  <div key={item.id} className={styles.cartItem}>
-                    <div className={styles.itemImage}>
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        width={150}
-                        height={150}
-                        style={{
-                          objectFit: 'cover'
-                        }}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = '/bike-yard-logo.png';
-                          target.alt = 'Product image not available';
-                          target.onerror = null;
-                        }}
-                      />
-                    </div>
-                    <div className={styles.itemDetails}>
-                      <h3>{item.name}</h3>
-                      <p className={styles.price}>{formatPrice(item.price)}</p>
-                      <div className={styles.quantityControls}>
-                        <button
-                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                          className={styles.quantityButton}
-                        >
-                          -
-                        </button>
-                        <span className={styles.quantity}>{item.quantity}</span>
-                        <button
-                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                          className={styles.quantityButton}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                    <div className={styles.itemTotal}>
-                      <p>{formatPrice(item.price * item.quantity)}</p>
+
+          <div className={styles.cartContent}>
+            <div className={styles.cartItems}>
+              {items.map((item) => (
+                <div key={item.id} className={styles.cartItem}>
+                  <div className={styles.itemImage}>
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={100}
+                      height={100}
+                      className={styles.image}
+                    />
+                  </div>
+                  <div className={styles.itemDetails}>
+                    <h3>{item.name}</h3>
+                    <p className={styles.itemPrice}>{formatPrice(item.price)}</p>
+                    <div className={styles.quantityControls}>
                       <button
-                        onClick={() => removeFromCart(item.id)}
-                        className={styles.removeButton}
+                        onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                        disabled={item.quantity <= 1}
+                        className={styles.quantityButton}
+                        type="button"
                       >
-                        Remove
+                        -
+                      </button>
+                      <span className={styles.quantity}>{item.quantity}</span>
+                      <button
+                        onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                        className={styles.quantityButton}
+                        type="button"
+                      >
+                        +
                       </button>
                     </div>
+                    <button
+                      onClick={() => handleRemoveItem(item.id)}
+                      className={styles.removeButton}
+                      type="button"
+                    >
+                      Remove
+                    </button>
                   </div>
-                ))}
-              </div>
+                  <div className={styles.itemTotal}>
+                    {formatPrice(item.price * item.quantity)}
+                  </div>
+                </div>
+              ))}
+            </div>
 
-              <div className={styles.orderSummary}>
-                <h2>Order Summary</h2>
-                <div className={styles.summaryRow}>
-                  <span>Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
-                </div>
-                <div className={styles.summaryRow}>
-                  <span>Tax (10%)</span>
-                  <span>{formatPrice(tax)}</span>
-                </div>
-                <div className={`${styles.summaryRow} ${styles.total}`}>
-                  <span>Total</span>
-                  <span>{formatPrice(total)}</span>
-                </div>
+            <div className={styles.cartSummary}>
+              <h2>Order Summary</h2>
+              <div className={styles.summaryRow}>
+                <span>Subtotal ({getTotalItems()} items)</span>
+                <span>{formatPrice(subtotal)}</span>
+              </div>
+              <div className={styles.summaryRow}>
+                <span>Tax (10%)</span>
+                <span>{formatPrice(tax)}</span>
+              </div>
+              <div className={`${styles.summaryRow} ${styles.total}`}>
+                <span>Total</span>
+                <span>{formatPrice(total)}</span>
+              </div>
+              <div className={styles.cartActions}>
                 <button
                   onClick={handleCheckout}
                   className={styles.checkoutButton}
+                  disabled={isSubmitting}
+                  type="button"
                 >
-                  Proceed to Checkout
+                  {isSubmitting ? 'Processing...' : 'Proceed to Checkout'}
                 </button>
+                <button
+                  onClick={handleClearCart}
+                  className={styles.clearButton}
+                  type="button"
+                >
+                  Clear Cart
+                </button>
+                <Link href="/products" className={styles.continueShopping}>
+                  Continue Shopping
+                </Link>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </main>
 
       <ShippingModal
         isOpen={isShippingModalOpen}
-        onClose={() => setIsShippingModalOpen(false)}
+        onClose={handleCloseShippingModal}
         onSubmit={handleShippingSubmit}
       />
 
       <PaymentModal
         isOpen={isPaymentModalOpen}
-        onClose={() => {
-          setIsPaymentModalOpen(false);
-          setError(null);
-        }}
+        onClose={handleClosePaymentModal}
         onSubmit={handlePaymentSubmit}
         totalAmount={total}
         isSubmitting={isSubmitting}

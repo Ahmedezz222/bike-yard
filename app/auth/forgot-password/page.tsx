@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "../signin/signin.module.css";
 
 export default function ForgotPassword() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -45,6 +47,22 @@ export default function ForgotPassword() {
             </button>
           </form>
         )}
+        
+        {/* Navigation links */}
+        <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+          <p style={{ marginBottom: "0.5rem", color: "#888" }}>
+            Remember your password?{' '}
+            <span onClick={() => router.push('/auth/signin')} className={styles.link}>
+              Sign in
+            </span>
+          </p>
+          <p style={{ color: "#888" }}>
+            Don't have an account?{' '}
+            <span onClick={() => router.push('/auth/signup')} className={styles.link}>
+              Sign up
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );

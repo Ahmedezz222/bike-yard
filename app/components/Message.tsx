@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './Message.module.css';
 
 interface MessageProps {
@@ -13,7 +13,16 @@ interface MessageProps {
 export default function Message({ message, type, onClose, duration = 5000 }: MessageProps) {
   const [isClosing, setIsClosing] = useState(false);
 
-  React.useEffect(() => {
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    const timer = setTimeout(() => {
+      onClose();
+    }, 300); // Match the animation duration
+
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  useEffect(() => {
     if (duration > 0) {
       const timer = setTimeout(() => {
         handleClose();
@@ -21,14 +30,11 @@ export default function Message({ message, type, onClose, duration = 5000 }: Mes
 
       return () => clearTimeout(timer);
     }
-  }, [duration]);
+  }, [duration, handleClose]);
 
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-    }, 300); // Match the animation duration
-  };
+  const handleCloseClick = useCallback(() => {
+    handleClose();
+  }, [handleClose]);
 
   return (
     <div className={`${styles.message} ${styles[type]} ${isClosing ? styles.closing : ''}`}>
@@ -37,8 +43,9 @@ export default function Message({ message, type, onClose, duration = 5000 }: Mes
       </div>
       <button 
         className={styles.closeButton}
-        onClick={handleClose}
+        onClick={handleCloseClick}
         aria-label="Close message"
+        type="button"
       >
         ×
       </button>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import styles from './signin.module.css';
@@ -11,9 +11,24 @@ export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email.trim() || !password.trim()) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
     try {
       const response = await fetch('http://127.0.0.1:8000/api/auth/login', {
         method: 'POST',
@@ -21,25 +36,58 @@ export default function SignIn() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email,
+          email: email.trim(),
           password,
         }),
       });
+
       const data = await response.json();
+      
       if (!response.ok || !data.success) {
         setError(data.message || 'Invalid email or password');
         return;
       }
+
       // Store token in localStorage for future requests
       localStorage.setItem('authToken', data.data.token);
       // Optionally store user info
       localStorage.setItem('user', JSON.stringify(data.data.user));
+      
       router.push('/');
       router.refresh();
     } catch (error) {
-      setError('An error occurred during sign in');
+      console.error('Sign in error:', error);
+      setError('An error occurred during sign in. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [email, password, router]);
+
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (error) setError('');
+  }, [error]);
+
+  const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (error) setError('');
+  }, [error]);
+
+  const handleForgotPassword = useCallback(() => {
+    router.push('/auth/forgot-password');
+  }, [router]);
+
+  const handleSignUp = useCallback(() => {
+    router.push('/auth/signup');
+  }, [router]);
+
+  const handleGoogleSignIn = useCallback(() => {
+    alert('Google sign-in not implemented yet');
+  }, []);
+
+  const handleFacebookSignIn = useCallback(() => {
+    alert('Facebook sign-in not implemented yet');
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -53,7 +101,8 @@ export default function SignIn() {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
+              disabled={isLoading}
               required
             />
           </div>
@@ -63,31 +112,42 @@ export default function SignIn() {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
+              disabled={isLoading}
               required
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-            <span className={styles.link} style={{ fontSize: '0.95rem' }} onClick={() => router.push('/auth/forgot-password')}>
+            <span className={styles.link} style={{ fontSize: '0.95rem' }} onClick={handleForgotPassword}>
               Forgot password?
             </span>
           </div>
-          <button type="submit" className={styles.button}>
-            Sign In
+          <button type="submit" className={styles.button} disabled={isLoading}>
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
         <div style={{ margin: '1.5rem 0', textAlign: 'center' }}>
           <div style={{ marginBottom: '0.5rem', color: '#888' }}>or sign in with</div>
-          <button className={`${styles.socialButton} ${styles.google}`} onClick={() => alert('Google sign-in not implemented yet')}>
+          <button 
+            type="button"
+            className={`${styles.socialButton} ${styles.google}`} 
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+          >
             <i className="fab fa-google" aria-hidden="true"></i> Google
           </button>
-          <button className={`${styles.socialButton} ${styles.facebook}`} onClick={() => alert('Facebook sign-in not implemented yet')}>
+          <button 
+            type="button"
+            className={`${styles.socialButton} ${styles.facebook}`} 
+            onClick={handleFacebookSignIn}
+            disabled={isLoading}
+          >
             <i className="fab fa-facebook-f" aria-hidden="true"></i> Facebook
           </button>
         </div>
         <p className={styles.signupLink}>
           Don't have an account?{' '}
-          <span onClick={() => router.push('/auth/signup')} className={styles.link}>
+          <span onClick={handleSignUp} className={styles.link}>
             Sign up
           </span>
         </p>
