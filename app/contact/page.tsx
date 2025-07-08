@@ -47,7 +47,7 @@ export default function ContactPage() {
     e.preventDefault();
     setStatus('submitting');
     try {
-      await apiFetch('http://127.0.0.1:8000/api/contact', {
+      await apiFetch('/contact', {
         method: 'POST',
         body: JSON.stringify({
           name: formData.name,
@@ -67,7 +67,7 @@ export default function ContactPage() {
     e.preventDefault();
     setOrderStatus('loading');
     try {
-      const data = await apiFetch(`http://127.0.0.1:8000/api/orders/${orderNumber}`);
+      const data = await apiFetch(`/orders/${orderNumber}`);
       const order = data.data;
       const transformedOrder: OrderDetails = {
         orderNumber: order.order_number,

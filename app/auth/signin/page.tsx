@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import styles from './signin.module.css';
 import Image from 'next/image';
+import { API_BASE_URL } from '../../lib/api';
 
 export default function SignIn() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function SignIn() {
     setError('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

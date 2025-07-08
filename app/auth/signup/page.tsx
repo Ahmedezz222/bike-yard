@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './signup.module.css';
 import Image from 'next/image';
+import { API_BASE_URL } from '../../lib/api';
 
 export default function SignUp() {
   const router = useRouter();
@@ -56,7 +57,7 @@ export default function SignUp() {
     setError('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

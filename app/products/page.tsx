@@ -42,7 +42,7 @@ const ProductsPage = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const data = await apiFetch('http://127.0.0.1:8000/api/products');
+        const data = await apiFetch('/products');
         // The API returns paginated data in data.data
         const apiProducts = data.data.data || [];
         // Map API products to the Product interface expected by the frontend

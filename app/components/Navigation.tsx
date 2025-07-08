@@ -20,16 +20,23 @@ export default function Navigation() {
   // Calculate total items in cart
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
+  // Move handleClickOutside outside of useEffect
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    const nav = document.querySelector(`.${styles.nav}`);
+    const menuToggle = document.querySelector(`.${styles.menuToggle}`);
+    if (
+      isMenuOpen &&
+      nav &&
+      !nav.contains(event.target as Node) &&
+      menuToggle &&
+      !menuToggle.contains(event.target as Node)
+    ) {
+      setIsMenuOpen(false);
+    }
+  }, [isMenuOpen]);
+
   // Close menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = useCallback((event: MouseEvent) => {
-      const nav = document.querySelector(`.${styles.nav}`);
-      const menuToggle = document.querySelector(`.${styles.menuToggle}`);
-      if (isMenuOpen && nav && !nav.contains(event.target as Node) && menuToggle && !menuToggle.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    }, [isMenuOpen]);
-
     // Prevent body scroll when menu is open
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -42,7 +49,7 @@ export default function Navigation() {
       document.removeEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'unset';
     };
-  }, [isMenuOpen]);
+  }, [isMenuOpen, handleClickOutside]);
 
   const handleImageError = useCallback(() => {
     setImgError(true);
