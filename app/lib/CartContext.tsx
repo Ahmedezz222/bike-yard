@@ -8,6 +8,9 @@ interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  variantId?: string;
+  variantOptions?: Record<string, string>;
+  sku?: string;
 }
 
 interface CartContextType {
@@ -58,14 +61,34 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = useCallback((product: Omit<CartItem, 'quantity'>) => {
     setItems(currentItems => {
-      const existingItem = currentItems.find(item => item.id === product.id);
+      // For variant products, we need to match both product ID and variant options
+      const existingItem = currentItems.find(item => {
+        if (item.id !== product.id) return false;
+        
+        // If both items have variant options, compare them
+        if (item.variantOptions && product.variantOptions) {
+          const itemKeys = Object.keys(item.variantOptions).sort();
+          const productKeys = Object.keys(product.variantOptions).sort();
+          
+          if (itemKeys.length !== productKeys.length) return false;
+          
+          return itemKeys.every(key => 
+            item.variantOptions![key] === product.variantOptions![key]
+          );
+        }
+        
+        // If neither has variant options, they're the same
+        return !item.variantOptions && !product.variantOptions;
+      });
       
       if (existingItem) {
-        return currentItems.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+        return currentItems.map(item => {
+          if (item.id === existingItem.id && 
+              JSON.stringify(item.variantOptions) === JSON.stringify(product.variantOptions)) {
+            return { ...item, quantity: item.quantity + 1 };
+          }
+          return item;
+        });
       }
 
       return [...currentItems, { ...product, quantity: 1 }];

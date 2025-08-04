@@ -1,0 +1,354 @@
+.variantSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.variantGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.variantHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.variantLabel {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.required {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.selectedValue {
+  font-size: 0.875rem;
+  color: #059669;
+  font-weight: 500;
+  background: #d1fae5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.optionsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.optionButton {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.optionButton:hover:not(.disabled):not(.unavailable) {
+  border-color: #3b82f6;
+  background: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.optionButton.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.optionButton.unavailable {
+  border-color: #f3f4f6;
+  background: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.optionButton.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.optionName {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.priceModifier {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  line-height: 1;
+}
+
+.priceModifier.positive {
+  color: #059669;
+  background: #d1fae5;
+}
+
+.priceModifier.negative {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.stockIndicator {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  line-height: 1;
+}
+
+.stockIndicator.inStock {
+  color: #059669;
+  background: #d1fae5;
+}
+
+.stockIndicator.lowStock {
+  color: #d97706;
+  background: #fef3c7;
+}
+
+.stockIndicator.outOfStock {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.unavailableText {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.variantInfo {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.variantDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.sku, .weight {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.priceComparison {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.compareAtPrice {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.savings {
+  font-size: 0.875rem;
+  color: #059669;
+  font-weight: 600;
+  background: #d1fae5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .variantSelector {
+    gap: 1rem;
+  }
+  
+  .optionsContainer {
+    gap: 0.375rem;
+  }
+  
+  .optionButton {
+    padding: 0.625rem 0.875rem;
+    min-width: 70px;
+    font-size: 0.8rem;
+  }
+  
+  .variantHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .variantInfo {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .optionsContainer {
+    justify-content: center;
+  }
+  
+  .optionButton {
+    min-width: 60px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .priceModifier, .stockIndicator {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.25rem;
+  }
+}
+
+/* Color-specific variant styles */
+.optionButton[data-color="Black"] {
+  background: linear-gradient(45deg, #000000, #1f2937);
+  color: white;
+  border-color: #000000;
+}
+
+.optionButton[data-color="Black"]:hover:not(.disabled):not(.unavailable) {
+  background: linear-gradient(45deg, #1f2937, #374151);
+  border-color: #374151;
+}
+
+.optionButton[data-color="Red"] {
+  background: linear-gradient(45deg, #dc2626, #ef4444);
+  color: white;
+  border-color: #dc2626;
+}
+
+.optionButton[data-color="Red"]:hover:not(.disabled):not(.unavailable) {
+  background: linear-gradient(45deg, #ef4444, #f87171);
+  border-color: #ef4444;
+}
+
+.optionButton[data-color="Blue"] {
+  background: linear-gradient(45deg, #2563eb, #3b82f6);
+  color: white;
+  border-color: #2563eb;
+}
+
+.optionButton[data-color="Blue"]:hover:not(.disabled):not(.unavailable) {
+  background: linear-gradient(45deg, #3b82f6, #60a5fa);
+  border-color: #3b82f6;
+}
+
+.optionButton[data-color="Green"] {
+  background: linear-gradient(45deg, #059669, #10b981);
+  color: white;
+  border-color: #059669;
+}
+
+.optionButton[data-color="Green"]:hover:not(.disabled):not(.unavailable) {
+  background: linear-gradient(45deg, #10b981, #34d399);
+  border-color: #10b981;
+}
+
+.optionButton[data-color="White"] {
+  background: linear-gradient(45deg, #f9fafb, #ffffff);
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.optionButton[data-color="White"]:hover:not(.disabled):not(.unavailable) {
+  background: linear-gradient(45deg, #ffffff, #f3f4f6);
+  border-color: #9ca3af;
+}
+
+/* Size-specific variant styles */
+.optionButton[data-size="S"]::before,
+.optionButton[data-size="M"]::before,
+.optionButton[data-size="L"]::before,
+.optionButton[data-size="XL"]::before {
+  content: '';
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #3b82f6;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.optionButton.selected[data-size]::before {
+  opacity: 1;
+}
+
+/* Animation for option selection */
+.optionButton {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading state */
+.variantSelector.loading .optionButton {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.variantSelector.loading .optionButton::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+} 

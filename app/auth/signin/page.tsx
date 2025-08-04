@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import styles from './signin.module.css';
 import Image from 'next/image';
-import { API_BASE_URL } from '../../lib/api';
 
 export default function SignIn() {
   const router = useRouter();
@@ -31,31 +29,24 @@ export default function SignIn() {
     setError('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock authentication - accept any valid email/password combination
+      if (email.trim() && password.length >= 6) {
+        // Store mock token and user info
+        localStorage.setItem('authToken', 'mock-jwt-token');
+        localStorage.setItem('user', JSON.stringify({
+          id: 1,
+          name: 'Demo User',
           email: email.trim(),
-          password,
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok || !data.success) {
-        setError(data.message || 'Invalid email or password');
-        return;
+        }));
+        
+        router.push('/');
+        router.refresh();
+      } else {
+        setError('Invalid email or password');
       }
-
-      // Store token in localStorage for future requests
-      localStorage.setItem('authToken', data.data.token);
-      // Optionally store user info
-      localStorage.setItem('user', JSON.stringify(data.data.user));
-      
-      router.push('/');
-      router.refresh();
     } catch (error) {
       console.error('Sign in error:', error);
       setError('An error occurred during sign in. Please try again.');

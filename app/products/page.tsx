@@ -8,18 +8,11 @@ import Message from '../components/Message';
 import { useCart } from '../lib/CartContext';
 import { useStorage } from '../lib/StorageContext';
 import { formatPrice } from '../lib/currency';
-import { apiFetch } from '../lib/api';
+import { sampleProducts, Product } from '../lib/sampleProducts';
 
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  description: string;
-  images: string[];
-  category: string;
-  stock: number;
-  featured: boolean;
-}
+
+
+
 
 const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -39,24 +32,13 @@ const ProductsPage = () => {
   const [filters, setFilters] = useState(savedFilters);
 
   useEffect(() => {
+    // Simulate API call with sample data
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const data = await apiFetch('/products');
-        // The API returns paginated data in data.data
-        const apiProducts = data.data.data || [];
-        // Map API products to the Product interface expected by the frontend
-        const mappedProducts = apiProducts.map((p: any) => ({
-          _id: p.id?.toString() || p._id || '',
-          name: p.name,
-          price: p.price,
-          description: p.description,
-          images: p.images && p.images.length > 0 ? p.images : ['/images/placeholder.jpg'],
-          category: p.category || '',
-          stock: p.stock ?? 0,
-          featured: p.featured ?? false,
-        }));
-        setProducts(mappedProducts);
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setProducts(sampleProducts);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -79,13 +61,13 @@ const ProductsPage = () => {
     // Apply price filters
     if (filters.minPrice) {
       filtered = filtered.filter(product => 
-        product.price >= Number(filters.minPrice)
+        product.basePrice >= Number(filters.minPrice)
       );
     }
 
     if (filters.maxPrice) {
       filtered = filtered.filter(product => 
-        product.price <= Number(filters.maxPrice)
+        product.basePrice <= Number(filters.maxPrice)
       );
     }
 
@@ -125,21 +107,28 @@ const ProductsPage = () => {
   };
 
   const handleAddToCart = (product: Product) => {
+    // For products with variants, redirect to product detail page
+    if (product.variantTypes.length > 0) {
+      window.location.href = `/products/${product._id}`;
+      return;
+    }
+    
+    // For simple products without variants, add directly to cart
     addToCart({
       id: product._id,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
+      name: product.title,
+      price: product.basePrice,
+      image: product.baseImages[0],
     });
     setMessage({
-      text: `${product.name} added to cart!`,
+      text: `${product.title} added to cart!`,
       type: 'success'
     });
   };
 
   const handleImageClick = (product: Product) => {
-    setSelectedProduct(product);
-    addRecentProduct(product._id);
+    // Navigate to product detail page
+    window.location.href = `/products/${product._id}`;
   };
 
   const closeImageModal = () => {
@@ -260,8 +249,8 @@ const ProductsPage = () => {
                     style={{ cursor: 'pointer' }}
                   >
                     <Image
-                      src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.jpg'}
-                      alt={product.name}
+                      src={product.baseImages && product.baseImages.length > 0 ? product.baseImages[0] : '/images/placeholder.jpg'}
+                      alt={product.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       priority={false}
@@ -271,28 +260,33 @@ const ProductsPage = () => {
                         objectFit: 'cover'
                       }}
                     />
-                    {product.images && product.images.length > 1 && (
+                    {product.baseImages && product.baseImages.length > 1 && (
                       <div className={styles.imageCount}>
-                        +{product.images.length - 1} more
+                        +{product.baseImages.length - 1} more
+                      </div>
+                    )}
+                    {product.variantTypes.length > 0 && (
+                      <div className={styles.variantBadge}>
+                        {product.variantTypes.length} Options
                       </div>
                     )}
                   </div>
                   <div className={styles.productInfo}>
-                    <h3>{product.name}</h3>
-                    <p className={styles.price}>{formatPrice(product.price)}</p>
+                    <h3>{product.title}</h3>
+                    <p className={styles.price}>{formatPrice(product.basePrice)}</p>
                     <p className={styles.description}>{product.description}</p>
                     <div className={styles.productMeta}>
                       <span className={styles.category}>{product.category}</span>
                       <span className={styles.stock}>
-                        {product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
+                        {product.variants.some(v => v.inventoryQuantity > 0) ? 'In Stock' : 'Out of Stock'}
                       </span>
                     </div>
                     <button
                       className={styles.addToCartButton}
                       onClick={() => handleAddToCart(product)}
-                      disabled={product.stock === 0}
+                      disabled={!product.variants.some(v => v.inventoryQuantity > 0)}
                     >
-                      {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                      {product.variants.some(v => v.inventoryQuantity > 0) ? 'View Options' : 'Out of Stock'}
                     </button>
                   </div>
                 </div>

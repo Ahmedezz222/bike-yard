@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './signup.module.css';
 import Image from 'next/image';
-import { API_BASE_URL } from '../../lib/api';
 
 export default function SignUp() {
   const router = useRouter();
@@ -57,31 +56,21 @@ export default function SignUp() {
     setError('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone.trim(),
-          password: formData.password,
-          password_confirmation: formData.confirmPassword,
-        }),
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock successful registration
+      console.log('User registered:', {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
       });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Something went wrong');
-      }
 
       // Redirect to sign in page after successful registration
       router.push('/auth/signin');
     } catch (error) {
       console.error('Sign up error:', error);
-      setError(error instanceof Error ? error.message : 'Failed to create account. Please try again.');
+      setError('Failed to create account. Please try again.');
     } finally {
       setIsLoading(false);
     }

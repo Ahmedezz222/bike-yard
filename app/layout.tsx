@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { CartProvider } from "./lib/CartContext";
 import { StorageProvider } from "./lib/StorageContext";
-import { SessionProvider } from "next-auth/react";
 import ClientProviders from "./components/ClientProviders";
 import Navigation from "./components/Navigation";
 

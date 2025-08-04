@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Footer from '../components/Footer';
 import styles from './contact.module.css';
-import { apiFetch } from '../lib/api';
 
 interface OrderDetails {
   orderNumber: string;
@@ -32,6 +31,33 @@ interface OrderDetails {
   }[];
 }
 
+// Mock order data for demonstration
+const mockOrder: OrderDetails = {
+  orderNumber: '12345',
+  status: 'shipped',
+  estimatedDelivery: '2024-01-15',
+  shippingAddress: '123 Main St, City, State 12345',
+  items: [
+    { name: 'Mountain Bike Pro', quantity: 1, price: 1299.99 },
+    { name: 'Bike Helmet Safety', quantity: 1, price: 89.99 }
+  ],
+  totalAmount: 1389.98,
+  orderDate: '2024-01-10',
+  paymentMethod: 'Credit Card',
+  trackingNumber: 'TRK123456789',
+  carrier: 'FedEx',
+  customerInfo: {
+    name: 'John Doe',
+    email: 'john@example.com',
+    phone: '(555) 123-4567'
+  },
+  statusHistory: [
+    { date: '2024-01-10', status: 'pending', location: 'Order placed' },
+    { date: '2024-01-11', status: 'processing', location: 'Order confirmed' },
+    { date: '2024-01-12', status: 'shipped', location: 'Package picked up by carrier' }
+  ]
+};
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -47,15 +73,8 @@ export default function ContactPage() {
     e.preventDefault();
     setStatus('submitting');
     try {
-      await apiFetch('/contact', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-          subject: 'Contact Form',
-        }),
-      });
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setStatus('success');
       setFormData({ name: '', email: '', message: '' });
     } catch {
@@ -67,32 +86,17 @@ export default function ContactPage() {
     e.preventDefault();
     setOrderStatus('loading');
     try {
-      const data = await apiFetch(`/orders/${orderNumber}`);
-      const order = data.data;
-      const transformedOrder: OrderDetails = {
-        orderNumber: order.order_number,
-        status: order.status,
-        estimatedDelivery: order.estimated_delivery,
-        shippingAddress: order.shipping_address?.street || 'N/A',
-        items: order.items?.map((item: any) => ({
-          name: item.product_name || item.product?.name || '',
-          quantity: item.quantity,
-          price: item.unit_price,
-        })) || [],
-        totalAmount: order.total_amount,
-        orderDate: order.created_at,
-        paymentMethod: order.payment_method,
-        trackingNumber: order.tracking_number,
-        carrier: order.carrier,
-        customerInfo: {
-          name: order.customer_name,
-          email: order.customer_email,
-          phone: order.customer_phone,
-        },
-        statusHistory: order.status_history || [],
-      };
-      setOrderDetails(transformedOrder);
-      setOrderStatus('found');
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock order tracking - only show order if number matches
+      if (orderNumber === '12345') {
+        setOrderDetails(mockOrder);
+        setOrderStatus('found');
+      } else {
+        setOrderStatus('not_found');
+        setOrderDetails(null);
+      }
     } catch (error) {
       setOrderStatus('not_found');
       setOrderDetails(null);
