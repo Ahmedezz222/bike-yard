@@ -1,9 +1,12 @@
-import { Product, ProductVariant, BIKE_VARIANT_TYPES, ACCESSORY_VARIANT_TYPES } from './variants';
+import { Product, ProductVariant, VariantType, BIKE_VARIANT_TYPES, ACCESSORY_VARIANT_TYPES } from './variants';
+
+// Re-export Product type for convenience
+export type { Product };
 
 // Generate variants for a product based on variant types
 function generateProductVariants(
   productId: string,
-  variantTypes: any[],
+  variantTypes: VariantType[],
   basePrice: number,
   baseStock: number = 10
 ): ProductVariant[] {
